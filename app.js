@@ -17,6 +17,11 @@ app.use((req, res, next) => {
 	next(error)
 })
 
+app.use((err, req, res, next) => {
+	console.error(err)
+	return res.status(err.status).json(err)
+})
+
 app.listen(app.get('port') || 3000, () => {
 	console.log(`Server listening on port ${app.get('port')}`)
 })
