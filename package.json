@@ -1,0 +1,21 @@
+{
+  "name": "sharingbookreview-be",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sharingBookReview-SERVICE/sharingBookReview-BE.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sharingBookReview-SERVICE/sharingBookReview-BE/issues"
+  },
+  "homepage": "https://github.com/sharingBookReview-SERVICE/sharingBookReview-BE#readme",
+  "type": "module"
+}
