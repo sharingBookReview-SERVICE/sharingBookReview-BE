@@ -32,7 +32,7 @@ router.post('/', (req, res) => {
 })
 
 router.get('/:reviewId', (req, res) => {
-
+	return res.json(sampleReview)
 })
 
 router.put('/:reviewId', (req, res) => {
@@ -44,7 +44,7 @@ router.delete('/:reviewId', (req, res) => {
 })
 
 router.get('/', (req, res) => {
-
+	return res.json([sampleReview, sampleReview])
 })
 
 export default router
