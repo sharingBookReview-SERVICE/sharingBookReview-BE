@@ -27,7 +27,7 @@ const sampleReview = {
 	likes: 10
 }
 
-router.post('/:reviewId', (req, res) => {
+router.post('/', (req, res) => {
 
 })
 
