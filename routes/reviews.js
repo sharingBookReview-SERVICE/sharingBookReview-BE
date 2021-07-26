@@ -28,7 +28,7 @@ const sampleReview = {
 }
 
 router.post('/', (req, res) => {
-
+	return res.sendStatus(201)
 })
 
 router.get('/:reviewId', (req, res) => {
@@ -36,11 +36,11 @@ router.get('/:reviewId', (req, res) => {
 })
 
 router.put('/:reviewId', (req, res) => {
-
+	return res.sendStatus(201)
 })
 
 router.delete('/:reviewId', (req, res) => {
-
+	return res.sendStatus(200)
 })
 
 router.get('/', (req, res) => {
