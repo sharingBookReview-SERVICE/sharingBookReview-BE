@@ -8,7 +8,7 @@ const router = express.Router()
 
 // router.use('/api/users', usersRouter)
 // router.use('/api/commentsRouter', commentsRouter) // temp path
-router.use('/api/reviewsRouter', reviewsRouter) // temp path
+router.use('/api/books/:bookId/reviews', reviewsRouter) // temp path
 // router.use('/api/booksRouter', booksRouter)
 
 // Swagger
