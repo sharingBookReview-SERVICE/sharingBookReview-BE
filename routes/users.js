@@ -12,6 +12,21 @@ const sampleUser = {
 
 const token = "dsfa39919ufndfasdffn3o220192ydfnl20342fnf0dnav0sd0f"
 
+const sampleComment = {
+	user: {
+		_id: '유저아이디',
+		nickname: '마산독서남',
+	},
+	book: {
+		isbn: 9791158392239,
+	},
+	review: {
+		reviewId: '리뷰아이디',
+	},
+	content: '리뷰가 유익하네요.',
+	created_at: '20210728',
+}
+
 const sampleReview = {
 	user: {
 		_id: '유저아이디',
