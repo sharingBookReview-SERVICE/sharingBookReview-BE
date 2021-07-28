@@ -1,4 +1,6 @@
 import mongoose from 'mongoose'
+import dotenv from 'dotenv'
+dotenv.config()
 
 const connect = () => {
 	if (process.env.NODE_ENV !== 'production') {
@@ -10,7 +12,7 @@ mongoose.connect(
 	'mongodb://localhost:27017/admin',
 	{
 		dbName: 'bns',
-		user: 'sbk',
+		user: process.env.DB_USER,
 		pass: process.env.DB_PASSWORD,
 		useNewUrlParser: true,
 		useUnifiedTopology: true,
