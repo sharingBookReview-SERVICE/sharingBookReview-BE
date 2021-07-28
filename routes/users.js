@@ -57,7 +57,7 @@ router.delete('/:userId', (req, res) => {
 })
 
 router.get('/:userId/reviews', (req, res) => {
-	return res.sendStatus(sampleReview)
+	return res.json(sampleReview)
 })
 
 export default router
