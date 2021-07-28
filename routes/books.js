@@ -35,7 +35,7 @@ const sampleBestseller = [
 ]
 
 // 책 목록
-router.get('/books', (req, res) => {
+router.get('/', (req, res) => {
 	return res.json(sampleBooks)
 })
 
@@ -43,8 +43,10 @@ router.get('/books', (req, res) => {
 router.get('/bestseller', (req, res) => {
 	return res.json(sampleBestseller)
 })
+
 // 개별 책 선택
 router.get('/:bookId', (req, res) => {
 	return res.json(sampleBooks.book1)
 })
+
 export default router
