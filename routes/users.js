@@ -10,6 +10,8 @@ const sampleUser = {
     userImage: 'https://www.pharmnews.com/news/photo/202009/101300_52229_3331.jpg'	
 }
 
+const token = "dsfa39919ufndfasdffn3o220192ydfnl20342fnf0dnav0sd0f"
+
 router.post('/users/:provider', (req, res) => {
 	return res.json()
 })
