@@ -8,6 +8,8 @@ const Review = connection.define('Review', {
 		type: DataTypes.TEXT,
 		allowNull: false
 	},
+	quote: DataTypes.TEXT,
+	image: DataTypes.TEXT,
 })
 
 await connection.sync({ force: true })
