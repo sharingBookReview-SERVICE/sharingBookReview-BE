@@ -46,7 +46,7 @@ router.get('/bestseller', (req, res) => {
 
 // 개별 책 선택
 router.get('/:bookId', (req, res) => {
-	return res.json(sampleBooks.book1)
+	return res.json(sampleBooks)
 })
 
 export default router
