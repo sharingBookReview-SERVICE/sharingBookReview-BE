@@ -13,11 +13,13 @@ const sampleUser = {
 const token = "dsfa39919ufndfasdffn3o220192ydfnl20342fnf0dnav0sd0f"
 
 router.post('/users/:provider', (req, res) => {
-	return res.json()
+	return res.json({
+        nickname : sampleUser.nickname, userImage: sampleUser.userImage, token
+    })
 })
 
 router.get('/users/:userId', (req, res) => {
-	return res.json(sampleReview)
+	return res.json(sampleUser)
 })
 
 router.put('/users/:userId', (req, res) => {
@@ -29,7 +31,7 @@ router.delete('/users/:userId', (req, res) => {
 })
 
 router.get('/users/:userId/reviews', (req, res) => {
-	return res.sendStatus(200)
+	return res.sendStatus(sampleReview)
 })
 
 export default router
