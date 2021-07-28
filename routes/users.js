@@ -2,6 +2,13 @@ import express from 'express'
 
 const router = new express.Router({ mergeParams: true })
 
+const sampleUser = {	
+    _id: '유저아이디',
+    nickname: '마산독서남',
+    provider: 'kakao',
+    providerKey: '338473284723238932434324',
+    userImage: 'https://www.pharmnews.com/news/photo/202009/101300_52229_3331.jpg'	
+}
 
 router.post('/users/:provider', (req, res) => {
 	return res.json()
