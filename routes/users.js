@@ -12,25 +12,25 @@ const sampleUser = {
 
 const token = "dsfa39919ufndfasdffn3o220192ydfnl20342fnf0dnav0sd0f"
 
-router.post('/users/:provider', (req, res) => {
+router.post('/:provider', (req, res) => {
 	return res.json({
         nickname : sampleUser.nickname, userImage: sampleUser.userImage, token
     })
 })
 
-router.get('/users/:userId', (req, res) => {
+router.get('/:userId', (req, res) => {
 	return res.json(sampleUser)
 })
 
-router.put('/users/:userId', (req, res) => {
+router.put('/:userId', (req, res) => {
 	return res.sendStatus(200)
 })
 
-router.delete('/users/:userId', (req, res) => {
+router.delete('/:userId', (req, res) => {
 	return res.sendStatus(200)
 })
 
-router.get('/users/:userId/reviews', (req, res) => {
+router.get('/:userId/reviews', (req, res) => {
 	return res.sendStatus(sampleReview)
 })
 
