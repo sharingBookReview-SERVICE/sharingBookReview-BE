@@ -2,6 +2,21 @@ import express from 'express'
 
 const router = new express.Router({ mergeParams: true })
 
+const sampleComment = {
+	user: {
+		_id: '유저아이디',
+		nickname: '마산독서남',
+	},
+	book: {
+		isbn: 9791158392239,
+	},
+	review: {
+		reviewId: '리뷰아이디',
+	},
+	content: '리뷰가 유익하네요.',
+	created_at: '20210728',
+}
+
 const sampleReview = {
 	user: {
 		_id: '유저아이디',
@@ -23,7 +38,7 @@ const sampleReview = {
 	content: '이책 정말 좋아요',
 	hashtag: ['개발', '자바스크립트', '자세한'],
 	createdAt: '20210726',
-	comments: [],
+	comments: [sampleComment],
 	myLike: true,
 	likes: 10
 }
