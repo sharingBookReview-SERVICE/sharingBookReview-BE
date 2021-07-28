@@ -9,6 +9,7 @@ const app = new express()
 
 app.set('port', process.env.PORT)
 
+app.use(cors())
 app.use(router)
 
 app.use((req, res, next) => {
