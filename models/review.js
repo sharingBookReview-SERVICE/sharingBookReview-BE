@@ -4,7 +4,10 @@ import connection from './index.js'
 const { DataTypes } = sequelize
 
 const Review = connection.define('Review', {
-	content: DataTypes.TEXT,
+	content: {
+		type: DataTypes.TEXT,
+		allowNull: false
+	},
 })
 
 await connection.sync({ force: true })
