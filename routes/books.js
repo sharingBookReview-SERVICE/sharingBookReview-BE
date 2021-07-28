@@ -19,7 +19,7 @@ const sampleBooks = [
 ]
 
 const sampleBestseller = [
-	(book2 = {
+	{
 		title: '달러구트 꿈 백화점',
 		link: 'http://www.kyobobook.co.kr/product/detailViewKor.laf?ejkGb=KOR&mallGb=KOR&barcode=9791165341909&orderClick=LAG&Kc=',
 		image: 'http://image.kyobobook.co.kr/images/book/large/909/l9791165341909.jpg',
@@ -31,7 +31,7 @@ const sampleBestseller = [
 		description:
 			'잠들어야만 입장 가능한 꿈 백화점에서 일어나는 비밀스럽고도 기묘하며 가슴 뭉클한 판타지 소설',
 		pubdate: '2020년 07월 08일',
-	}),
+	},
 ]
 
 // 책 목록
