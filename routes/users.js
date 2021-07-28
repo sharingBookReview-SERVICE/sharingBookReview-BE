@@ -15,7 +15,7 @@ const token = "dsfa39919ufndfasdffn3o220192ydfnl20342fnf0dnav0sd0f"
 const sampleReview = {
 	user: {
 		_id: '유저아이디',
-		nickname: '마산독서남'
+		nickname: '마산독서남',
 	},
 	book: {
 		isbn: 9791158392239,
@@ -27,7 +27,7 @@ const sampleReview = {
 		discount: 0.1,
 		description:
 			'269개의 그림과 원리를 파헤치는 설명으로 ‘자바스크립트의 기본 개념과 동작 원리’를 이해하자!\\n웹페이지의 단순한 보조 기능을 처리하기 위한 제한적인 용도로 태어난 자바스크립트는 과도하다고 느껴질 만큼 친절한 프로그래밍 언어입니다. 이러한 자바스크립트의 특징은 편리한 경우도 있지만 내부 동작을 이해하기 어렵게 만들기도 합니다.',
-		pubdate: '2020925'
+		pubdate: '2020925',
 	},
 	quote: '자바스크립트 최고',
 	content: '이책 정말 좋아요',
@@ -35,7 +35,7 @@ const sampleReview = {
 	createdAt: '20210726',
 	comments: [sampleComment],
 	myLike: true,
-	likes: 10
+	likes: 10,
 }
 
 router.post('/:provider', (req, res) => {
