@@ -1,6 +1,6 @@
 import express from 'express'
 
-const router = new express.Router({ mergeParams: true })
+const router = new express.Router()
 
 const sampleUser = {	
     _id: '유저아이디',
