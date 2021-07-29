@@ -11,7 +11,7 @@ const searchBooks = async (target,query,client_id, client_secret) => {
                 "X-Naver-Client-Id": client_id,
                 "X-Naver-Client-Secret": client_secret
             }
-        }) // 프로미스로 이어 보자
+        }) // todo 프로미스로 이어 보자
         let searchList;
         parseString(result.data, (err,result) => {
             if(err){
