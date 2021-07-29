@@ -1,10 +1,8 @@
 import puppeteer from 'puppeteer'
 
-const URL = 'https://www.kyobobook.co.kr/bestSellerNew/bestseller.laf'
-
-const getBestsellerISBNs = async () => {
+const getBestsellerISBNs = async (URL) => {
     const browser = await puppeteer.launch({
-        headless: false,
+        headless: true,
         defaultViewport: null
     })
 
