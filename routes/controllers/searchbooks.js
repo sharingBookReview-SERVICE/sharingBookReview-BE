@@ -1,10 +1,16 @@
 import axios from 'axios'
 import { parseString } from 'xml2js'
+import Book from '../../models/book.js'
 
 const checkBookDatabase = async (array) => {
     for (let i = 0; i < array.length; i++){
         const isbn = array[i].isbn[0].split(' ')[0]
-        console.log(isbn)
+        const existBook = await Book.findById(isbn)
+        if (existBook == null){
+            for (let [key,value] of Object.entries(array[i])){
+                console.log(key,value[0])
+            }
+        }
     }
 }
 
