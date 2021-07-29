@@ -41,8 +41,13 @@ router.get('/', (req, res) => {
     const { query } = req.query
     const client_id = process.env.BOOK_API_CLIENT_ID
     const client_secret = process.env.BOOK_API_CLIENT_SECRET
-    
-    searchbooks()
+    try{
+        searchBooks()
+        res.json({resultData})
+    } catch (err){
+        console.log(err)
+        res.sendStatus(400)
+    }
 })
 
 // 베스트 샐러
