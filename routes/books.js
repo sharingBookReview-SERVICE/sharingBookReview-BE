@@ -40,12 +40,12 @@ const sampleBestseller = [
 // 책 목록
 router.get('/', async (req, res) => {
     const { target } = req.query
-    const { query } = req.query
+    const query = "%ED%95%B4%EB%A6%AC%ED%8F%AC%ED%84%B0"
     const client_id = process.env.BOOK_API_CLIENT_ID
     const client_secret = process.env.BOOK_API_CLIENT_SECRET
     try{
-        await searchBooks(target, query, client_id, client_secret)
-        res.json({resultData})
+        const searchList = await searchBooks(target, query, client_id, client_secret)
+        res.json({searchList})
     } catch (err){
         console.log(err)
         res.sendStatus(400)
