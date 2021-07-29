@@ -1,6 +1,13 @@
 import axios from 'axios'
 import { parseString } from 'xml2js'
 
+const checkBookDatabase = async (array) => {
+    for (let i = 0; i < array.length; i++){
+        const isbn = array[i].isbn[0].split(' ')[0]
+        console.log(isbn)
+    }
+}
+
 /**
  * Search book information on naver.
  * @param {string} target - Search target must be either d_titl, d_auth, or d_isbn
@@ -35,6 +42,7 @@ const searchBooks = async (target, query) => {
 		}
 		searchList = result.rss.channel[0].item
 	})
+    checkBookDatabase(searchList)
 	return searchList
 }
 
