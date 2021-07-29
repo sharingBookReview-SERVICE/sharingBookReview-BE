@@ -65,11 +65,16 @@ router.get('/', async (req, res, next) => {
 })
 
 // 베스트 샐러
-router.get('/bestseller', async(req, res) => {
-    const URL = 'https://www.kyobobook.co.kr/bestSellerNew/bestseller.laf'
-    const bestsellers = await getBestsellerISBNs(URL)
+router.get('/bestsellers', async(req, res, next) => {
+    try{
+        const bestsellers = await getBestsellerISBNs()
     console.log(bestsellers)
 	return res.json({bestsellers})
+    } catch(err){
+        console.error(err)
+        return next(err)
+    }
+    
 })
 
 // 개별 책 선택
