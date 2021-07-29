@@ -1,10 +1,13 @@
 import express from 'express'
-import dotenv from 'dotenv'
 import searchBooks from './controllers/searchbooks.js'
 import getBestsellerISBNs from './controllers/bestsellercrawling.js'
+import dotenv from 'dotenv'
+dotenv.config()
 
 const router = new express.Router({ mergeParams: true })
-dotenv.config()
+
+
+const router = new express.Router({ mergeParams: true })
 
 const sampleBooks = [
 	{
@@ -57,7 +60,7 @@ router.get('/', async (req, res, next) => {
 			client_secret
 		)
 		// console.log(searchList)
-		res.json({ searchList })
+		return res.json({ searchList })
 	} catch (err) {
 		console.error(err)
 		return next(err)
@@ -74,7 +77,7 @@ router.get('/bestsellers', async(req, res, next) => {
         console.error(err)
         return next(err)
     }
-    
+
 })
 
 // 개별 책 선택
