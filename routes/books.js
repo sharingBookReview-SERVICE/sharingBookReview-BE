@@ -1,6 +1,7 @@
 import express from 'express'
-import searchBooks from './controllers/searchbooks.js'
 import dotenv from 'dotenv'
+import searchBooks from './controllers/searchbooks.js'
+import getBestsellerISBNs from './controllers/bestsellercrawling.js'
 
 const router = new express.Router({ mergeParams: true })
 dotenv.config()
@@ -64,8 +65,11 @@ router.get('/', async (req, res, next) => {
 })
 
 // 베스트 샐러
-router.get('/bestseller', (req, res) => {
-	return res.json(sampleBestseller)
+router.get('/bestseller', async(req, res) => {
+    const URL = 'https://www.kyobobook.co.kr/bestSellerNew/bestseller.laf'
+    const bestsellers = await getBestsellerISBNs(URL)
+    console.log(bestsellers)
+	return res.json({bestsellers})
 })
 
 // 개별 책 선택
