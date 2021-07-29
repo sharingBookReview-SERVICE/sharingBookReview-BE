@@ -43,8 +43,13 @@ router.get('/', async (req, res) => {
     const { query } = req.query
     const client_id = process.env.BOOK_API_CLIENT_ID
     const client_secret = process.env.BOOK_API_CLIENT_SECRET
+    //todo 나중에 맵으로 고치기
+    const targetConverter =  {
+        title: 'd_titl',
+        author: 'd_auth',
+    }
     try{
-        const searchList = await searchBooks(target, query, client_id, client_secret)
+        const searchList = await searchBooks(targetConverter[target], query, client_id, client_secret)
         // console.log(searchList)
         res.json({searchList})
     } catch (err){
