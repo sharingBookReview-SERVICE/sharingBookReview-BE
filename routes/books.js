@@ -1,4 +1,5 @@
 import express from 'express'
+import searchbooks from './controllers/searchbooks'
 
 const router = new express.Router({ mergeParams: true })
 
@@ -36,7 +37,12 @@ const sampleBestseller = [
 
 // 책 목록
 router.get('/', (req, res) => {
-	return res.json(sampleBooks)
+    const { target } = req.query
+    const { query } = req.query
+    const client_id = process.env.BOOK_API_CLIENT_ID
+    const client_secret = process.env.BOOK_API_CLIENT_SECRET
+    
+    searchbooks()
 })
 
 // 베스트 샐러
