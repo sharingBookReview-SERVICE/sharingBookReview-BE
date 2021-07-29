@@ -13,9 +13,10 @@ const searchBooks = async (target,query,client_id, client_secret) => {
             }
         }) // todo 프로미스로 이어 보자
         let searchList;
-        parseString(result.data, (err,result) => {
+        parseString(result.data, (err,result,next) => {
             if(err){
-                return console.log("sth wrong")
+                console.error(err)
+                next(err)
             }
             searchList = result.rss.channel[0].item
         })

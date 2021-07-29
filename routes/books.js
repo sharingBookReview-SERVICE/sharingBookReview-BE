@@ -38,7 +38,7 @@ const sampleBestseller = [
 ]
 
 // 책 목록
-router.get('/', async (req, res) => {
+router.get('/', async (req, res, next) => {
     const { target } = req.query
     const { query } = req.query
     const client_id = process.env.BOOK_API_CLIENT_ID
@@ -53,8 +53,8 @@ router.get('/', async (req, res) => {
         // console.log(searchList)
         res.json({searchList})
     } catch (err){
-        console.log(err)
-        res.sendStatus(400)
+        console.error(err)
+        next(err)
     }
 })
 
