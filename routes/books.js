@@ -1,5 +1,5 @@
 import express from 'express'
-import searchbooks from './controllers/searchbooks.js'
+import searchBooks from './controllers/searchbooks.js'
 
 const router = new express.Router({ mergeParams: true })
 

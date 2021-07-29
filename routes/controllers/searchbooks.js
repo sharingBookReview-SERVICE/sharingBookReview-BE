@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-exports.searchBooks = async (req,res) => {
+const searchBooks = async (req,res) => {
     const api_url = "https://openapi.naver.com/v1/search/book_adv.xml"
         let result = await axios({
             method: 'get',
@@ -24,4 +24,4 @@ exports.searchBooks = async (req,res) => {
 
 }
 
-
+export default searchBooks
