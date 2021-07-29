@@ -39,23 +39,28 @@ const sampleBestseller = [
 
 // 책 목록
 router.get('/', async (req, res, next) => {
-    const { target } = req.query
-    const { query } = req.query
-    const client_id = process.env.BOOK_API_CLIENT_ID
-    const client_secret = process.env.BOOK_API_CLIENT_SECRET
-    //todo 나중에 맵으로 고치기
-    const targetConverter =  {
-        title: 'd_titl',
-        author: 'd_auth',
-    }
-    try{
-        const searchList = await searchBooks(targetConverter[target], query, client_id, client_secret)
-        // console.log(searchList)
-        res.json({searchList})
-    } catch (err){
-        console.error(err)
-        next(err)
-    }
+	const { target } = req.query
+	const { query } = req.query
+	const client_id = process.env.BOOK_API_CLIENT_ID
+	const client_secret = process.env.BOOK_API_CLIENT_SECRET
+	//todo 나중에 맵으로 고치기
+	const targetConverter = {
+		title: 'd_titl',
+		author: 'd_auth',
+	}
+	try {
+		const searchList = await searchBooks(
+			targetConverter[target],
+			query,
+			client_id,
+			client_secret
+		)
+		// console.log(searchList)
+		res.json({ searchList })
+	} catch (err) {
+		console.error(err)
+		return next(err)
+	}
 })
 
 // 베스트 샐러
