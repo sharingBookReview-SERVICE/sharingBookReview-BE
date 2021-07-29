@@ -65,7 +65,6 @@ router.get('/', async (req, res, next) => {
 router.get('/bestsellers', async(req, res, next) => {
     try{
         const bestsellers = await getBestsellerISBNs()
-    console.log(bestsellers)
 	return res.json({bestsellers})
     } catch(err){
         console.error(err)
@@ -75,8 +74,23 @@ router.get('/bestsellers', async(req, res, next) => {
 })
 
 // 개별 책 선택
-router.get('/:bookId', (req, res) => {
-	return res.json(sampleBooks)
+router.get('/:bookId', async (req, res, next) => {
+    const { bookId } = req.params
+    const client_id = process.env.BOOK_API_CLIENT_ID
+	const client_secret = process.env.BOOK_API_CLIENT_SECRET
+	try {
+		const searchList = await searchBooks(
+			"isbn",
+			bookId,
+			client_id,
+			client_secret
+		)
+		// console.log(searchList)
+		return res.json({ searchList })
+	} catch (err) {
+		console.error(err)
+		return next(err)
+	}
 })
 
 export default router
