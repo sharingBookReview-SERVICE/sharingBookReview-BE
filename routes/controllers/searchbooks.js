@@ -1,13 +1,13 @@
 import axios from 'axios'
 
 exports.searchBooks = async (req,res) => {
-    const api_url = "https://openapi.naver.com/v1/search/book.json?query=%EC%A3%BC%EC%8B%9D&display=10&start=1"
+    const api_url = "https://openapi.naver.com/v1/search/book_adv.xml"
         let result = await axios({
             method: 'get',
             url : api_url,
 
             params: {
-                query: req.query.query
+                target: query
             },
             header: {
                 "X-Naver-Client-Id": client_id,
