@@ -9,6 +9,7 @@ const userSchema = new mongoose.Schema({
 	},
 	provider: {
 		type: String,
+		enum: ['Naver']
 	}
 })
 
