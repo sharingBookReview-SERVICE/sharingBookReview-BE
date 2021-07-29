@@ -45,6 +45,7 @@ router.get('/', async (req, res) => {
     const client_secret = process.env.BOOK_API_CLIENT_SECRET
     try{
         const searchList = await searchBooks(target, query, client_id, client_secret)
+        // console.log(searchList)
         res.json({searchList})
     } catch (err){
         console.log(err)
