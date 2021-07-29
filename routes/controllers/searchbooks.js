@@ -9,7 +9,9 @@ import { parseString } from 'xml2js'
  * @param {string} client_secret - Naver dev api account secret key
  * @returns {Promise<Object[]>}
  */
-const searchBooks = async (target, query, client_id, client_secret) => {
+const searchBooks = async (target, query) => {
+    const client_id = process.env.BOOK_API_CLIENT_ID
+	const client_secret = process.env.BOOK_API_CLIENT_SECRET
     const targetConverter = {
 		title: 'd_titl',
 		author: 'd_auth',
