@@ -20,4 +20,17 @@ const bookSchema = new mongoose.Schema({
 	}
 })
 
+class Book {
+	/**
+	 *
+	 * @returns {[string]}
+	 */
+	get topTags() {
+		const topTags = "1234"
+		return topTags
+	}
+}
+
+bookSchema.loadClass(Book)
+
 export default mongoose.model('Book', bookSchema)
