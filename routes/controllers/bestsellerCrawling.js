@@ -16,15 +16,15 @@ const getBestsellers = async () => {
 		(inputList) =>
 			inputList.map((input) => {
 				return input.value
-			}),
+			})
 	)
 
 	await browser.close()
 
-
 	//Due to naver dev api's request limit, only request 10 items
-	return Promise.allSettled(isbnList.slice(0,9).map(isbn => searchBooks('isbn', isbn)))
-
+	return [...await Promise.allSettled(isbnList.slice(0, 9).map((isbn) => searchBooks('isbn', isbn)))].
+		filter((p) => p.status === 'fulfilled').
+		map((p) => p.value)
 }
 
 export default getBestsellers
