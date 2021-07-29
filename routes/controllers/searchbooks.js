@@ -10,8 +10,13 @@ import { parseString } from 'xml2js'
  * @returns {Promise<Object[]>}
  */
 const searchBooks = async (target, query, client_id, client_secret) => {
+    const targetConverter = {
+		title: 'd_titl',
+		author: 'd_auth',
+        isbn: 'd_isbn'
+	}
 	const api_url =
-		`https://openapi.naver.com/v1/search/book_adv.xml?${target}=` +
+		`https://openapi.naver.com/v1/search/book_adv.xml?${targetConverter[target]}=` +
 		encodeURI(query)
 	const result = await axios({
 		method: 'get',

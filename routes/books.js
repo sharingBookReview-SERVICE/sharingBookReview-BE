@@ -6,9 +6,6 @@ dotenv.config()
 
 const router = new express.Router({ mergeParams: true })
 
-
-const router = new express.Router({ mergeParams: true })
-
 const sampleBooks = [
 	{
 		title: '지구인만큼 지구를 사랑할 순 없어',
@@ -48,13 +45,10 @@ router.get('/', async (req, res, next) => {
 	const client_id = process.env.BOOK_API_CLIENT_ID
 	const client_secret = process.env.BOOK_API_CLIENT_SECRET
 	//todo 나중에 맵으로 고치기
-	const targetConverter = {
-		title: 'd_titl',
-		author: 'd_auth',
-	}
+	
 	try {
 		const searchList = await searchBooks(
-			targetConverter[target],
+			target,
 			query,
 			client_id,
 			client_secret
