@@ -11,14 +11,14 @@ const bookSchema = new mongoose.Schema({
 	author: String,
 	price: Number,
 	discount: Number,
-    publisher: String,
+	publisher: String,
 	description: String,
 	pubdate: Date,
 	reviews: {
 		type: [mongoose.Schema.Types.ObjectId],
 		default: [],
-		ref: 'Review'
-	}
+		ref: 'Review',
+	},
 })
 
 class Book {
