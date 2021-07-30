@@ -11,6 +11,7 @@ const bookSchema = new mongoose.Schema({
 	author: String,
 	price: Number,
 	discount: Number,
+    publisher: String,
 	description: String,
 	pubdate: Date,
 	reviews: {
