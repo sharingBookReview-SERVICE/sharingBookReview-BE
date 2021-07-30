@@ -1,9 +1,10 @@
+// /api/books/:bookId/reviews/:reviewId/
 import express from 'express'
 import { Review, Comment } from '../models/index.js'
 
 const router = new express.Router({ mergeParams: true })
 
-const { bookId, reviewId } = req.params
+const { reviewId } = req.params
 
 router.post('/', async (req, res, next) => {
 	try {
