@@ -11,10 +11,16 @@ router.post('/', async (req, res, next) => {
 
 		if (!review) return next(new Error('존재하지 않는 리뷰 아이디입니다.'))
 
-	} catch (e) {
+		const comment = new Comment(req.body)
 
+		await review.comments.push(comment)
+		await review.save()
+
+		return res.sendStatus(201)
+		// todo findByIdAndUpdate(,{$push:}) review 존재하지 않을 때의 에러처리 확인하고 적용하기
+	} catch (e) {
+		return next(new Error('댓글 작성을 실패했습니다.'))
 	}
-	return res.sendStatus(201)
 })
 
 router.patch('/:commentId', (req, res) => {
