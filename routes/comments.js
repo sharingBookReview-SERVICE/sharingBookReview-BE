@@ -40,12 +40,14 @@ router.patch('/:commentId', async (req, res, next) => {
 
 	try {
 		await Review.updateOne({
-		_id: reviewId, 'comments._id': commentId
+		_id: reviewId, 'comments.$._id': commentId
 		}, {
 			$set: {
 				'comments.$.content': content
 			}
 		})
+
+		return res.sendStatus(200)
 	} catch (e) {
 		console.error(e)
 		return next(e)
