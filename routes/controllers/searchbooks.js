@@ -5,7 +5,7 @@ import Book from '../../models/book.js'
 const searchBooks = (target, query) => {
 
     const checkBookDatabase = async (target, query) =>{
-        const databaseBook = await Book.find({ target : query })
+        const databaseBook = await Book.find({ [target] : query })
         console.log(databaseBook)
     }
     
@@ -20,6 +20,8 @@ const searchBooks = (target, query) => {
     const showBookDatabase = async() =>{
     
     }
+    checkBookDatabase(target,query)
+
     let searchList = ['dummy']
     return searchList
 }
