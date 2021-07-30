@@ -44,7 +44,12 @@ const sampleReview = {
 }
 
 router.post('/', (req, res) => {
+    const { bookId } = req.params
 	return res.sendStatus(201)
+})
+
+router.get('/', (req, res) => {
+	return res.json([sampleReview, sampleReview])
 })
 
 router.get('/:reviewId', (req, res) => {
@@ -59,8 +64,8 @@ router.delete('/:reviewId', (req, res) => {
 	return res.sendStatus(200)
 })
 
-router.get('/', (req, res) => {
-	return res.json([sampleReview, sampleReview])
+router.put('/:reviewId/like', (req, res) => {
+	return res.sendStatus(201)
 })
 
 export default router
