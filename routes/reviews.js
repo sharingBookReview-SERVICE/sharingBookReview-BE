@@ -10,11 +10,11 @@ router.post('/', async (req, res) => {
     // const { userId } = req.locals.user   
     const { quote, content, hashtags, image } = req.body
 
-    const searchList = searchBooks(isbn, bookId)
+    const searchList = await searchBooks("isbn", bookId)
     saveBooks(searchList[0], bookId)
     const review = new Review({
         // userId,
-        book: Number(bookId),
+        bookId,
         quote,
         content,
         hashtags,
