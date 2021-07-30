@@ -1,6 +1,22 @@
 import axios from 'axios'
 import { parseString } from 'xml2js'
 
+const removeArrayInValue = async (array) => {
+    const bookList =[]
+    for (let i = 0; i < array.length; i++){
+        const book = {}
+        for (const [key,value] of Object.entries(array[i])){
+            if(key == 'isbn'){
+                book[key] = value[0].split(' ')[1]
+            }else{
+                book[key] = value[0]     
+            }                           
+        }
+        bookList.push(book)
+    }
+    return bookList
+}
+
 /**
  * Search book information on naver.
  * @param {string} target - Search target must be either d_titl, d_auth, or d_isbn
@@ -35,7 +51,7 @@ const searchBooks = async (target, query) => {
 		}
 		searchList = result.rss.channel[0].item
 	})
-	return searchList
+    return removeArrayInValue(searchList)
 }
 
 export default searchBooks
