@@ -1,6 +1,6 @@
 import Book from '../../models/book.js'
 
-const saveBooks = async (bookId) => {
+const saveBooks = async (bookId, book) => {
     const bookExist = await Book.findById(bookId)
     if (bookExist == null){
         const newBook = new Book
