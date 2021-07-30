@@ -66,16 +66,23 @@ router.post('/', async (req, res) => {
 
 router.get('/', async (req, res) => {
     const { bookId } = req.params
+
     const reviewList = await Review.find({ book : bookId })
     
 	return res.json({reviewList})
 })
 
-router.get('/:reviewId', (req, res) => {
-	return res.json(sampleReview)
+router.get('/:reviewId', async (req, res) => {
+    const { bookId } = req.params
+    const { reviewId } = req.params
+
+    const review = await Review.find({ _id: reviewId })
+    
+	return res.json({ review })
 })
 
 router.put('/:reviewId', (req, res) => {
+    
 	return res.sendStatus(201)
 })
 
