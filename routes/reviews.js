@@ -1,4 +1,5 @@
 import express from 'express'
+import Book from '../models/book.js'
 import Review from '../models/review.js'
 import saveBooks from './controllers/savebooks.js'
 import searchBooks from './controllers/searchbooks.js'
@@ -21,6 +22,10 @@ router.post('/', async (req, res) => {
         image,
     })
     await review.save()
+    await Book.findByIdAndUpdate(
+        bookId,
+        { $push: {reviews : review._id } }
+        )
 
 	return res.sendStatus(201)
 })
