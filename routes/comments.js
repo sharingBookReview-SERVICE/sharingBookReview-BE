@@ -22,8 +22,21 @@ router.post('/', async (req, res, next) => {
 	}
 })
 
-router.patch('/:commentId', (req, res) => {
-	return res.sendStatus(200)
+router.patch('/:commentId', async (req, res, next) => {
+	const { reviewId, commentId } = req.params
+	const { content } = req.body
+
+	try {
+		const review = await Review.findById(reviewId)
+
+		await review.commnets.id(commentId).content = content
+		await review.save()
+
+		return res.sendStatus(200)
+	} catch (e) {
+		console.error(e)
+		return next(e)
+	}
 })
 
 router.delete('/:commentId', (req, res) => {
