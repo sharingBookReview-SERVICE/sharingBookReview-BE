@@ -11,10 +11,9 @@ const reviewSchema = new mongoose.Schema({
 		ref: 'Book',
 		immutable: true,
 	},
-    comment: {
+    comments: {
         type: [mongoose.Schema.Types.ObjectId],
         ref: 'Comment',
-        immutable: true,
     },
 	quote: String,
 	content: String,
