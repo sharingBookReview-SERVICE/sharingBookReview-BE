@@ -12,7 +12,7 @@ const reviewSchema = new mongoose.Schema({
 		immutable: true,
 	},
     comment: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: [mongoose.Schema.Types.ObjectId],
         ref: 'Comment',
         immutable: true,
     },
@@ -26,7 +26,7 @@ const reviewSchema = new mongoose.Schema({
 		immutable: true,
 	},
 	liked_users: {
-		type: [mongoose.Types.ObjectId],
+		type: [mongoose.Schema.Types.ObjectId],
 		ref: 'User',
 	},
 })
