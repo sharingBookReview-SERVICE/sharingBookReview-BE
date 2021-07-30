@@ -81,12 +81,22 @@ router.get('/:reviewId', async (req, res) => {
 	return res.json({ review })
 })
 
-router.put('/:reviewId', (req, res) => {
+router.put('/:reviewId', async (req, res) => {
+    const { bookId } = req.params
+    const { reviewId } = req.params
+    const { quote, content, hashtags, image } = req.body
     
-	return res.sendStatus(201)
+    await Review.findOneAndUpdate(
+        { _id: reviewId },
+        { quote, content, hashtags, image }
+        )
+
+	return res.sendStatus(202)
 })
 
 router.delete('/:reviewId', (req, res) => {
+
+    
 	return res.sendStatus(200)
 })
 
