@@ -58,6 +58,16 @@ router.post('/', async (req, res) => {
             }
         await newBook.save()
         }
+    const review = new Review({
+        // userId,
+        bookId,
+        quote,
+        content,
+        hashtags,
+        image,
+    })
+    await review.save()
+
     
 	return res.sendStatus(201)
 })
