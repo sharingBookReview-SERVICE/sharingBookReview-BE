@@ -8,7 +8,7 @@ router.post('/', async (req, res, next) => {
 	const { reviewId } = req.params
 
 	try {
-		const comment = Comment.create(req.body)
+		const comment = await Comment.create(req.body)
 
 		await Review.findByIdAndUpdate(reviewId, {
 			$push: {
