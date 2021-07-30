@@ -1,24 +1,20 @@
 import axios from 'axios'
 import { parseString } from 'xml2js'
-import Book from '../../models/book.js'
 
-const checkBookDatabase = async (array) => {
+const removeArrayInValue = async (array) => {
+    const bookList =[]
     for (let i = 0; i < array.length; i++){
-        const isbn = array[i].isbn[0].split(' ')[1]
-        const existBook = await Book.findById(isbn)
-        if (existBook == null){
-            const book = new Book;
-            for (const [key,value] of Object.entries(array[i])){
-                if(key == 'isbn'){
-                    book[key] = value[0].split(' ')[1]
-                }else{
-                    book[key] = value[0]     
-                }                           
-            }
-            await book.save()
+        const book = {}
+        for (const [key,value] of Object.entries(array[i])){
+            if(key == 'isbn'){
+                book[key] = value[0].split(' ')[1]
+            }else{
+                book[key] = value[0]     
+            }                           
         }
+        bookList.push(book)
     }
-    return
+    return bookList
 }
 
 /**
@@ -55,8 +51,7 @@ const searchBooks = async (target, query) => {
 		}
 		searchList = result.rss.channel[0].item
 	})
-    checkBookDatabase(searchList)
-	return searchList
+    return removeArrayInValue(searchList)
 }
 
 export default searchBooks
