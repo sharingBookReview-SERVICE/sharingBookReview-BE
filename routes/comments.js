@@ -26,13 +26,26 @@ router.patch('/:commentId', async (req, res, next) => {
 	const { reviewId, commentId } = req.params
 	const { content } = req.body
 
+	// try {
+	// 	const review = await Review.findById(reviewId)
+	//
+	// 	await review.commnets.id(commentId).content = content
+	// 	await review.save()
+	//
+	// 	return res.sendStatus(200)
+	// } catch (e) {
+	// 	console.error(e)
+	// 	return next(e)
+	// }
+
 	try {
-		const review = await Review.findById(reviewId)
-
-		await review.commnets.id(commentId).content = content
-		await review.save()
-
-		return res.sendStatus(200)
+		await Review.updateOne({
+		_id: reviewId, 'comments._id': commentId
+		}, {
+			$set: {
+				'comments.$': content
+			}
+		})
 	} catch (e) {
 		console.error(e)
 		return next(e)
