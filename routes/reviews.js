@@ -1,15 +1,17 @@
 import express from 'express'
 import Review from '../models/review.js'
 import saveBooks from './controllers/savebooks.js'
+import searchBooks from './controllers/searchbooks.js'
 
 const router = new express.Router({ mergeParams: true })
 
 router.post('/', async (req, res) => {
     const { bookId } = req.params
     // const { userId } = req.locals.user   
-    const { book, quote, content, hashtags, image } = req.body
+    const { quote, content, hashtags, image } = req.body
 
-    saveBooks(bookId, book)
+    const searchList = searchBooks(isbn, bookId)
+    saveBooks(searchList[0], bookId)
     const review = new Review({
         // userId,
         book: Number(bookId),
