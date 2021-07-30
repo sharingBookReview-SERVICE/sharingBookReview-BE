@@ -94,10 +94,13 @@ router.put('/:reviewId', async (req, res) => {
 	return res.sendStatus(202)
 })
 
-router.delete('/:reviewId', (req, res) => {
+router.delete('/:reviewId', async(req, res) => {
+    const { bookId } = req.params
+    const { reviewId } = req.params
 
+    await Review.deleteOne({_id: reviewId})
     
-	return res.sendStatus(200)
+	return res.sendStatus(202)
 })
 
 router.put('/:reviewId/like', (req, res) => {
