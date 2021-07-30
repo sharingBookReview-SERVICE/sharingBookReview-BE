@@ -1,5 +1,10 @@
 import mongoose from 'mongoose'
 import dotenv from 'dotenv'
+import Book from './book.js'
+import Review from './review.js'
+import Comment from './comment.js'
+import User from './user.js'
+
 dotenv.config()
 
 const connect = () => {
@@ -29,3 +34,5 @@ mongoose.connection.on('error', (err) => {
 })
 
 connect()
+
+export { Book, Review, Comment, User }
