@@ -4,9 +4,11 @@ import { Review, Comment } from '../models/index.js'
 
 const router = new express.Router({ mergeParams: true })
 
-const { reviewId } = req.params
+
 
 router.post('/', async (req, res, next) => {
+	const { reviewId } = req.params
+
 	try {
 		const review = Review.findById(reviewId).exec()
 
