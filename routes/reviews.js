@@ -28,27 +28,25 @@ router.post('/', async (req, res) => {
 router.get('/', async (req, res) => {
     const { bookId } = req.params
 
-    const reviewList = await Review.find({ book : bookId })
+    const reviewList = await Review.findById({ bookId })
     
 	return res.json({reviewList})
 })
 
 router.get('/:reviewId', async (req, res) => {
-    const { bookId } = req.params
-    const { reviewId } = req.params
+    const { bookId, reviewId } = req.params
 
-    const review = await Review.find({ _id: reviewId })
+    const review = await Review.findById({ reviewId })
     
 	return res.json({ review })
 })
 
 router.put('/:reviewId', async (req, res) => {
-    const { bookId } = req.params
-    const { reviewId } = req.params
+    const { bookId, reviewId } = req.params
     const { quote, content, hashtags, image } = req.body
     
-    await Review.findOneAndUpdate(
-        { _id: reviewId },
+    await Review.findByIdAndUpdate(
+        { reviewId },
         { quote, content, hashtags, image }
         )
 
@@ -56,10 +54,9 @@ router.put('/:reviewId', async (req, res) => {
 })
 
 router.delete('/:reviewId', async(req, res) => {
-    const { bookId } = req.params
-    const { reviewId } = req.params
+    const { bookId, reviewId } = req.params
 
-    await Review.deleteOne({_id: reviewId})
+    await Review.findOneByIdAndDelete({_id: reviewId})
     
 	return res.sendStatus(202)
 })
