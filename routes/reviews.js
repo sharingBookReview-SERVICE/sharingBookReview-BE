@@ -1,6 +1,6 @@
 import express from 'express'
 import Review from '../models/review.js'
-import Book from '../models/book.js'
+import saveBooks from './controllers/savebooks.js'
 
 const router = new express.Router({ mergeParams: true })
 
@@ -50,14 +50,7 @@ router.post('/', async (req, res) => {
     // const { userId } = req.locals.user   
     const { book, quote, content, hashtags, image } = req.body
 
-    const bookExist = await Book.findById(bookId)
-    if (bookExist == null){
-        const newBook = new Book
-        for (const [key,value] of Object.entries(book)){            
-            newBook[key] = value
-            }
-        await newBook.save()
-        }
+    saveBooks(bookId)
     const review = new Review({
         // userId,
         bookId,
