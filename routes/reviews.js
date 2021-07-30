@@ -50,10 +50,10 @@ router.post('/', async (req, res) => {
     // const { userId } = req.locals.user   
     const { book, quote, content, hashtags, image } = req.body
 
-    saveBooks(bookId)
+    saveBooks(bookId, book)
     const review = new Review({
         // userId,
-        bookId,
+        book: Number(bookId),
         quote,
         content,
         hashtags,
@@ -61,12 +61,14 @@ router.post('/', async (req, res) => {
     })
     await review.save()
 
-    
 	return res.sendStatus(201)
 })
 
-router.get('/', (req, res) => {
-	return res.json([sampleReview, sampleReview])
+router.get('/', async (req, res) => {
+    const { bookId } = req.params
+    const reviewList = await Review.find({ book : bookId })
+    
+	return res.json({reviewList})
 })
 
 router.get('/:reviewId', (req, res) => {
