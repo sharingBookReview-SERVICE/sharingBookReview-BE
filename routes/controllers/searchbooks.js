@@ -7,13 +7,13 @@ const checkBookDatabase = async (array) => {
         const isbn = array[i].isbn[0].split(' ')[1]
         const existBook = await Book.findById(isbn)
         if (existBook == null){
-            let book = new Book;
-            for (let [key,value] of Object.entries(array[i])){
-                if (key == 'isbn') {
-					book[key] = value[0].split(' ')[1]
-				} else {
-					book[key] = value[0]
-				}                           
+            const book = new Book;
+            for (const [key,value] of Object.entries(array[i])){
+                if(key == 'isbn'){
+                    book[key] = value[0].split(' ')[1]
+                }else{
+                    book[key] = value[0]     
+                }                           
             }
             await book.save()
         }
