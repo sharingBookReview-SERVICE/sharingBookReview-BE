@@ -36,7 +36,7 @@ router.get('/', async (req, res) => {
 router.get('/:reviewId', async (req, res) => {
     const { bookId, reviewId } = req.params
 
-    const review = await Review.findById({ reviewId })
+    const review = await Review.findById( reviewId )
     
 	return res.json({ review })
 })
@@ -56,7 +56,7 @@ router.put('/:reviewId', async (req, res) => {
 router.delete('/:reviewId', async(req, res) => {
     const { bookId, reviewId } = req.params
 
-    await Review.findOneByIdAndDelete({_id: reviewId})
+    await Review.findByIdAndDelete(reviewId)
     
 	return res.sendStatus(202)
 })
