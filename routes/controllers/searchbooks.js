@@ -9,13 +9,12 @@ const checkBookDatabase = async (array) => {
         if (existBook == null){
             let book = new Book;
             for (let [key,value] of Object.entries(array[i])){
-                if(key == 'isbn'){
-                    book[key] = value[0].split(' ')[1]
-                }else{
-                    book[key] = value[0]     
-                }                           
+                if (key == 'isbn') {
+					book[key] = value[0].split(' ')[1]
+				} else {
+					book[key] = value[0]
+				}                           
             }
-            console.log(book)
             await book.save()
         }
     }
