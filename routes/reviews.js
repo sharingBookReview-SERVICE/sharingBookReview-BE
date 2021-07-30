@@ -46,7 +46,7 @@ router.put('/:reviewId', async (req, res) => {
     const { quote, content, hashtags, image } = req.body
     
     await Review.findByIdAndUpdate(
-        { reviewId },
+        reviewId ,
         { quote, content, hashtags, image }
         )
 

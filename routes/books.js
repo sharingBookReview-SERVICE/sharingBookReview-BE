@@ -9,8 +9,7 @@ const router = new express.Router({ mergeParams: true })
 
 // 책 목록
 router.get('/', async (req, res, next) => {
-	const { target } = req.query
-	const { query } = req.query
+	const { target, query } = req.query
 	
 	//todo 나중에 맵으로 고치기	
 	try {
