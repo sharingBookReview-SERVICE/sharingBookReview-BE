@@ -5,6 +5,8 @@ import commentsRouter from './comments.js'
 import booksRouter from './books.js'
 
 const router = express.Router()
+router.use(express.urlencoded({ extended: false }));
+router.use(express.json());
 
 router.use('/api/users', usersRouter)
 router.use('/api/books/:bookId/reviews/:reviewId/comments', commentsRouter) // temp path
