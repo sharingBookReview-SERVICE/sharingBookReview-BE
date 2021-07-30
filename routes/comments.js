@@ -43,7 +43,7 @@ router.patch('/:commentId', async (req, res, next) => {
 		_id: reviewId, 'comments._id': commentId
 		}, {
 			$set: {
-				'comments.$': content
+				'comments.$.content': content
 			}
 		})
 	} catch (e) {
