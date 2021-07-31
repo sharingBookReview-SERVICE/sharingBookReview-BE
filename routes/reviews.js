@@ -63,18 +63,23 @@ router.get('/:reviewId', async (req, res, next) => {
 	}
 })
 
-router.put('/:reviewId', async (req, res) => {
+router.put('/:reviewId', async (req, res, next) => {
 	const { reviewId } = req.params
 	const { quote, content, hashtags, image } = req.body
 
-	await Review.findByIdAndUpdate(reviewId, {
-		quote,
-		content,
-		hashtags,
-		image,
-	})
+	try {
+		await Review.findByIdAndUpdate(reviewId, {
+			quote,
+			content,
+			hashtags,
+			image,
+		})
 
-	return res.sendStatus(202)
+		return res.sendStatus(202)
+	} catch (e) {
+		console.error(e)
+		return next(new Error('리뷰 수정을 실패했습니다.'))
+	}
 })
 
 router.delete('/:reviewId', async (req, res) => {
