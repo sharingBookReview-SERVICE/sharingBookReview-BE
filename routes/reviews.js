@@ -1,6 +1,5 @@
 import express from 'express'
-import Book from '../models/book.js'
-import Review from '../models/review.js'
+import { Book, Review } from '../models/index.js'
 import saveBooks from './controllers/savebooks.js'
 import searchBooks from './controllers/searchbooks.js'
 
