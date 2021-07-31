@@ -8,7 +8,8 @@ const router = new express.Router({ mergeParams: true })
 router.post('/', async (req, res, next) => {
 	const { bookId } = req.params
 	// const { userId } = req.locals.user
-	const { isbn, quote, content, hashtags, image } = req.body
+	const { quote, content, hashtags, image } = req.body
+	const { isbn } = req.body.book
 
 	if (bookId !== isbn)
 		return next(
