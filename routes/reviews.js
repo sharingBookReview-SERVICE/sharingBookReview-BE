@@ -8,20 +8,13 @@ const router = new express.Router({ mergeParams: true })
 router.post('/', async (req, res, next) => {
 	const { bookId } = req.params
 	// const { userId } = req.locals.user
-	const { quote, content, hashtags, image } = req.body
-	const { isbn } = req.body.book
-
-	if (bookId !== isbn)
-		return next(
-			new Error('URL 상의 책 정보와 실제 책의 정보가 일치하지 않습니다.')
-		)
 
 	// Check if the book is saved on DB
 	const book = await Book.findById(bookId)
 
 	if (!book) {
 		try {
-			const [searchResult] = await searchBooks('isbn', isbn)
+			const [searchResult] = await searchBooks('isbn', bookId)
 			await saveBook(searchResult)
 		} catch (e) {
 			console.error(e)
