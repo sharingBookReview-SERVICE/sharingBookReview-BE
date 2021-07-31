@@ -1,4 +1,5 @@
 import mongoose from 'mongoose'
+import { commentSchema } from './comment.js'
 
 const reviewSchema = new mongoose.Schema({
 	userId: {
@@ -12,8 +13,7 @@ const reviewSchema = new mongoose.Schema({
 		immutable: true,
 	},
 	comments: {
-		type: [mongoose.Schema.Types.ObjectId],
-		ref: 'Comment',
+		type: [commentSchema],
 	},
 	quote: String,
 	content: String,
