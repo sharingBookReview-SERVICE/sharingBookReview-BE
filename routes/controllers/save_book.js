@@ -5,7 +5,7 @@ const saveBook = async (object, bookId) => {
 	for (const [key, value] of Object.entries(object)) {
 		newBook[key] = value
 	}
-	await newBook.save()
+	return await newBook.save()
 }
 
 export default saveBook
