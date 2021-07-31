@@ -1,4 +1,4 @@
-import Book from '../../models/book.js'
+import { Book } from '../../models/index.js'
 
 const saveBook = async (object, bookId) => {
 	const newBook = new Book()
