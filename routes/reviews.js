@@ -20,8 +20,13 @@ router.post('/', async (req, res, next) => {
 	let book = await Book.findById(bookId)
 
 	if (!book) {
-		const [searchResult] = (await searchBooks('isbn', isbn))
-		book = await saveBook(searchResult)
+		try {
+			const [searchResult] = (await searchBooks('isbn', isbn))
+			book = await saveBook(searchResult)
+		} catch (e) {
+			console.error(e)
+			return next(new Error('책 정보 저장을 실패했습니다.'))
+		}
 	}
 
 	console.log(book)
