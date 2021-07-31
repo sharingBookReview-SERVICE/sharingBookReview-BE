@@ -42,8 +42,7 @@ router.patch('/:commentId', async (req, res, next) => {
 
 		return res.sendStatus(200)
 	} catch (e) {
-		console.error(e)
-		return next(e)
+		return next(new Error('댓글 수정을 실패했습니다.'))
 	}
 })
 
@@ -69,8 +68,7 @@ router.delete('/:commentId', async (req, res, next) => {
 
 		return res.sendStatus(200)
 	} catch (e) {
-		console.error(e)
-		return next(e)
+		return next(new Error('댓글 삭제를 실패했습니다.'))
 	}
 })
 
