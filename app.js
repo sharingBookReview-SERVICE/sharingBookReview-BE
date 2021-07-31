@@ -3,6 +3,8 @@ import dotenv from 'dotenv'
 import cors from 'cors'
 import './models/index.js'
 import router from './routes/index.js'
+import session from "express-session";
+import passport from "passport";
 
 dotenv.config()
 
