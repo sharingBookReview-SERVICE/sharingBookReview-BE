@@ -1,5 +1,6 @@
-var passport = require('passport')
-var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy
+const express = require('express')
+const passport = require('passport')
+const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy
 
 passport.use(
 	new GoogleStrategy(
