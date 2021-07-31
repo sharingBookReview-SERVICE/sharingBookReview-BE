@@ -37,7 +37,9 @@ router.post('/', async (req, res, next) => {
 router.get('/', async (req, res) => {
 	const { bookId } = req.params
 
-	const reviews= await Book.findById( bookId ).select('reviews').populate({path : 'reviews',options: { sort: { 'created_at':-1 } }})
+	const reviews = await Book.findById(bookId)
+		.select('reviews')
+		.populate({ path: 'reviews', options: { sort: { created_at: -1 } } })
 
 	return res.json(reviews)
 })
