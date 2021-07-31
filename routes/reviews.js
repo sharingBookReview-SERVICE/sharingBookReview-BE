@@ -1,6 +1,6 @@
 import express from 'express'
 import { Book, Review } from '../models/index.js'
-import saveBooks from './controllers/savebooks.js'
+import saveBook from './controllers/save_book.js'
 import searchBooks from './controllers/searchbooks.js'
 
 const router = new express.Router({ mergeParams: true })
@@ -21,7 +21,7 @@ router.post('/', async (req, res, next) => {
 
 	if (!book) {
 		const [searchResult] = (await searchBooks('isbn', isbn))
-		book = await saveBooks(searchResult)
+		book = await saveBook(searchResult)
 	}
 
 	console.log(book)
