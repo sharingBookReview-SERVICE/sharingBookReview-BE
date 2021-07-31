@@ -1,27 +1,33 @@
 import jwt from "jsonwebtoken";
 import User from "../models/user.js";
-import passportRouter from "passport";
+import passport from "passport";
 import { Strategy } from "passport-kakao";
 
 const kakaoPassportConfig = () => {
-    passportRouter.serializeUser((user, done) => {
+    passport.serializeUser((user, done) => {
         done(null, user);
     })
     
-    passportRouter.deserializeUser((user, done) => {
+    passport.deserializeUser((user, done) => {
         done(null, user);
     })
     
-    passportRouter.use(
+    passport.use(
 		new Strategy(
 			{
 				clientID: '89c020b3b307f237f8e3e3135ce353cf',
 				clientSecret: '',
-				callbackURL: 'http://13.124.63.103/api/users/kakao/callback',
+				callbackURL: 'http://localhost:3000/api/users/kakao/callback',
+                // http://13.124.63.103/api/users/kakao/callback
 			},
 			async (_, __, profile, done) => {
 				const providerKey = profile.id
 				const provider = profile.provider
+
+                const user = {
+                    provider,
+                    providerKey
+                }
 				
 				return done(null, user)
 			}
