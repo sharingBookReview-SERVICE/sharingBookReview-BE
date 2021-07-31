@@ -6,6 +6,7 @@ const router = new express.Router({ mergeParams: true })
 
 router.post('/', async (req, res, next) => {
 	const { reviewId } = req.params
+    if(!await Review.findById(reviewId))return next(new Error('존재하지 않는 리뷰입니다.'))
 
 	try {
 		// todo: Is there a way not to create the comments collection when creating a comment document?
