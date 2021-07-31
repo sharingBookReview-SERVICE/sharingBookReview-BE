@@ -87,10 +87,15 @@ router.delete('/:reviewId', async (req, res) => {
 
 	// By using Document instead of Query (or Model),
 	// pre deleteOne middleware can bind the document as this
-	const review = await Review.findById(reviewId)
-	await review.deleteOne()
+	try {
+		const review = await Review.findById(reviewId)
+		await review.deleteOne()
 
-	return res.sendStatus(202)
+		return res.sendStatus(202)
+	} catch (e) {
+		console.error(e)
+		return next(new Error('리뷰 삭제를 실패했습니다.'))
+	}
 })
 
 router.put('/:reviewId/like', (req, res) => {
