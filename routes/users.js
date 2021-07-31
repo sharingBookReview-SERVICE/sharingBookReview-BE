@@ -1,7 +1,7 @@
 import express from 'express'
 import jwt from "jsonwebtoken";
-import Users from "../schemas/user";
-import passportRouter from "passport";
+import User from "../models/user.js";
+import passport from "passport";
 
 const router = new express.Router()
 
@@ -55,6 +55,18 @@ const sampleReview = {
 	myLike: true,
 	likes: 10,
 }
+// kakao-login
+router.get("/kakao", passport.authenticate("kakao"));
+
+router.get(
+	'/kakao/callback',
+	passport.authenticate('kakao', {
+		failureRedirect: '/',
+	}), (req, res) => {
+        res.redirect('/')
+    }
+)
+
 
 router.post('/:provider', (req, res) => {
 	return res.json({

@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import Users from "../schemas/user";
+import User from "../models/user.js";
 import passportRouter from "passport";
 import { Strategy } from "passport-kakao";
 
