@@ -43,7 +43,7 @@ router.get('/', async (req, res) => {
 })
 
 router.get('/:reviewId', async (req, res) => {
-	const { bookId, reviewId } = req.params
+	const { reviewId } = req.params
 
 	const review = await Review.findById(reviewId).populate('bookId')
 
@@ -51,7 +51,7 @@ router.get('/:reviewId', async (req, res) => {
 })
 
 router.put('/:reviewId', async (req, res) => {
-	const { bookId, reviewId } = req.params
+	const { reviewId } = req.params
 	const { quote, content, hashtags, image } = req.body
 
 	await Review.findByIdAndUpdate(reviewId, {
