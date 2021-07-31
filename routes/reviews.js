@@ -16,26 +16,38 @@ router.post('/', async (req, res, next) => {
 			new Error('URL 상의 책 정보와 실제 책의 정보가 일치하지 않습니다.')
 		)
 
+	// Check if the book is saved on DB
+	let book = await Book.findById(bookId)
 
-	try {
-		const searchList = await searchBooks('isbn', bookId)
-		saveBooks(searchList[0], bookId)
-		const review = new Review({
-			// userId,
-			bookId,
-			quote,
-			content,
-			hashtags,
-			image,
-		})
-		await review.save()
-		await Book.findByIdAndUpdate(bookId, { $push: { reviews: review._id } })
-
-		return res.sendStatus(201)
-	} catch (e) {
-		console.error(e)
-		return next(new Error('리뷰 작성을 실패했습니다.'))
+	if (!book) {
+		const [searchResult] = (await searchBooks('isbn', isbn))
+		book = await saveBooks(searchResult)
 	}
+
+	console.log(book)
+
+	return res.sendStatus(200)
+
+
+	// try {
+	// 	const searchList = await searchBooks('isbn', bookId)
+	// 	saveBooks(searchList[0], bookId)
+	// 	const review = new Review({
+	// 		// userId,
+	// 		bookId,
+	// 		quote,
+	// 		content,
+	// 		hashtags,
+	// 		image,
+	// 	})
+	// 	await review.save()
+	// 	await Book.findByIdAndUpdate(bookId, { $push: { reviews: review._id } })
+	//
+	// 	return res.sendStatus(201)
+	// } catch (e) {
+	// 	console.error(e)
+	// 	return next(new Error('리뷰 작성을 실패했습니다.'))
+	// }
 })
 
 router.get('/', async (req, res) => {
