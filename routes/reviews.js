@@ -34,34 +34,52 @@ router.post('/', async (req, res, next) => {
 	return res.sendStatus(200)
 })
 
-router.get('/', async (req, res) => {
+router.get('/', async (req, res, next) => {
 	const { bookId } = req.params
 
-	const reviews= await Book.findById( bookId ).select('reviews').populate({path : 'reviews',options: { sort: { 'created_at':-1 } }})
-
-	return res.json(reviews)
+	try {
+		const reviews = await Book.findById(bookId)
+			.select('reviews')
+			.populate({
+				path: 'reviews',
+				options: { sort: { created_at: -1 } },
+			})
+		return res.json(reviews)
+	} catch (e) {
+		console.error(e)
+		return next(new Error('리뷰 목록 가져오기를 실패했습니다.'))
+	}
 })
 
-router.get('/:reviewId', async (req, res) => {
-	const { bookId, reviewId } = req.params
+router.get('/:reviewId', async (req, res, next) => {
+	const { reviewId } = req.params
 
-	const review = await Review.findById(reviewId).populate('bookId')
-
-	return res.json({ review })
+	try {
+		const review = await Review.findById(reviewId).populate('bookId')
+		return res.json({ review })
+	} catch (e) {
+		console.error(e)
+		return next(new Error('리뷰 조회를 실패했습니다.'))
+	}
 })
 
-router.put('/:reviewId', async (req, res) => {
-	const { bookId, reviewId } = req.params
+router.put('/:reviewId', async (req, res, next) => {
+	const { reviewId } = req.params
 	const { quote, content, hashtags, image } = req.body
 
-	await Review.findByIdAndUpdate(reviewId, {
-		quote,
-		content,
-		hashtags,
-		image,
-	})
+	try {
+		await Review.findByIdAndUpdate(reviewId, {
+			quote,
+			content,
+			hashtags,
+			image,
+		})
 
-	return res.sendStatus(202)
+		return res.sendStatus(202)
+	} catch (e) {
+		console.error(e)
+		return next(new Error('리뷰 수정을 실패했습니다.'))
+	}
 })
 
 router.delete('/:reviewId', async (req, res) => {
@@ -69,10 +87,15 @@ router.delete('/:reviewId', async (req, res) => {
 
 	// By using Document instead of Query (or Model),
 	// pre deleteOne middleware can bind the document as this
-	const review = await Review.findById(reviewId)
-	await review.deleteOne()
+	try {
+		const review = await Review.findById(reviewId)
+		await review.deleteOne()
 
-	return res.sendStatus(202)
+		return res.sendStatus(202)
+	} catch (e) {
+		console.error(e)
+		return next(new Error('리뷰 삭제를 실패했습니다.'))
+	}
 })
 
 router.put('/:reviewId/like', (req, res) => {
