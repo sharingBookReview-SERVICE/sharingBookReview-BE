@@ -40,26 +40,6 @@ router.post('/', async (req, res, next) => {
 	}
 
 	return res.sendStatus(200)
-
-	// try {
-	// 	const searchList = await searchBooks('isbn', bookId)
-	// 	saveBooks(searchList[0], bookId)
-	// 	const review = new Review({
-	// 		// userId,
-	// 		bookId,
-	// 		quote,
-	// 		content,
-	// 		hashtags,
-	// 		image,
-	// 	})
-	// 	await review.save()
-	// 	await Book.findByIdAndUpdate(bookId, { $push: { reviews: review._id } })
-	//
-	// 	return res.sendStatus(201)
-	// } catch (e) {
-	// 	console.error(e)
-	// 	return next(new Error('리뷰 작성을 실패했습니다.'))
-	// }
 })
 
 router.get('/', async (req, res) => {
