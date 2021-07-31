@@ -4,7 +4,7 @@ import Review from '../models/review.js'
 const router = new express.Router()
     router.get('/', async (req, res) => {
         try {
-			const feeds = await Review.find({}).sort('-created_at')
+			const feeds = await Review.find({}).populate('bookId').sort('-created_at')
 
 			return res.json({ feeds })
 		} catch (err) {
