@@ -21,7 +21,7 @@ router.post('/', async (req, res, next) => {
 
 	if (!book) {
 		try {
-			const [searchResult] = (await searchBooks('isbn', isbn))
+			const [searchResult] = await searchBooks('isbn', isbn)
 			book = await saveBook(searchResult)
 		} catch (e) {
 			console.error(e)
@@ -29,10 +29,17 @@ router.post('/', async (req, res, next) => {
 		}
 	}
 
-	console.log(book)
+	try {
+		const review = await Review.create({ ...req.body, bookId })
+		await Book.findByIdAndUpdate(bookId, {
+			$push: { reviews: review._id },
+		})
+	} catch (e) {
+		console.error(e)
+		return next(new Error('댓글 작성을 실패했습니다.'))
+	}
 
 	return res.sendStatus(200)
-
 
 	// try {
 	// 	const searchList = await searchBooks('isbn', bookId)
