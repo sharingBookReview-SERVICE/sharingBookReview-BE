@@ -1,9 +1,18 @@
 import express from 'express'
+import Review from '../models/review.js'
 
 const router = new express.Router()
+    router.get('/', async (req, res) => {
+        try {
+			const feeds = await Review.find({}).sort('-created_at')
 
-router.get('/', (req, res) => {
-	return res.send('여기에 피드가 갈겁니다.')
+			return res.json({ feeds })
+		} catch (err) {
+			console.error(err)
+			return next(err)
+		}
 })
+
+
 
 export default router
