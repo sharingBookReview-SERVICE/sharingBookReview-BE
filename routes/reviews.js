@@ -65,9 +65,12 @@ router.put('/:reviewId', async (req, res) => {
 })
 
 router.delete('/:reviewId', async (req, res) => {
-	const { bookId, reviewId } = req.params
+	const { reviewId } = req.params
 
-	await Review.findByIdAndDelete(reviewId)
+	// By using Document instead of Query (or Model),
+	// pre deleteOne middleware can bind the document as this
+	const review = await Review.findById(reviewId)
+	await review.deleteOne()
 
 	return res.sendStatus(202)
 })
