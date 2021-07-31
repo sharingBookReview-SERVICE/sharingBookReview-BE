@@ -31,9 +31,8 @@ router.post('/', async (req, res, next) => {
 
 	try {
 		const review = await Review.create({ ...req.body, bookId })
-		await Book.findByIdAndUpdate(bookId, {
-			$push: { reviews: review._id },
-		})
+		await book.reviews.push(review._id)
+		await book.save()
 	} catch (e) {
 		console.error(e)
 		return next(new Error('댓글 작성을 실패했습니다.'))
