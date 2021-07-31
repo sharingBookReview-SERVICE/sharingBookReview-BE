@@ -34,14 +34,18 @@ router.post('/', async (req, res, next) => {
 	return res.sendStatus(200)
 })
 
-router.get('/', async (req, res) => {
+router.get('/', async (req, res, next) => {
 	const { bookId } = req.params
 
-	const reviews = await Book.findById(bookId)
-		.select('reviews')
-		.populate({ path: 'reviews', options: { sort: { created_at: -1 } } })
-
-	return res.json(reviews)
+	try {
+		const reviews = await Book.findById(bookId).
+			select('reviews').
+			populate({ path: 'reviews', options: { sort: { created_at: -1 } } })
+		return res.json(reviews)
+	} catch (e) {
+		console.error(e)
+		return next(new Error('리뷰 목록 가져오기를 실패했습니다.'))
+	}
 })
 
 router.get('/:reviewId', async (req, res) => {
