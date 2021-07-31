@@ -8,6 +8,7 @@ router.post('/', async (req, res, next) => {
 	const { reviewId } = req.params
 
 	try {
+		// todo: Is there a way not to create the comments collection when creating a comment document?
 		const comment = await Comment.create(req.body)
 
 		await Review.findByIdAndUpdate(reviewId, {
@@ -46,8 +47,31 @@ router.patch('/:commentId', async (req, res, next) => {
 	}
 })
 
-router.delete('/:commentId', (req, res) => {
-	return res.sendStatus(200)
+router.delete('/:commentId', async (req, res, next) => {
+	const { reviewId, commentId } = req.params
+
+	try {
+		await Promise.all([
+
+			// Delete the comment in the comment collection
+			Comment.deleteOne({ _id: commentId }),
+
+			// Delete the comment in the review document
+			Review.updateOne(
+				{ _id: reviewId },
+				{
+					$pull: {
+						comments: { _id: commentId },
+					},
+				}
+			),
+		])
+
+		return res.sendStatus(200)
+	} catch (e) {
+		console.error(e)
+		return next(e)
+	}
 })
 
 export default router
