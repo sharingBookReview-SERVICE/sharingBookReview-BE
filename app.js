@@ -14,12 +14,12 @@ const app = new express()
 app.set('port', process.env.PORT)
 
 app.use(cors())
-app.use(router)
-
 app.use(session({secret: "secret key", resave: false, saveUninitialized: false}));
 
 app.use(passport.initialize())
 app.use(passport.session())
+
+app.use(router)
 
 kakaoPassportConfig()
 
