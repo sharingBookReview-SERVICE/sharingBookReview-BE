@@ -37,15 +37,15 @@ router.post('/', async (req, res, next) => {
 router.get('/', async (req, res) => {
 	const { bookId } = req.params
 
-	const reviewList = await Review.findById({ bookId })
+	const reviews= await Book.findById( bookId ).select('reviews').populate({path : 'reviews',options: { sort: { 'created_at':-1 } }})
 
-	return res.json({ reviewList })
+	return res.json(reviews)
 })
 
 router.get('/:reviewId', async (req, res) => {
 	const { bookId, reviewId } = req.params
 
-	const review = await Review.findById(reviewId)
+	const review = await Review.findById(reviewId).populate('bookId')
 
 	return res.json({ review })
 })
