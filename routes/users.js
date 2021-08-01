@@ -71,19 +71,18 @@ router.put("/nickname/:userId", async (req,res) => {
     // if user do not have nickname use this router
     const { userId } = req.params
     const { nickname } = req.body
+
     await User.findByIdAndUpdate(userId, { nickname })
+
     return res.sendStatus(200)
 })
 
+router.get('/:userId', async (req, res) => {
+    const { userId } = req.params
 
-router.post('/:provider', (req, res) => {
-	return res.json({
-        nickname : sampleUser.nickname, userImage: sampleUser.userImage, token
-    })
-})
+    const user = await User.findById(userId)
 
-router.get('/:userId', (req, res) => {
-	return res.json(sampleUser)
+	return res.json({user})
 })
 
 router.put('/:userId', (req, res) => {
