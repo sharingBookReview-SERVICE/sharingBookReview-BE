@@ -94,7 +94,11 @@ router.put('/:userId', async (req, res) => {
 	return res.sendStatus(200)
 })
 
-router.delete('/:userId', (req, res) => {
+router.delete('/:userId', async (req, res) => {
+    const {userId} = req.params
+    
+    await User.findByIdAndDelete(userId)
+
 	return res.sendStatus(200)
 })
 
