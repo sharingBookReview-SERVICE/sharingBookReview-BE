@@ -85,7 +85,12 @@ router.get('/:userId', async (req, res) => {
 	return res.json({user})
 })
 
-router.put('/:userId', (req, res) => {
+router.put('/:userId', async (req, res) => {
+    const { userId } = req.params
+    const { nickname } = req.body
+
+    await User.findByIdAndUpdate(userId, { nickname })
+
 	return res.sendStatus(200)
 })
 
