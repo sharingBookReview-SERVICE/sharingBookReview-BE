@@ -23,13 +23,16 @@ const kakaoPassportConfig = () => {
 			async (_, __, profile, done) => {
 				const providerKey = profile.id
 				const provider = profile.provider
-
-                const user = {
-                    provider,
-                    providerKey
+                
+                let user = await User.findOne({ provider, providerKey })
+                
+                if(!user){
+                    user = await User.create({ provider, providerKey })
                 }
+
+                const token = jwt.sign({ userId : user._id }, 'ohbinisthebest');
 				
-				return done(null, user)
+				return done(null, user, token)
 			}
 		)
 	)
