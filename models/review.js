@@ -2,12 +2,12 @@ import mongoose from 'mongoose'
 import Comment, { commentSchema } from './comment.js'
 
 const reviewSchema = new mongoose.Schema({
-	userId: {
+	user: {
 		type: mongoose.Schema.Types.ObjectId,
 		ref: 'User',
 		immutable: true,
 	},
-	bookId: {
+	book: {
 		type: Number,
 		ref: 'Book',
 		immutable: true,
