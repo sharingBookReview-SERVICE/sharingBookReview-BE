@@ -18,9 +18,8 @@ router.get('/', async (req, res, next) => {
 			query
 		)
 		return res.json({ searchList })
-	} catch (err) {
-		console.error(err)
-		return next(err)
+	} catch (e) {
+		return next(new Error('책 목록을 불러오는데 실패했습니다.'))
 	}
 })
 
@@ -29,9 +28,8 @@ router.get('/bestsellers', async(req, res, next) => {
     try{
         const bestsellers = await getBestsellers()
 	return res.json({bestsellers})
-    } catch(err){
-        console.error(err)
-        return next(err)
+    } catch(e){
+        return next(new Error('베스트셀러 목록을 불러오는데 실패했습니다.'))
     }
 
 })
@@ -46,9 +44,8 @@ router.get('/:bookId', async (req, res, next) => {
 			bookId
 		)
 		return res.json(searchList[0])
-	} catch (err) {
-		console.error(err)
-		return next(err)
+	} catch (e) {
+		return next(new Error('책 정보를 불러오는데 실패했습니다.'))
 	}
 })
 
