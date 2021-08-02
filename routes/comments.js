@@ -1,8 +1,7 @@
 // /api/books/:bookId/reviews/:reviewId/
 import express from 'express'
 import { Review, Comment } from '../models/index.js'
-import { authMiddleware } from '../middleware/auth_middleware.js'
-import review from '../models/review.js'
+import authMiddleware from '../middleware/auth_middleware.js'
 
 
 const router = new express.Router({ mergeParams: true })

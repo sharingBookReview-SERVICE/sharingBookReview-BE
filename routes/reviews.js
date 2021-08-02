@@ -2,7 +2,7 @@ import express from 'express'
 import { Book, Review } from '../models/index.js'
 import saveBook from './controllers/save_book.js'
 import searchBooks from './controllers/searchbooks.js'
-import { authMiddleware } from '../middleware/auth_middleware.js'
+import authMiddleware from '../middleware/auth_middleware.js'
 
 const router = new express.Router({ mergeParams: true })
 
