@@ -1,16 +1,20 @@
 // /api/books/:bookId/reviews/:reviewId/
 import express from 'express'
 import { Review, Comment } from '../models/index.js'
+import { authMiddleware } from '../middleware/auth_middleware.js'
+
 
 const router = new express.Router({ mergeParams: true })
 
-router.post('/', async (req, res, next) => {
+router.post('/', authMiddleware, async (req, res, next) => {
+    const userId = res.locals.user._id
 	const { reviewId } = req.params
+    const { content } = req.body
     if(!await Review.findById(reviewId))return next(new Error('존재하지 않는 리뷰입니다.'))
 
 	try {
 		// todo: Is there a way not to create the comments collection when creating a comment document?
-		const comment = new Comment(req.body)
+		const comment = new Comment({content, user: userId})
 
 		await Review.findByIdAndUpdate(reviewId, {
 			$push: {
@@ -24,16 +28,23 @@ router.post('/', async (req, res, next) => {
 	}
 })
 
-router.patch('/:commentId', async (req, res, next) => {
+router.patch('/:commentId',authMiddleware, async (req, res, next) => {
+    const userId = res.locals.user._id
 	const { reviewId, commentId } = req.params
 	const { content } = req.body
 
 	try {
-		await Review.updateOne(
-			{
-				_id: reviewId,
+        const comment = await Review.findOne({
+                _id: reviewId,
 				'comments._id': commentId,
-			},
+        })
+        console.log("0", comment)
+        console.log("1", comment.user)
+        console.log("2", userId)
+        if (comment === null) return next(new Error("댓글이 존재하지 않습니다."))
+        if (comment.user !== userId) return next(new Error("본인이 아닙니다."))
+
+		await comment.updateOne(			
 			{
 				$set: {
 					'comments.$.content': content,
@@ -47,7 +58,7 @@ router.patch('/:commentId', async (req, res, next) => {
 	}
 })
 
-router.delete('/:commentId', async (req, res, next) => {
+router.delete('/:commentId', authMiddleware, async (req, res, next) => {
 	const { reviewId, commentId } = req.params
 
 	try {
