@@ -10,7 +10,7 @@ router.post('/', async (req, res, next) => {
 
 	try {
 		// todo: Is there a way not to create the comments collection when creating a comment document?
-		const comment = await Comment.create(req.body)
+		const comment = new Comment(req.body)
 
 		await Review.findByIdAndUpdate(reviewId, {
 			$push: {
