@@ -2,6 +2,7 @@
 import express from 'express'
 import { Review, Comment } from '../models/index.js'
 import { authMiddleware } from '../middleware/auth_middleware.js'
+import review from '../models/review.js'
 
 
 const router = new express.Router({ mergeParams: true })
@@ -10,6 +11,7 @@ router.post('/', authMiddleware, async (req, res, next) => {
     const userId = res.locals.user._id
 	const { reviewId } = req.params
     const { content } = req.body
+
     if(!await Review.findById(reviewId))return next(new Error('존재하지 않는 리뷰입니다.'))
 
 	try {
@@ -34,23 +36,16 @@ router.patch('/:commentId',authMiddleware, async (req, res, next) => {
 	const { content } = req.body
 
 	try {
-        const comment = await Review.findOne({
-                _id: reviewId,
-				'comments._id': commentId,
-        })
-        console.log("0", comment)
-        console.log("1", comment.user)
-        console.log("2", userId)
-        if (comment === null) return next(new Error("댓글이 존재하지 않습니다."))
-        if (comment.user !== userId) return next(new Error("본인이 아닙니다."))
+        const review = await Review.findById(reviewId)
+        const comment = review.comments.id(commentId)
+        // todo : 나중에 밑에 녀석으로 해보기($표시)
+        // const review = await Review.find({comments: { _id : commentId }})
 
-		await comment.updateOne(			
-			{
-				$set: {
-					'comments.$.content': content,
-				},
-			}
-		)
+        if (comment === null) return next(new Error("댓글이 존재하지 않습니다."))
+        if (String(comment.user) !== String(userId)) return next(new Error("본인이 아닙니다."))
+        comment.content = content
+
+		await review.save()
 
 		return res.sendStatus(200)
 	} catch (e) {
@@ -59,6 +54,7 @@ router.patch('/:commentId',authMiddleware, async (req, res, next) => {
 })
 
 router.delete('/:commentId', authMiddleware, async (req, res, next) => {
+    const userId = res.locals.user._id
 	const { reviewId, commentId } = req.params
 
 	try {
