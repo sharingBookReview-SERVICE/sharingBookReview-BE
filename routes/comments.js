@@ -54,27 +54,15 @@ router.patch('/:commentId',authMiddleware, async (req, res, next) => {
 })
 
 router.delete('/:commentId', authMiddleware, async (req, res, next) => {
-    const userId = res.locals.user._id
+    const { _id: userId } = res.locals.user
 	const { reviewId, commentId } = req.params
 
 	try {
-		await Promise.all([
-
-			// Delete the comment in the comment collection
-			Comment.deleteOne({ _id: commentId }),
-
-			// Delete the comment in the review document
-			Review.updateOne(
-				{ _id: reviewId },
-				{
-					$pull: {
-						comments: { _id: commentId },
-					},
-				}
-			),
-		])
-
-		return res.sendStatus(200)
+    	const review = await Review.findById(reviewId)
+		const comment = review.comments.id(commentId)
+		if (comment.user !== userId) return next(new Error('댓글 작성자와 현재 로그인된 사용자가 다릅니다.'))
+		review.comments.pull(commentId)
+		await review.save()
 	} catch (e) {
 		return next(new Error('댓글 삭제를 실패했습니다.'))
 	}

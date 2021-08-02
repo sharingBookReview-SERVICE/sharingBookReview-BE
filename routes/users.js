@@ -12,6 +12,7 @@ router.get(
 	passport.authenticate('kakao', {
 		failureRedirect: '/kakao',
 	}), (req, res) => {
+		console.log(res)
         return res.redirect('/')
     }
 )
