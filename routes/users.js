@@ -1,78 +1,104 @@
 import express from 'express'
+import User from "../models/user.js";
+import Review from "../models/review.js";
+import passport from "passport";
 
 const router = new express.Router()
 
-const sampleUser = {	
-    _id: '유저아이디',
-    nickname: '마산독서남',
-    provider: 'kakao',
-    providerKey: '338473284723238932434324',
-    userImage: 'https://www.pharmnews.com/news/photo/202009/101300_52229_3331.jpg'	
-}
+// kakao-login
+router.get("/kakao", passport.authenticate("kakao"));
 
-const token = "dsfa39919ufndfasdffn3o220192ydfnl20342fnf0dnav0sd0f"
+router.get(
+	'/kakao/callback',
+	passport.authenticate('kakao', {
+		failureRedirect: '/kakao',
+	}), (req, res) => {
+        return res.redirect('/')
+    }
+)
 
-const sampleComment = {
-	user: {
-		_id: '유저아이디',
-		nickname: '마산독서남',
-	},
-	book: {
-		isbn: 9791158392239,
-	},
-	review: {
-		reviewId: '리뷰아이디',
-	},
-	content: '리뷰가 유익하네요.',
-	created_at: '20210728',
-}
+router.put("/nickname/:userId", async (req,res,next) => {
+	// if user do not have nickname use this router
+    const { userId } = req.params
+	const { nickname } = req.body
+    
+    try{		
+		// findByIdAndUpdate를 사용하면 user가 존재하지 않아도 등록된것으로 인식하기 때문에 나누어서 error 처리
+		const user = await User.findByIdAndUpdate(userId,{nickname})
 
-const sampleReview = {
-	user: {
-		_id: '유저아이디',
-		nickname: '마산독서남',
-	},
-	book: {
-		isbn: 9791158392239,
-		title: '모던 자바스크립트 Deep Dive',
-		link: 'http://www.kyobobook.co.kr/product/detailViewKor.laf?ejkGb=KOR&mallGb=KOR&barcode=9791158392239&orderClick=LAG&Kc=',
-		image: 'http://image.kyobobook.co.kr/images/book/large/239/l9791158392239.jpg',
-		author: '이웅모',
-		price: 45000,
-		discount: 0.1,
-		description:
-			'269개의 그림과 원리를 파헤치는 설명으로 ‘자바스크립트의 기본 개념과 동작 원리’를 이해하자!\\n웹페이지의 단순한 보조 기능을 처리하기 위한 제한적인 용도로 태어난 자바스크립트는 과도하다고 느껴질 만큼 친절한 프로그래밍 언어입니다. 이러한 자바스크립트의 특징은 편리한 경우도 있지만 내부 동작을 이해하기 어렵게 만들기도 합니다.',
-		pubdate: '2020925',
-	},
-	quote: '자바스크립트 최고',
-	content: '이책 정말 좋아요',
-	hashtag: ['개발', '자바스크립트', '자세한'],
-	createdAt: '20210726',
-	comments: [sampleComment],
-	myLike: true,
-	likes: 10,
-}
+        if (user == null)return next(new Error('등록되지 않은 유저입니다'))
 
-router.post('/:provider', (req, res) => {
-	return res.json({
-        nickname : sampleUser.nickname, userImage: sampleUser.userImage, token
-    })
+		return res.sendStatus(200)
+
+	} catch(e) {
+        return next(new Error('nickname 등록을 실패했습니다.'))
+    }
+	
 })
 
-router.get('/:userId', (req, res) => {
-	return res.json(sampleUser)
+router.get('/:userId', async (req, res, next) => {
+    const { userId } = req.params
+    try{
+        const user = await User.findById(userId)
+        
+        return res.json({user})
+
+    } catch(e) {
+        return next(new Error('user를 찾는데 실패했습니다.'))
+    }
+
+    
 })
 
-router.put('/:userId', (req, res) => {
-	return res.sendStatus(200)
+router.put('/:userId', async (req, res, next) => {
+    const { userId } = req.params
+    const { nickname } = req.body
+    try{
+        const user = await User.findByIdAndUpdate(userId,{nickname})
+		
+        if (user == null)return next(new Error('등록되지 않은 유저입니다'))
+		
+        return res.sendStatus(200)
+
+    } catch(e) {
+        return next(new Error('수정에 실패했습니다.'))
+    }
+
+    
 })
 
-router.delete('/:userId', (req, res) => {
-	return res.sendStatus(200)
+router.delete('/:userId', async (req, res, next) => {
+    const { userId } = req.params
+    try{
+        const user = await User.findByIdAndDelete(userId)
+        
+        if (user == null)return next(new Error('등록되지 않은 유저입니다'))
+
+        return res.sendStatus(200)
+
+    } catch(e) {
+        return next(new Error('삭제에 실패했습니다.'))
+    }
+    
+    
 })
 
-router.get('/:userId/reviews', (req, res) => {
-	return res.json(sampleReview)
+router.get('/:userId/reviews', async (req, res, next) => {
+	const { userId } = req.params
+	// id에 관한건 confirm merge 후에 findOne안의 인자와 select,populate값 user:userId로 바꿔줘야함
+	// 각 기능 userId 추가 후에 기능 검사 필
+	try {
+		const reviews = await Review.findOne({ userId })
+			.select('reviews')
+			.populate({
+				path: 'reviews',
+				options: { sort: { created_at: -1 } },
+			})
+
+		return res.json(reviews)
+	} catch (e) {
+		return next(new Error('nickname 등록을 실패했습니다.'))
+	}
 })
 
 export default router

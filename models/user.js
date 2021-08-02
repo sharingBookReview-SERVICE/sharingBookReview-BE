@@ -9,14 +9,14 @@ const userSchema = new mongoose.Schema({
 	},
 	provider: {
 		type: String,
-		enum: ['Naver']
+		enum: ['naver','kakao','google']
 	}
 })
 
 for(const path in userSchema.paths) {
 	if (path === '_id') continue
 	const property = userSchema.paths[path]
-	property.required(true)
+	// property.required(true)
 }
 
 export default mongoose.model('User', userSchema)
