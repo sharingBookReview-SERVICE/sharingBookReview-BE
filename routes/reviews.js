@@ -2,10 +2,12 @@ import express from 'express'
 import { Book, Review } from '../models/index.js'
 import saveBook from './controllers/save_book.js'
 import searchBooks from './controllers/searchbooks.js'
+import { authMiddleware } from '../middleware/auth_middleware.js'
 
 const router = new express.Router({ mergeParams: true })
 
-router.post('/', async (req, res, next) => {
+router.post('/', authMiddleware, async (req, res, next) => {
+    const userId = res.locals.user._id
 	const { bookId } = req.params
 	// const { userId } = req.locals.user
 
@@ -22,7 +24,7 @@ router.post('/', async (req, res, next) => {
 	}
 
 	try {
-		const review = await Review.create({ ...req.body, book: bookId })
+		const review = await Review.create({ ...req.body, book: bookId, user: userId })
 		await book.reviews.push(review._id)
 		await book.save()
 	} catch (e) {
