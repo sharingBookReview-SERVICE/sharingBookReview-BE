@@ -1,7 +1,6 @@
 import express from 'express'
 import searchBooks from './controllers/searchbooks.js'
 import getBestsellers from './controllers/bestseller_crawling.js'
-import Book from '../models/book.js'
 import dotenv from 'dotenv'
 dotenv.config()
 
