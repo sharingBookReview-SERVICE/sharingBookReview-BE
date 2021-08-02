@@ -101,7 +101,7 @@ router.delete('/:reviewId', authMiddleware, async (req, res) => {
 	}
 })
 
-router.put('/:reviewId/like', (req, res) => {
+router.put('/:reviewId/likes', (req, res, next) => {
 	return res.sendStatus(201)
 })
 
