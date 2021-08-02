@@ -104,6 +104,15 @@ router.delete('/:reviewId', authMiddleware, async (req, res) => {
 router.put('/:reviewId/likes', async (req, res, next) => {
 	const { _id: userId } = res.locals.user
 	const { reviewId } = req.params
+
+	try {
+		const review = await Review.findById(reviewId)
+		if (!review) return next(new Error('존재하지 않는 리뷰입니다.'))
+		review.getMyLike(userId) ? review.liked_users.pull(userId) : review.liked_users.push(userId)
+		await review.save()
+	} catch (e) {
+		return next(new Error('좋아요/좋아요취소 를 실패했습니다.'))
+	}
 })
 
 export default router
