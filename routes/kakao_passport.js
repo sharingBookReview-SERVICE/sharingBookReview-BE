@@ -2,6 +2,9 @@ import jwt from "jsonwebtoken";
 import User from "../models/user.js";
 import passport from "passport";
 import { Strategy } from "passport-kakao";
+import dotenv from 'dotenv'
+
+dotenv.config()
 
 const kakaoPassportConfig = () => {
     passport.serializeUser((user, done) => {
@@ -15,7 +18,7 @@ const kakaoPassportConfig = () => {
     passport.use(
 		new Strategy(
 			{
-				clientID: '89c020b3b307f237f8e3e3135ce353cf',
+				clientID: process.env.KAKAO_CLIENT_ID,
 				clientSecret: '',
 				callbackURL: 'http://localhost:3000/api/users/kakao/callback',
 				// http://13.124.63.103/api/users/kakao/callback
