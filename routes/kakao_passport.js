@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import User from "../models/user.js";
+import { User } from '../models/index.js'
 import passport from "passport";
 import { Strategy } from "passport-kakao";
 import dotenv from 'dotenv'

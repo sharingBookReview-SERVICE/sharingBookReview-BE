@@ -1,7 +1,6 @@
 import express from 'express'
-import User from "../models/user.js";
-import Review from "../models/review.js";
-import passport from "passport";
+import { User, Review } from '../models/index.js'
+import passport from "passport"
 
 const router = new express.Router()
 
