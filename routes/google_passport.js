@@ -1,15 +1,17 @@
 const express = require('express')
 const passport = require('passport')
+const session = require('express-session'),
+	bodyParser = require('body-parser')
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy
 
+const googleCredentials = require('./config/google.json')
+consol.log(googleCredentials.web.client_id)
 passport.use(
 	new GoogleStrategy(
 		{
-			clientID:
-				531193406993 -
-				gf1v14ui793k2nv119nq0be6eaqgtt8h.apps.googleusercontent.com,
-			clientSecret: kY3QDE2eRhViy1ehE4yVFmvs,
-			callbackURL: 'http://www.example.com/auth/google/callback',
+			clientID: googleCredentials.web.client_id,
+			clientSecret: googleCredentials.web.client_secret,
+			callbackURL: googleCredentials.web.redirect_uris,
 		},
 		function (accessToken, refreshToken, profile, done) {
 			User.findOrCreate({ googleId: profile.id }, function (err, user) {
