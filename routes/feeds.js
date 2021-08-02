@@ -8,8 +8,7 @@ const router = new express.Router()
 
 			return res.json({ feeds })
 		} catch (err) {
-			console.error(err)
-			return next(err)
+			return next(new Error('피드를 불러오는데 실패했습니다.'))
 		}
 })
 

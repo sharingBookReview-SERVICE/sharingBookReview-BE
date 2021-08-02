@@ -17,7 +17,6 @@ router.post('/', async (req, res, next) => {
 			const [searchResult] = await searchBooks('isbn', bookId)
 			await saveBook(searchResult)
 		} catch (e) {
-			console.error(e)
 			return next(new Error('책 정보 저장을 실패했습니다.'))
 		}
 	}
@@ -27,7 +26,6 @@ router.post('/', async (req, res, next) => {
 		await book.reviews.push(review._id)
 		await book.save()
 	} catch (e) {
-		console.error(e)
 		return next(new Error('댓글 작성을 실패했습니다.'))
 	}
 
@@ -46,7 +44,6 @@ router.get('/', async (req, res, next) => {
 			})
 		return res.json(reviews)
 	} catch (e) {
-		console.error(e)
 		return next(new Error('리뷰 목록 가져오기를 실패했습니다.'))
 	}
 })
@@ -58,7 +55,6 @@ router.get('/:reviewId', async (req, res, next) => {
 		const review = await Review.findById(reviewId).populate('book')
 		return res.json({ review })
 	} catch (e) {
-		console.error(e)
 		return next(new Error('리뷰 조회를 실패했습니다.'))
 	}
 })
@@ -77,7 +73,6 @@ router.put('/:reviewId', async (req, res, next) => {
 
 		return res.sendStatus(202)
 	} catch (e) {
-		console.error(e)
 		return next(new Error('리뷰 수정을 실패했습니다.'))
 	}
 })
@@ -93,7 +88,6 @@ router.delete('/:reviewId', async (req, res) => {
 
 		return res.sendStatus(202)
 	} catch (e) {
-		console.error(e)
 		return next(new Error('리뷰 삭제를 실패했습니다.'))
 	}
 })
