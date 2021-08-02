@@ -101,8 +101,9 @@ router.delete('/:reviewId', authMiddleware, async (req, res) => {
 	}
 })
 
-router.put('/:reviewId/likes', (req, res, next) => {
-	return res.sendStatus(201)
+router.put('/:reviewId/likes', async (req, res, next) => {
+	const { _id: userId } = res.locals.user
+	const { reviewId } = req.params
 })
 
 export default router
