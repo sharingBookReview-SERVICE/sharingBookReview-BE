@@ -1,5 +1,5 @@
 import express from 'express'
-import Review from '../models/review.js'
+import { Review } from '../models/index.js'
 
 const router = new express.Router()
     router.get('/', async (req, res, next) => {
