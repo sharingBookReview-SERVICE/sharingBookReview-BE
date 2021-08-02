@@ -56,16 +56,22 @@ router.patch('/:commentId',authMiddleware, async (req, res, next) => {
 router.delete('/:commentId', authMiddleware, async (req, res, next) => {
     const { _id: userId } = res.locals.user
 	const { reviewId, commentId } = req.params
-
 	try {
-    	const review = await Review.findById(reviewId)
+        const review = await Review.findById(reviewId)
 		const comment = review.comments.id(commentId)
-		if (comment.user !== userId) return next(new Error('댓글 작성자와 현재 로그인된 사용자가 다릅니다.'))
-		review.comments.pull(commentId)
+        
+        if (comment === null) return next(new Error("댓글이 존재하지 않습니다."))
+		if (String(comment.user) !== String(userId)) return next(new Error('댓글 작성자와 현재 로그인된 사용자가 다릅니다.'))
+		
+        await review.comments.pull(commentId)
 		await review.save()
+
+        return res.sendStatus(200)        
 	} catch (e) {
 		return next(new Error('댓글 삭제를 실패했습니다.'))
 	}
 })
+
+
 
 export default router

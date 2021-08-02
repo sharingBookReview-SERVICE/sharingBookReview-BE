@@ -69,7 +69,7 @@ router.put('/:reviewId', authMiddleware, async (req, res, next) => {
 	try {
 		const review = await Review.findById(reviewId)
         if (review == null)return next(new Error('리뷰가 존재하지 않습니다.'))
-        if(review.user !== userId) return next(new Error("본인이 아닙니다."))
+        if(String(review.user) !== String(userId)) return next(new Error("본인이 아닙니다."))
         await review.updateOne({
 			quote,
 			content,
@@ -92,7 +92,7 @@ router.delete('/:reviewId', authMiddleware, async (req, res) => {
 	try {
 		const review = await Review.findById(reviewId)
         if (review == null)return next(new Error('리뷰가 존재하지 않습니다.'))
-        if(review.user !== userId) return next(new Error("본인이 아닙니다."))
+        if(String(review.user) !== String(userId)) return next(new Error("본인이 아닙니다."))
 		await review.deleteOne()
 
 		return res.sendStatus(202)
