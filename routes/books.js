@@ -1,13 +1,14 @@
 import express from 'express'
 import searchBooks from './controllers/searchbooks.js'
 import getBestsellers from './controllers/bestseller_crawling.js'
+import authMiddleware from '../middleware/auth_middleware.js'
 import dotenv from 'dotenv'
 dotenv.config()
 
 const router = new express.Router({ mergeParams: true })
 
 // 책 목록
-router.get('/', async (req, res, next) => {
+router.get('/', authMiddleware, async (req, res, next) => {
 	const { target, query } = req.query
 	
 	//todo 나중에 맵으로 고치기	
