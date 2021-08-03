@@ -44,6 +44,11 @@ router.get('/', async (req, res, next) => {
 				path: 'reviews',
 				options: { sort: { created_at: -1 } },
 			})
+
+		reviews.forEach((review) => {
+			review.myLike = review.getMyLIke(userId)
+		})
+
 		return res.json(reviews)
 	} catch (e) {
 		return next(new Error('리뷰 목록 가져오기를 실패했습니다.'))
@@ -55,6 +60,7 @@ router.get('/:reviewId', async (req, res, next) => {
 
 	try {
 		const review = await Review.findById(reviewId).populate('book')
+		review.myLike = review.getMyLike(userId)
 		return res.json({ review })
 	} catch (e) {
 		return next(new Error('리뷰 조회를 실패했습니다.'))
