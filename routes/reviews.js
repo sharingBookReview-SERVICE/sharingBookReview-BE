@@ -38,7 +38,7 @@ router.get('/', async (req, res, next) => {
 	const { bookId } = req.params
 
 	try {
-		const reviews = await Book.findById(bookId)
+		const { reviews } = await Book.findById(bookId)
 			.select('reviews')
 			.populate({
 				path: 'reviews',
