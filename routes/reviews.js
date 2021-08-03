@@ -6,6 +6,13 @@ import authMiddleware from '../middleware/auth_middleware.js'
 
 const router = new express.Router({ mergeParams: true })
 
+const processLikesInfo = (review, userId) => {
+	review = review.toJSON()
+	review.myLike = review.liked_users.includes(userId)
+	delete review.liked_users
+	return review
+}
+
 router.post('/', authMiddleware, async (req, res, next) => {
     const userId = res.locals.user._id
 	const { bookId } = req.params
@@ -49,12 +56,7 @@ router.get('/', authMiddleware, async (req, res, next) => {
 		/**
 		 * Add myLike and likes properties and Delete liked_users property.
 		 */
-		const result = reviews.map(review => {
-			review = review.toJSON()
-			review.myLike = review.liked_users.includes(userId)
-			delete review.liked_users
-			return review
-		})
+		const result = reviews.map(review => processLikesInfo(review, userId))
 
 		return res.json({review: result})
 	} catch (e) {
@@ -69,8 +71,7 @@ router.get('/:reviewId', authMiddleware ,async (req, res, next) => {
 
 	try {
 		const review = await Review.findById(reviewId).populate('book')
-		const result = review.toJSON()
-		result.myLike = review.getMyLike(userId)
+		const result = processLikesInfo(review, userId)
 		return res.json({ review: result })
 	} catch (e) {
 		return next(new Error('리뷰 조회를 실패했습니다.'))
