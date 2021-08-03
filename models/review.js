@@ -27,7 +27,6 @@ const reviewSchema = new mongoose.Schema({
 	liked_users: {
 		type: [mongoose.Schema.Types.ObjectId],
 		ref: 'User',
-		select: false,
 	},
 })
 
