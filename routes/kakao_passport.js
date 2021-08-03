@@ -1,4 +1,3 @@
-import jwt from "jsonwebtoken";
 import { User } from '../models/index.js'
 import passport from "passport";
 import { Strategy } from "passport-kakao";
@@ -8,12 +7,14 @@ dotenv.config()
 
 const kakaoPassportConfig = () => {
     passport.serializeUser((user, done) => {
-        done(null, user);
+        done(null, user._id);
     })
     
-    passport.deserializeUser((user, done) => {
-        done(null, user);
-    })
+    passport.deserializeUser((id, done) => {
+        User.findById(id, (err, user) => {
+        done(err, user);
+        });
+    });
     
     passport.use(
 		new Strategy(
@@ -32,10 +33,8 @@ const kakaoPassportConfig = () => {
 				if (!user) {
 					user = await User.create({ provider, providerKey })
 				}
-
-				const token = jwt.sign({ userId: user._id }, 'ohbinisthebest')
-
-				return done(null, user, token)
+                console.log(user)
+				return done(null, user)
 			}
 		)
 	)
