@@ -62,8 +62,9 @@ router.get('/', authMiddleware, async (req, res, next) => {
 	}
 })
 
-router.get('/:reviewId', async (req, res, next) => {
+router.get('/:reviewId', authMiddleware ,async (req, res, next) => {
 	const { reviewId } = req.params
+	const { _id: userId } = res.locals.user
 
 	try {
 		const review = await Review.findById(reviewId).populate('book')
