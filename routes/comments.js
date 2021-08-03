@@ -7,24 +7,26 @@ import authMiddleware from '../middleware/auth_middleware.js'
 const router = new express.Router({ mergeParams: true })
 
 router.post('/', authMiddleware, async (req, res, next) => {
-    const userId = res.locals.user._id
+	const userId = res.locals.user._id
 	const { reviewId } = req.params
-    const { content } = req.body
+	const { content } = req.body
 
-    if(!await Review.findById(reviewId))return next(new Error('존재하지 않는 리뷰입니다.'))
+	if (!(await Review.findById(reviewId)))
+		return next(new Error('존재하지 않는 리뷰입니다.'))
 
 	try {
 		// todo: Is there a way not to create the comments collection when creating a comment document?
-		const comment = new Comment({content, user: userId})
+		const comment = new Comment({ content, user: userId })
 
-		await Review.findByIdAndUpdate(reviewId, {
+		const review = await Review.findByIdAndUpdate(reviewId, {
 			$push: {
 				comments: comment,
 			},
 		})
 
-		return res.sendStatus(201)
+		return res.status(201).json({ review })
 	} catch (e) {
+		console.error(e)
 		return next(new Error('댓글 작성을 실패했습니다.'))
 	}
 })
