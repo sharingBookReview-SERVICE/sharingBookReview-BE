@@ -34,8 +34,9 @@ router.post('/', authMiddleware, async (req, res, next) => {
 	return res.sendStatus(200)
 })
 
-router.get('/', async (req, res, next) => {
+router.get('/', authMiddleware, async (req, res, next) => {
 	const { bookId } = req.params
+	const { _id: userId } = res.locals.user
 
 	try {
 		const { reviews } = await Book.findById(bookId)
@@ -45,12 +46,18 @@ router.get('/', async (req, res, next) => {
 				options: { sort: { created_at: -1 } },
 			})
 
-		reviews.forEach((review) => {
-			review.myLike = review.getMyLIke(userId)
+
+		const result = reviews.map(review => {
+			const myLike = review.liked_users.includes(userId)
+			review = review.toJSON()
+			review.myLike = myLike
+			delete review.liked_users
+			return review
 		})
 
-		return res.json(reviews)
+		return res.json(result)
 	} catch (e) {
+		console.error(e)
 		return next(new Error('리뷰 목록 가져오기를 실패했습니다.'))
 	}
 })
