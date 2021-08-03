@@ -68,8 +68,9 @@ router.get('/:reviewId', authMiddleware ,async (req, res, next) => {
 
 	try {
 		const review = await Review.findById(reviewId).populate('book')
-		review.myLike = review.getMyLike(userId)
-		return res.json({ review })
+		const result = review.toJSON()
+		result.myLike = review.getMyLike(userId)
+		return res.json({ review: result })
 	} catch (e) {
 		return next(new Error('리뷰 조회를 실패했습니다.'))
 	}
