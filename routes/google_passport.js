@@ -1,14 +1,15 @@
 import passport from 'passport'
-import GoogleStrategy from "('passport-google-oauth').OAuth2Strategy"
-import googleCredentials from 'google-credentials'
-consol.log(googleCredentials.web.client_id)
+import { OAuth2Strategy } from 'passport-google-oauth'
+import express from 'express'
+const router = new express.Router()
+// consol.log(googleCredentials.web.client_id)
 
 passport.use(
-	new GoogleStrategy(
+	new OAuth2Strategy(
 		{
-			clientID: googleCredentials.web.client_id,
-			clientSecret: googleCredentials.web.client_secret,
-			callbackURL: googleCredentials.web.redirect_uris[0],
+			clientID: process.env.GOOGLE_CLIENT_ID,
+			clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+			callbackURL: 'http://localhost:3000/auth/google/callback',
 		},
 		function (accessToken, refreshToken, profile, done) {
 			// DB에서 User 정보(porfile)를 받아옴.
@@ -21,18 +22,20 @@ passport.use(
 )
 
 // 인증서 & scope 설정
-app.get(
-	'/auth/google',
+router.get(
+	'/',
 	passport.authenticate('google', {
 		scope: ['https://www.googleapis.com/auth/plus.login'],
 	})
 )
 
 // 임시 코드 발행
-app.get(
-	'/auth/google/callback',
+router.get(
+	'/callback',
 	passport.authenticate('google', { failureRedirect: '/auth/login' }),
 	function (req, res) {
 		res.redirect('/')
 	}
 )
+
+export default google
