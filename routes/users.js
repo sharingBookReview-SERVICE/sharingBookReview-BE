@@ -8,14 +8,18 @@ const router = new express.Router()
 router.get("/kakao", passport.authenticate("kakao"));
 
 router.get(
-	'/kakao/callback',
-	passport.authenticate('kakao', {
-		failureRedirect: '/kakao',
-	}), (req, res) => {
-		console.log(res)
-        return res.redirect('/')
-    }
-)
+	'/kakao/callback', (req, res, next) =>{
+	passport.authenticate(
+		'kakao',
+		{
+			failureRedirect: '/kakao',
+		},
+		(err, profile, token) => {
+			if (err) return next(new Error('소셜로그인 에러'))
+			return res.redirect(`http://localhost:3000/logincheck/token=${token}`)
+		}
+	)(req, res, next)
+    })
 
 router.put("/nickname/:userId", async (req,res,next) => {
 	// if user do not have nickname use this router
