@@ -30,4 +30,15 @@ const reviewSchema = new mongoose.Schema({
 	},
 })
 
+class Review {
+	getMyLike(userId) {
+		return this.liked_users.includes(userId)
+	}
+	get likes() {
+		return this.liked_users.length
+	}
+}
+
+reviewSchema.loadClass(Review)
+
 export default mongoose.model('Review', reviewSchema)
