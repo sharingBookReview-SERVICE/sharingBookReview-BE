@@ -27,6 +27,7 @@ const reviewSchema = new mongoose.Schema({
 	liked_users: {
 		type: [mongoose.Schema.Types.ObjectId],
 		ref: 'User',
+		select: false,
 	},
 })
 
@@ -34,6 +35,7 @@ class Review {
 	getMyLike(userId) {
 		return this.liked_users.includes(userId)
 	}
+
 	get likes() {
 		return this.liked_users.length
 	}
