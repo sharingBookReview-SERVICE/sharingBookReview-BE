@@ -46,16 +46,17 @@ router.get('/', authMiddleware, async (req, res, next) => {
 				options: { sort: { created_at: -1 } },
 			})
 
-
+		/**
+		 * Add myLike and likes properties and Delete liked_users property.
+		 */
 		const result = reviews.map(review => {
-			const myLike = review.liked_users.includes(userId)
 			review = review.toJSON()
-			review.myLike = myLike
+			review.myLike = review.liked_users.includes(userId)
 			delete review.liked_users
 			return review
 		})
 
-		return res.json(result)
+		return res.json({review: result})
 	} catch (e) {
 		console.error(e)
 		return next(new Error('리뷰 목록 가져오기를 실패했습니다.'))
