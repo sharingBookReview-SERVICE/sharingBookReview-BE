@@ -1,9 +1,8 @@
-const express = require('express')
-const passport = require('passport')
-const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy
-
-const googleCredentials = require('./config/google.json')
+import passport from 'passport'
+import GoogleStrategy from "('passport-google-oauth').OAuth2Strategy"
+import googleCredentials from 'google-credentials'
 consol.log(googleCredentials.web.client_id)
+
 passport.use(
 	new GoogleStrategy(
 		{
