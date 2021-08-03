@@ -13,6 +13,8 @@ const connect = () => {
 	}
 }
 
+mongoose.set('toJSON', { virtuals: true })
+
 mongoose.connect(
 	'mongodb://localhost:27017/admin',
 	// 'mongodb://13.124.63.103/admin',
@@ -22,8 +24,8 @@ mongoose.connect(
 		pass: process.env.DB_PASSWORD,
 		useNewUrlParser: true,
 		useUnifiedTopology: true,
-        // user:'BNS',
-        // pass:'BNS'
+		// user:'BNS',
+		// pass:'BNS'
 	},
 	(err) => {
 		if (err) console.error('몽고디비 연결 오류', err)
