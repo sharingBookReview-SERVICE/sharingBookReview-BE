@@ -1,25 +1,31 @@
 import mongoose from 'mongoose'
 
-const bookSchema = new mongoose.Schema({
-	_id: {
-		type: Number,
-		alias: 'isbn',
+const bookSchema = new mongoose.Schema(
+	{
+		_id: {
+			type: Number,
+			alias: 'isbn',
+		},
+		title: String,
+		link: String,
+		image: String,
+		author: String,
+		price: Number,
+		discount: Number,
+		publisher: String,
+		description: String,
+		pubdate: Date,
+		reviews: {
+			type: [mongoose.Schema.Types.ObjectId],
+			default: [],
+			ref: 'Review',
+		},
 	},
-	title: String,
-	link: String,
-	image: String,
-	author: String,
-	price: Number,
-	discount: Number,
-	publisher: String,
-	description: String,
-	pubdate: Date,
-	reviews: {
-		type: [mongoose.Schema.Types.ObjectId],
-		default: [],
-		ref: 'Review',
-	},
-})
+	{
+		toJSON: { virtuals: true },
+		toObject: { virtuals: true },
+	}
+)
 
 class Book {
 	/**
@@ -27,7 +33,7 @@ class Book {
 	 * @returns {[string]}
 	 */
 	get topTags() {
-		const topTags = "1234"
+		const topTags = '1234'
 		return topTags
 	}
 }

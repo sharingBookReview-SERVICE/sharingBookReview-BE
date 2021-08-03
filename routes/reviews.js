@@ -6,6 +6,13 @@ import authMiddleware from '../middleware/auth_middleware.js'
 
 const router = new express.Router({ mergeParams: true })
 
+const processLikesInfo = (review, userId) => {
+	review = review.toJSON()
+	review.myLike = review.liked_users.includes(userId)
+	delete review.liked_users
+	return review
+}
+
 router.post('/', authMiddleware, async (req, res, next) => {
     const userId = res.locals.user._id
 	const { bookId } = req.params
@@ -34,28 +41,38 @@ router.post('/', authMiddleware, async (req, res, next) => {
 	return res.sendStatus(200)
 })
 
-router.get('/', async (req, res, next) => {
+router.get('/', authMiddleware, async (req, res, next) => {
 	const { bookId } = req.params
+	const { _id: userId } = res.locals.user
 
 	try {
-		const reviews = await Book.findById(bookId)
+		const { reviews } = await Book.findById(bookId)
 			.select('reviews')
 			.populate({
 				path: 'reviews',
 				options: { sort: { created_at: -1 } },
 			})
-		return res.json(reviews)
+
+		/**
+		 * Add myLike and likes properties and Delete liked_users property.
+		 */
+		const result = reviews.map(review => processLikesInfo(review, userId))
+
+		return res.json({review: result})
 	} catch (e) {
+		console.error(e)
 		return next(new Error('리뷰 목록 가져오기를 실패했습니다.'))
 	}
 })
 
-router.get('/:reviewId', async (req, res, next) => {
+router.get('/:reviewId', authMiddleware ,async (req, res, next) => {
 	const { reviewId } = req.params
+	const { _id: userId } = res.locals.user
 
 	try {
 		const review = await Review.findById(reviewId).populate('book')
-		return res.json({ review })
+		const result = processLikesInfo(review, userId)
+		return res.json({ review: result })
 	} catch (e) {
 		return next(new Error('리뷰 조회를 실패했습니다.'))
 	}
@@ -101,7 +118,7 @@ router.delete('/:reviewId', authMiddleware, async (req, res) => {
 	}
 })
 
-router.put('/:reviewId/likes', async (req, res, next) => {
+router.put('/:reviewId/likes', authMiddleware, async (req, res, next) => {
 	const { _id: userId } = res.locals.user
 	const { reviewId } = req.params
 
