@@ -1,6 +1,11 @@
 import passport from 'passport'
 import { OAuth2Strategy } from 'passport-google-oauth'
 import express from 'express'
+import { User } from '../models/index.js'
+import dotenv from 'dotenv'
+import jwt from 'jsonwebtoken'
+
+dotenv.config()
 const router = new express.Router()
 // consol.log(googleCredentials.web.client_id)
 
@@ -15,7 +20,10 @@ passport.use(
 			// DB에서 User 정보(porfile)를 받아옴.
 			console.log('GoogleStrategy', accessToken, refreshToken, profile)
 			User.findOrCreate({ googleId: profile.id }, function (err, user) {
-				return done(err, user)
+				console.log(user)
+				const token = jwt.sign({ userId: user._id }, 'Google_test')
+				return done(null, user, token)
+				// return done(err, user)
 			})
 		}
 	)
@@ -32,10 +40,10 @@ router.get(
 // 임시 코드 발행
 router.get(
 	'/callback',
-	passport.authenticate('google', { failureRedirect: '/auth/login' }),
+	passport.authenticate('google', { failureRedirect: '/' }),
 	function (req, res) {
 		res.redirect('/')
 	}
 )
 
-export default google
+export default router
