@@ -16,6 +16,11 @@ router.get(
     }
 )
 
+router.get('/logincheck', (req,res) => {
+    let session = req.session
+    res.json({session})
+})
+
 router.put("/nickname/:userId", async (req,res,next) => {
 	// if user do not have nickname use this router
     const { userId } = req.params

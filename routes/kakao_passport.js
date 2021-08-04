@@ -33,7 +33,6 @@ const kakaoPassportConfig = () => {
 				if (!user) {
 					user = await User.create({ provider, providerKey })
 				}
-                console.log(user)
 				return done(null, user)
 			}
 		)

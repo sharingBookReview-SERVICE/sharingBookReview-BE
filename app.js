@@ -14,7 +14,15 @@ const app = new express()
 app.set('port', process.env.PORT)
 
 app.use(cors())
-app.use(session({secret: "secret key", resave: false, saveUninitialized: false}));
+app.use(session({
+    key:'ohbin',
+    secret: process.env.SESSION_SECRET, 
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        maxAge: 24000 * 60 * 60 // 쿠키 유효기간 24시간
+    }
+}));
 
 app.use(passport.initialize())
 app.use(passport.session())
