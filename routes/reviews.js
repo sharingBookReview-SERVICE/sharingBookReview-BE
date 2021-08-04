@@ -3,8 +3,10 @@ import { Book, Review } from '../models/index.js'
 import saveBook from './controllers/save_book.js'
 import searchBooks from './controllers/searchbooks.js'
 import authMiddleware from '../middleware/auth_middleware.js'
-
+import multer from 'multer'
+import reviewImage from './controllers/review_image.js'
 const router = new express.Router({ mergeParams: true })
+const upload = multer({})
 
 const processLikesInfo = (review, userId) => {
 	review = review.toJSON()
