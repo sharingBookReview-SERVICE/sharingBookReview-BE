@@ -15,6 +15,8 @@ const processLikesInfo = (review, userId) => {
 	return review
 }
 
+router.post('/profile', upload.single('image'), reviewImage.uploadImage)
+
 router.post('/', authMiddleware, async (req, res, next) => {
 	const { _id: userId } = res.locals.user
 	const { bookId } = req.params
