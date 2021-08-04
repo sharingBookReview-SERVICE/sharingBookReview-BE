@@ -6,7 +6,9 @@ import authMiddleware from '../middleware/auth_middleware.js'
 import multer from 'multer'
 import reviewImage from './controllers/review_image.js'
 const router = new express.Router({ mergeParams: true })
-const upload = multer({})
+const upload = multer({
+    dest: 'uploads/'
+})
 
 const processLikesInfo = (review, userId) => {
 	review = review.toJSON()
@@ -15,7 +17,9 @@ const processLikesInfo = (review, userId) => {
 	return review
 }
 
-router.post('/profile', upload.single('image'), reviewImage.uploadImage)
+router.get('/images/:key', reviewImage.getImage)
+
+router.post('/images', upload.single('image'), reviewImage.uploadImage)
 
 router.post('/', authMiddleware, async (req, res, next) => {
 	const { _id: userId } = res.locals.user
