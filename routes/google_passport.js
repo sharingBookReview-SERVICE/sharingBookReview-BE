@@ -38,12 +38,16 @@ router.get(
 )
 
 // 임시 코드 발행
-router.get(
-	'/callback',
-	passport.authenticate('google', { failureRedirect: '/' }),
-	function (req, res) {
-		res.redirect('/')
-	}
-)
+router.get('/callback', (req, res, next) => {
+	passport.authenticate(
+		'google',
+		{ failureRedirect: '/' },
+		(err, user, token) => {
+			return res.redirect(
+				`http://localhost:3000/logincheck/token=${token}`
+			)
+		}
+	)
+})
 
 export default router
