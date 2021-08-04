@@ -1,14 +1,13 @@
 import express from 'express'
 import { User, Review } from '../models/index.js'
-import passport from "passport"
+import passport from 'passport'
 
 const router = new express.Router()
 
 // kakao-login
-router.get("/kakao", passport.authenticate("kakao"));
+router.get('/kakao', passport.authenticate('kakao'))
 
-router.get(
-	'/kakao/callback', (req, res, next) =>{
+router.get('/kakao/callback', (req, res, next) => {
 	passport.authenticate(
 		'kakao',
 		{
@@ -16,75 +15,86 @@ router.get(
 		},
 		(err, profile, token) => {
 			if (err) return next(new Error('소셜로그인 에러'))
-			return res.redirect(`http://localhost:3000/logincheck/token=${token}`)
+			return res.redirect(
+				`http://localhost:3000/logincheck/token=${token}`
+			)
 		}
 	)(req, res, next)
-    })
+})
 
-router.put("/nickname/:userId", async (req,res,next) => {
+//Google-login
+router.get(
+	'/',
+	passport.authenticate('google', {
+		scope: ['https://www.googleapis.com/auth/plus.login'],
+	})
+)
+
+router.get('/callback', (req, res, next) => {
+	passport.authenticate(
+		'google',
+		{ failureRedirect: '/' },
+		(err, user, token) => {
+			return res.redirect(
+				`http://localhost:3000/logincheck/token=${token}`
+			)
+		}
+	)
+})
+
+router.put('/nickname/:userId', async (req, res, next) => {
 	// if user do not have nickname use this router
-    const { userId } = req.params
+	const { userId } = req.params
 	const { nickname } = req.body
-    
-    try{		
-		// findByIdAndUpdate를 사용하면 user가 존재하지 않아도 등록된것으로 인식하기 때문에 나누어서 error 처리
-		const user = await User.findByIdAndUpdate(userId,{nickname})
 
-        if (user == null)return next(new Error('등록되지 않은 유저입니다'))
+	try {
+		// findByIdAndUpdate를 사용하면 user가 존재하지 않아도 등록된것으로 인식하기 때문에 나누어서 error 처리
+		const user = await User.findByIdAndUpdate(userId, { nickname })
+
+		if (user == null) return next(new Error('등록되지 않은 유저입니다'))
 
 		return res.sendStatus(200)
-
-	} catch(e) {
-        return next(new Error('nickname 등록을 실패했습니다.'))
-    }
-	
+	} catch (e) {
+		return next(new Error('nickname 등록을 실패했습니다.'))
+	}
 })
 
 router.get('/:userId', async (req, res, next) => {
-    const { userId } = req.params
-    try{
-        const user = await User.findById(userId)
-        
-        return res.json({user})
+	const { userId } = req.params
+	try {
+		const user = await User.findById(userId)
 
-    } catch(e) {
-        return next(new Error('user를 찾는데 실패했습니다.'))
-    }
-
-    
+		return res.json({ user })
+	} catch (e) {
+		return next(new Error('user를 찾는데 실패했습니다.'))
+	}
 })
 
 router.put('/:userId', async (req, res, next) => {
-    const { userId } = req.params
-    const { nickname } = req.body
-    try{
-        const user = await User.findByIdAndUpdate(userId,{nickname})
-		
-        if (user == null)return next(new Error('등록되지 않은 유저입니다'))
-		
-        return res.sendStatus(200)
+	const { userId } = req.params
+	const { nickname } = req.body
+	try {
+		const user = await User.findByIdAndUpdate(userId, { nickname })
 
-    } catch(e) {
-        return next(new Error('수정에 실패했습니다.'))
-    }
+		if (user == null) return next(new Error('등록되지 않은 유저입니다'))
 
-    
+		return res.sendStatus(200)
+	} catch (e) {
+		return next(new Error('수정에 실패했습니다.'))
+	}
 })
 
 router.delete('/:userId', async (req, res, next) => {
-    const { userId } = req.params
-    try{
-        const user = await User.findByIdAndDelete(userId)
-        
-        if (user == null)return next(new Error('등록되지 않은 유저입니다'))
+	const { userId } = req.params
+	try {
+		const user = await User.findByIdAndDelete(userId)
 
-        return res.sendStatus(200)
+		if (user == null) return next(new Error('등록되지 않은 유저입니다'))
 
-    } catch(e) {
-        return next(new Error('삭제에 실패했습니다.'))
-    }
-    
-    
+		return res.sendStatus(200)
+	} catch (e) {
+		return next(new Error('삭제에 실패했습니다.'))
+	}
 })
 
 router.get('/:userId/reviews', async (req, res, next) => {

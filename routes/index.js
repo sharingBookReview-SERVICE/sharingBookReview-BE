@@ -4,7 +4,6 @@ import reviewsRouter from './reviews.js'
 import commentsRouter from './comments.js'
 import booksRouter from './books.js'
 import feedsRouter from './feeds.js'
-import google from './google_passport.js'
 
 const router = express.Router()
 router.use(express.urlencoded({ extended: false }))
@@ -15,6 +14,5 @@ router.use('/api/books/:bookId/reviews/:reviewId/comments', commentsRouter) // t
 router.use('/api/books/:bookId/reviews', reviewsRouter) // temp path
 router.use('/api/books', booksRouter)
 router.use('/api/feeds', feedsRouter)
-router.use('/api/auth/google', google)
 
 export default router
