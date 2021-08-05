@@ -19,7 +19,37 @@ const processLikesInfo = (review, userId) => {
 
 router.get('/images/:key', reviewImage.getImage)
 
-router.post('/images', upload.single('image'), reviewImage.uploadImage)
+router.post('/', authMiddleware, upload.single('image'), reviewImage.uploadImage, async (req, res, next) => {
+    const userId = res.locals.user._id
+    const path = res.locals.path.key
+    // const { quote, content, hashtags } = res.locals.path.body
+	const { bookId } = req.params
+    console.log(path)
+    console.log(res.locals.path.body)
+
+	// Check if the book is saved on DB
+	const book = await Book.findById(bookId)
+
+	if (!book) {
+		try {
+			const [searchResult] = await searchBooks('isbn', bookId)
+			await saveBook(searchResult)
+		} catch (e) {
+			return next(new Error('책 정보 저장을 실패했습니다.'))
+		}
+	}
+
+	try {
+		const review = await Review.create({ ...res.locals.path.body, image: path, book: bookId, user: userId })
+		await book.reviews.push(review._id)
+		await book.save()
+    
+        return res.json({review})
+	} catch (e) {
+		return next(new Error('댓글 작성을 실패했습니다.'))
+	}
+    
+})
 
 router.post('/', authMiddleware, async (req, res, next) => {
 	const { _id: userId } = res.locals.user
