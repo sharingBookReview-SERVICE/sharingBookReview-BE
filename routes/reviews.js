@@ -34,11 +34,12 @@ router.post('/', authMiddleware, async (req, res, next) => {
 		const review = await Review.create({ ...req.body, book: bookId, user: userId })
 		await book.reviews.push(review._id)
 		await book.save()
+    
+        return res.json({review})
 	} catch (e) {
 		return next(new Error('댓글 작성을 실패했습니다.'))
 	}
-
-	return res.sendStatus(200)
+    
 })
 
 router.get('/', authMiddleware, async (req, res, next) => {
@@ -84,17 +85,17 @@ router.put('/:reviewId', authMiddleware, async (req, res, next) => {
 	const { quote, content, hashtags, image } = req.body
 
 	try {
-		const review = await Review.findById(reviewId)
-        if (review == null)return next(new Error('리뷰가 존재하지 않습니다.'))
-        if(String(review.user) !== String(userId)) return next(new Error("본인이 아닙니다."))
-        await review.updateOne({
+		const targetReview = await Review.findById(reviewId)
+        if (targetReview == null)return next(new Error('리뷰가 존재하지 않습니다.'))
+        if(String(targetReview.user) !== String(userId)) return next(new Error("본인이 아닙니다."))
+        await targetReview.updateOne({
 			quote,
 			content,
 			hashtags,
 			image,
 		})
-
-		return res.sendStatus(202)
+        const review = await Review.findById(reviewId)
+		return res.status(202).json({review})
 	} catch (e) {
 		return next(new Error('리뷰 수정을 실패했습니다.'))
 	}
