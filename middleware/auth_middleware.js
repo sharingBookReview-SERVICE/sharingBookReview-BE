@@ -26,10 +26,12 @@ const authMiddleware = (req, res, next) => {
 				next()
 			})
 			.catch((e) => {
-				return next(new Error('유저 정보가 존재하지 않습니다.'))
+				console.error(e)
+				return next(new Error('DB에 해당 유저 정보가 존재하지 않습니다.'))
 			})
 
 	} catch (e) {
+		console.error(e)
 		return next(new Error('인증에 실패했습니다.'))
 	}
 }
