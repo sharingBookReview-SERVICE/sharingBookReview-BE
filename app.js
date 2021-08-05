@@ -6,6 +6,7 @@ import router from './routes/index.js'
 import session from "express-session";
 import passport from "passport";
 import kakaoPassportConfig from "./routes/kakao_passport.js";
+import googlePassportConfig from './routes/google_passport.js'
 
 dotenv.config()
 
@@ -14,7 +15,9 @@ const app = new express()
 app.set('port', process.env.PORT)
 
 app.use(cors())
-app.use(session({secret: "secret key", resave: false, saveUninitialized: false}));
+app.use(
+	session({ secret: 'secret key', resave: false, saveUninitialized: false })
+)
 
 app.use(passport.initialize())
 app.use(passport.session())
@@ -22,6 +25,7 @@ app.use(passport.session())
 app.use(router)
 
 kakaoPassportConfig()
+googlePassportConfig()
 
 app.use((req, res, next) => {
 	const error = new Error(`${req.method} ${req.url} router doesn't exist`)
@@ -31,7 +35,7 @@ app.use((req, res, next) => {
 
 app.use((err, req, res, next) => {
 	console.error(err)
-	return res.json({error: err.message})
+	return res.json({ error: err.message })
 })
 
 app.listen(app.get('port') || 3000, () => {
