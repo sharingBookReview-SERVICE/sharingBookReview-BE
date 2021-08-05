@@ -22,10 +22,7 @@ router.post('/', authMiddleware, upload.single('image'), reviewImage.uploadImage
     const { bookId } = req.params
     const image = res.locals.url
     const { quote, content } = res.locals.body
-    let { hashtags } = res.locals.body
-    console.log(image)
-
-    hashtags = JSON.parse(hashtags)
+    const hashtags = JSON.parse(res.locals.body.hashtags)
     
 	// Check if the book is saved on DB
 	const existBook = await Book.findById(bookId)
