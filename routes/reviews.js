@@ -3,8 +3,12 @@ import { Book, Review } from '../models/index.js'
 import saveBook from './controllers/save_book.js'
 import searchBooks from './controllers/searchbooks.js'
 import authMiddleware from '../middleware/auth_middleware.js'
-
+import multer from 'multer'
+import reviewImage from './controllers/review_image.js'
 const router = new express.Router({ mergeParams: true })
+const upload = multer({
+    dest: 'uploads/'
+})
 
 const processLikesInfo = (review, userId) => {
 	review = review.toJSON()
@@ -12,6 +16,42 @@ const processLikesInfo = (review, userId) => {
 	delete review.liked_users
 	return review
 }
+
+router.post('/', authMiddleware, upload.single('image'), reviewImage.uploadImage, async (req, res, next) => {
+    const { _id : userId } = res.locals.user
+    const { bookId } = req.params
+    const image = res.locals.url
+    const { quote, content } = res.locals.body
+    let { hashtags } = res.locals.body
+    console.log(image)
+
+    hashtags = JSON.parse(hashtags)
+    
+	// Check if the book is saved on DB
+	const existBook = await Book.findById(bookId)
+
+	if (!existBook) {
+		try {
+			const [searchResult] = await searchBooks('isbn', bookId)
+			await saveBook(searchResult)
+		} catch (e) {
+			return next(new Error('책 정보 저장을 실패했습니다.'))
+		}
+	}
+
+	try {
+		const review = await Review.create({ quote, content, hashtags, image, book: bookId, user: userId })
+        
+        const book = await Book.findById(bookId)
+		await book.reviews.push(review._id)
+		await book.save()
+    
+        return res.json({review})
+	} catch (e) {
+		return next(new Error('리뷰작성을 실패했습니다.'))
+	}
+    
+})
 
 router.post('/', authMiddleware, async (req, res, next) => {
 	const { _id: userId } = res.locals.user
