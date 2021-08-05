@@ -25,6 +25,7 @@ router.post('/', authMiddleware, async (req, res, next) => {
 			const [searchResult] = await searchBooks('isbn', bookId)
 			await saveBook(searchResult)
 		} catch (e) {
+			console.error(e)
 			return next(new Error('책 정보 저장을 실패했습니다.'))
 		}
 	}
