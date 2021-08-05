@@ -21,16 +21,17 @@ router.get('/images/:key', reviewImage.getImage)
 
 router.post('/', authMiddleware, upload.single('image'), reviewImage.uploadImage, async (req, res, next) => {
     const userId = res.locals.user._id
+    const { bookId } = req.params
     const path = res.locals.path.key
-    // const { quote, content, hashtags } = res.locals.path.body
-	const { bookId } = req.params
-    console.log(path)
-    console.log(res.locals.path.body)
+    const { quote, content } = res.locals.body
+    let { hashtags } = res.locals.body
 
+    hashtags = JSON.parse(hashtags)
+    
 	// Check if the book is saved on DB
-	const book = await Book.findById(bookId)
+	const existBook = await Book.findById(bookId)
 
-	if (!book) {
+	if (!existBook) {
 		try {
 			const [searchResult] = await searchBooks('isbn', bookId)
 			await saveBook(searchResult)
@@ -40,13 +41,15 @@ router.post('/', authMiddleware, upload.single('image'), reviewImage.uploadImage
 	}
 
 	try {
-		const review = await Review.create({ ...res.locals.path.body, image: path, book: bookId, user: userId })
+		const review = await Review.create({ quote, content, hashtags, image: path, book: bookId, user: userId })
+        
+        const book = await Book.findById(bookId)
 		await book.reviews.push(review._id)
 		await book.save()
     
         return res.json({review})
 	} catch (e) {
-		return next(new Error('댓글 작성을 실패했습니다.'))
+		return next(new Error('리뷰작성을 실패했습니다.'))
 	}
     
 })
