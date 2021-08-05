@@ -17,14 +17,13 @@ const processLikesInfo = (review, userId) => {
 	return review
 }
 
-router.get('/images/:key', reviewImage.getImage)
-
 router.post('/', authMiddleware, upload.single('image'), reviewImage.uploadImage, async (req, res, next) => {
-    const userId = res.locals.user._id
+    const { _id : userId } = res.locals.user
     const { bookId } = req.params
-    const path = res.locals.path.key
+    const image = res.locals.url
     const { quote, content } = res.locals.body
     let { hashtags } = res.locals.body
+    console.log(image)
 
     hashtags = JSON.parse(hashtags)
     
@@ -41,7 +40,7 @@ router.post('/', authMiddleware, upload.single('image'), reviewImage.uploadImage
 	}
 
 	try {
-		const review = await Review.create({ quote, content, hashtags, image: path, book: bookId, user: userId })
+		const review = await Review.create({ quote, content, hashtags, image, book: bookId, user: userId })
         
         const book = await Book.findById(bookId)
 		await book.reviews.push(review._id)

@@ -1,4 +1,4 @@
-import { uploadFile, getFileStream } from "../../s3.js"
+import { uploadFile } from "../../s3.js"
 import fs from 'fs'
 import util from 'util'
 
@@ -12,18 +12,12 @@ const reviewImage = {
         }
         const result = await uploadFile(file)
         await unlinkFile(file.path)
-        
-        res.locals.path = result
+        console.log(result)
+        console.log(result.Location)
+        res.locals.url = result.Location
         res.locals.body = req.body
         return next()
         
-        // return res.json({imagePath: `/api/users/images/${result.Key}`})
-    },
-    getImage: (res, req) => {
-        const key = req.params.key
-        const readStream = getFileStream(key)
-
-        readStream.pipe(res)
     }
 }
 
