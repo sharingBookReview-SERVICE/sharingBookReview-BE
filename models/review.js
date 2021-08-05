@@ -31,6 +31,13 @@ const reviewSchema = new mongoose.Schema({
 })
 
 class Review {
+	static processLikesInfo = (review, userId) => {
+		review = review.toJSON()
+		review.myLike = review.liked_users.includes(userId)
+		delete review.liked_users
+		return review
+	}
+
 	getMyLike(userId) {
 		return this.liked_users.includes(userId)
 	}
