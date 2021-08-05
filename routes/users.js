@@ -27,10 +27,12 @@ router.put("/nickname/:userId", async (req,res,next) => {
 	const { nickname } = req.body
     
     try{		
-		// findByIdAndUpdate를 사용하면 user가 존재하지 않아도 등록된것으로 인식하기 때문에 나누어서 error 처리
+        if (await User.findOne({nickname})) return next(new Error('해당 닉네임이 존재합니다.'))
+
 		const user = await User.findByIdAndUpdate(userId,{nickname})
 
         if (user == null)return next(new Error('등록되지 않은 유저입니다'))
+
 
 		return res.sendStatus(200)
 

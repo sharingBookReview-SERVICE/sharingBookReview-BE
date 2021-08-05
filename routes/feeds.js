@@ -11,7 +11,7 @@ router.get('/', async (req, res, next) => {
 		const reviews = await Review.find({}).populate('book user').sort('-created_at')
 
 		const result = reviews.map(review => Review.processLikesInfo(review, userId))
-		return res.json({ reviews: result })
+		return res.json(result)
 
 	} catch (err) {
 		return next(new Error('피드를 불러오는데 실패했습니다.'))

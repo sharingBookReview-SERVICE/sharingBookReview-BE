@@ -21,7 +21,7 @@ const kakaoPassportConfig = () => {
 				clientID: process.env.KAKAO_CLIENT_ID,
 				clientSecret: '',
 				callbackURL: 'http://localhost:3000/api/users/kakao/callback',
-				// http://13.124.63.103/api/users/kakao/callback
+				// callbackURL: 'http://13.124.63.103/api/users/kakao/callback'
 			},
 			async (_, __, profile, done) => {
 				const providerKey = profile.id
