@@ -81,7 +81,7 @@ router.post('/', authMiddleware, async (req, res, next) => {
 
 		return res.json({ review })
 	} catch (e) {
-		return next(new Error('댓글 작성을 실패했습니다.'))
+		return next(new Error('리뷰 작성을 실패했습니다.'))
 	}
 })
 
