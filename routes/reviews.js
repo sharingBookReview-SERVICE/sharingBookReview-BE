@@ -14,9 +14,8 @@ const processLikesInfo = (review, userId) => {
 }
 
 router.post('/', authMiddleware, async (req, res, next) => {
-    const userId = res.locals.user._id
+	const { _id: userId } = res.locals.user
 	const { bookId } = req.params
-	// const { userId } = req.locals.user
 
 	// Check if the book is saved on DB
 	const book = await Book.findById(bookId)
@@ -26,20 +25,24 @@ router.post('/', authMiddleware, async (req, res, next) => {
 			const [searchResult] = await searchBooks('isbn', bookId)
 			await saveBook(searchResult)
 		} catch (e) {
+			console.error(e)
 			return next(new Error('책 정보 저장을 실패했습니다.'))
 		}
 	}
 
 	try {
-		const review = await Review.create({ ...req.body, book: bookId, user: userId })
+		const review = await Review.create({
+			...req.body,
+			book: bookId,
+			user: userId,
+		})
 		await book.reviews.push(review._id)
 		await book.save()
-    
-        return res.json({review})
+
+		return res.json({ review })
 	} catch (e) {
 		return next(new Error('댓글 작성을 실패했습니다.'))
 	}
-    
 })
 
 router.get('/', authMiddleware, async (req, res, next) => {

@@ -1,4 +1,5 @@
 import mongoose from 'mongoose'
+import { ChangeIndex } from './index.js'
 
 const bookSchema = new mongoose.Schema(
 	{
@@ -39,5 +40,13 @@ class Book {
 }
 
 bookSchema.loadClass(Book)
+
+/**
+ * Saves updated book's isbn in ChangeIndex for tag indexing.
+ */
+bookSchema.post('save', async function () {
+	const updatedBookISBN = this.isbn
+	await ChangeIndex.create({ isbn: updatedBookISBN })
+})
 
 export default mongoose.model('Book', bookSchema)
