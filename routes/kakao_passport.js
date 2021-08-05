@@ -7,14 +7,7 @@ import dotenv from 'dotenv'
 dotenv.config()
 
 const kakaoPassportConfig = () => {
-    passport.serializeUser((user, done) => {
-        done(null, user);
-    })
-    
-    passport.deserializeUser((user, done) => {
-        done(null, user);
-    })
-    
+
     passport.use(
 		new Strategy(
 			{
