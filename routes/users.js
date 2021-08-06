@@ -1,6 +1,7 @@
 import express from 'express'
 import { User, Review } from '../models/index.js'
 import passport from "passport"
+import jwt from 'jsonwebtoken'
 
 const router = new express.Router()
 
@@ -33,8 +34,9 @@ router.put("/nickname/:userId", async (req,res,next) => {
 
         if (user == null)return next(new Error('등록되지 않은 유저입니다'))
 
+        const token = jwt.sign({ userId: user._id, nickname : user.nickname }, 'ohbinisthebest')
 
-		return res.sendStatus(200)
+		return res.json(token)
 
 	} catch(e) {
         return next(new Error('nickname 등록을 실패했습니다.'))
