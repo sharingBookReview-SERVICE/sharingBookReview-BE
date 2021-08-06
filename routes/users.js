@@ -81,7 +81,7 @@ router.delete('/:userId', async (req, res, next) => {
         const user = await User.findByIdAndDelete(userId)
         
         if (user == null)return next(new Error('등록되지 않은 유저입니다'))
-
+        // todo: 추후에 미들웨어로 바꿀 예정
         await Review.findOneAndRemove({user: userId})
 
         return res.sendStatus(200)
