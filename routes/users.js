@@ -82,6 +82,8 @@ router.delete('/:userId', async (req, res, next) => {
         
         if (user == null)return next(new Error('등록되지 않은 유저입니다'))
 
+        await Review.findOneAndRemove({user: userId})
+
         return res.sendStatus(200)
 
     } catch(e) {
