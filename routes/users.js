@@ -1,6 +1,6 @@
 import express from 'express'
 import { User, Review } from '../models/index.js'
-import passport from "passport"
+import passport from 'passport'
 import jwt from 'jsonwebtoken'
 
 const router = new express.Router()
@@ -36,6 +36,7 @@ router.get('/google/callback', (req, res, next) => {
 		'google',
 		{ failureRedirect: '/google' },
 		(err, user, token) => {
+			if (err) return next(new Error('소셜로그인 에러'))
 			return res.redirect(
 				`http://localhost:3000/logincheck/token=${token}`
 			)
@@ -54,14 +55,15 @@ router.put('/nickname/:userId', async (req, res, next) => {
 
 		const user = await User.findByIdAndUpdate(userId, { nickname })
 
-        const token = jwt.sign({ userId: user._id, nickname : user.nickname }, 'ohbinisthebest')
+		const token = jwt.sign(
+			{ userId: user._id, nickname: user.nickname },
+			'ohbinisthebest'
+		)
 
 		return res.json(token)
-
-	} catch(e) {
-        return next(new Error('nickname 등록을 실패했습니다.'))
-    }
-	
+	} catch (e) {
+		return next(new Error('nickname 등록을 실패했습니다.'))
+	}
 })
 
 router.get('/:userId', async (req, res, next) => {
@@ -90,12 +92,12 @@ router.put('/:userId', async (req, res, next) => {
 })
 
 router.delete('/:userId', async (req, res, next) => {
-    const { userId } = req.params
-    try{
-        const user = await User.findByIdAndDelete(userId)
-        
-        // todo: 추후에 미들웨어로 바꿀 예정
-        await Review.findOneAndRemove({user: userId})
+	const { userId } = req.params
+	try {
+		const user = await User.findByIdAndDelete(userId)
+
+		// todo: 추후에 미들웨어로 바꿀 예정
+		await Review.findOneAndRemove({ user: userId })
 
 		if (user == null) return next(new Error('등록되지 않은 유저입니다'))
 

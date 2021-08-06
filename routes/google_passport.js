@@ -27,7 +27,7 @@ const googlePassportConfig = () => {
 
 				const token = jwt.sign(
 					{ userId: user._id, nickname: user.nickname },
-					'google_test'
+					process.env.TOKEN_KEY
 				)
 
 				return done(null, user, token)
