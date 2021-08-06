@@ -10,8 +10,17 @@ const userSchema = new mongoose.Schema({
 	provider: {
 		type: String,
 		enum: ['naver','kakao','google']
-	}
+	},
+    level: {
+        type: Number,
+        default: 1
+    },
+    exp: {
+        type: Number,
+        default: 0
+    }
 })
+
 
 for(const path in userSchema.paths) {
 	if (path === '_id') continue
