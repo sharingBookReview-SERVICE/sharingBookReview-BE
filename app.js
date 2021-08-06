@@ -5,7 +5,7 @@ import './models/index.js'
 import router from './routes/index.js'
 import session from "express-session";
 import passport from "passport";
-import { kakaoPassportConfig } from "./routes/kakao_passport.js";
+import kakaoPassportConfig from "./routes/kakao_passport.js";
 
 dotenv.config()
 

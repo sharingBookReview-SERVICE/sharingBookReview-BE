@@ -33,4 +33,4 @@ const kakaoPassportConfig = () => {
 		)
 	)
 }
-export { kakaoPassportConfig };
+export default kakaoPassportConfig ;
