@@ -26,7 +26,7 @@ const kakaoPassportConfig = () => {
 					user = await User.create({ provider, providerKey })
 				}
                 
-				const token = jwt.sign({ userId: user._id, nickname : user.nickname }, 'ohbinisthebest')
+				const token = jwt.sign({ userId: user._id, nickname : user.nickname }, process.env.TOKEN_KEY)
 
 				return done(null, user, token)
 			}
