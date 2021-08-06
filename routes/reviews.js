@@ -10,13 +10,6 @@ const upload = multer({
     dest: 'uploads/'
 })
 
-const processLikesInfo = (review, userId) => {
-	review = review.toJSON()
-	review.myLike = review.liked_users.includes(userId)
-	delete review.liked_users
-	return review
-}
-
 router.post('/', authMiddleware, upload.single('image'), reviewImage.uploadImage, async (req, res, next) => {
     const { _id : userId } = res.locals.user
     const { bookId } = req.params
