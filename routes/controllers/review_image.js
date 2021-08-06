@@ -12,8 +12,6 @@ const reviewImage = {
         }
         const result = await uploadFile(file)
         await unlinkFile(file.path)
-        console.log(result)
-        console.log(result.Location)
         res.locals.url = result.Location
         res.locals.body = req.body
         return next()

@@ -8,7 +8,7 @@ dotenv.config()
 const router = new express.Router({ mergeParams: true })
 
 // 책 목록
-router.get('/', authMiddleware, async (req, res, next) => {
+router.get('/', async (req, res, next) => {
 	const { target, query } = req.query
 	
 	//todo 나중에 맵으로 고치기	
