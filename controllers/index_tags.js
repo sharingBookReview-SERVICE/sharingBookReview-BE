@@ -43,9 +43,8 @@ const books = await Book.find({
 }).populate('reviews')
 
 books.forEach((book) => {
-	const uniqueTags = new Set()
-	book.reviews.forEach((review) => {
-		uniqueTags.add(...review.hashtags)
-	})
+	const uniqueTags = book.reviews.reduce((acc, review) => {
+		return acc.add(...review.hashtags)
+	}, new Set())
 	console.log(uniqueTags)
 })
