@@ -43,8 +43,20 @@ const books = await Book.find({
 }).populate('reviews')
 
 books.forEach((book) => {
-	const uniqueTags = book.reviews.reduce((acc, review) => {
-		return acc.add(...review.hashtags)
-	}, new Set())
-	console.log(uniqueTags)
+	// Array of all tags used to describe the book in its reviews
+	const allTags = book.reviews.reduce((acc, review) => {
+		return [...acc, ...review.hashtags]
+	}, [])
+
+	// Unique values of tag list
+	const uniqueTags = [...new Set(allTags)]
+
+	const tagOccurrence = uniqueTags.map((tag) => {
+		return { name: tag, occurrence : allTags.filter((_tag) => _tag === tag).length }
+	}).sort((a,b) => {
+		return b.occurrence - a.occurrence
+	})
+	
+	console.log(tagOccurrence)
+	//todo 위 결과를 각각의 book document 에 저장하기
 })
