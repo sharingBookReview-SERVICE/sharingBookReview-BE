@@ -24,22 +24,7 @@ const getChanges = async () => {
 }
 
 const job = schedule.scheduleJob('0 * * * * *', async () => {
-	const input = await Book.findOne()
-	console.log(input._id)
-	await ChangeIndex.create({isbn: input._id})
-	const changedISBNs = await getChanges()
-	await ChangeIndex.deleteMany({indexed: true})
 
-	// Books to be indexed
-	const books = await Book.find({
-		_id: {
-			$in: changedISBNs,
-		},
-	})
-
-	books.forEach((book) => {
-		console.log(book)
-	})
 })
 
 // Test code for debugging
@@ -47,3 +32,20 @@ debugger
 const input = await Book.findOne()
 await ChangeIndex.create({ isbn: input._id })
 /************************************************/
+
+const changedISBNs = await getChanges()
+await ChangeIndex.deleteMany({ indexed: true })
+// Books to be indexed
+const books = await Book.find({
+	_id: {
+		$in: [...changedISBNs],
+	},
+}).populate('reviews')
+
+books.forEach((book) => {
+	const uniqueTags = new Set()
+	book.reviews.forEach((review) => {
+		uniqueTags.add(...review.hashtags)
+	})
+	console.log(uniqueTags)
+})
