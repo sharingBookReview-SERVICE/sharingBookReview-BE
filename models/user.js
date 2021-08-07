@@ -27,16 +27,13 @@ const userSchema = new mongoose.Schema({
 // levelUp 후에 남는 경험치는 exp에 넘겨줌(레벨업이 두번되는 경우가 있을까? 없도록 설계하는게 비즈니스 로직으로 맞다고 생각한다.) -> levelup저장, exp 저장
 async function checkExpAndLevelup() {
     const requiredExp = 3**(1.06^(this.level - 1))
-    console.log(requiredExp)
     if (this.exp >= requiredExp){
         this.level += 1
         this.exp -= requiredExp
-        console.log("exp", this.exp)
-        console.log("exp", this.level)
     }
 }
 
-userSchema.post('save', {document: true}, checkExpAndLevelup )
+userSchema.pre('save', {document: true}, checkExpAndLevelup )
 
 for(const path in userSchema.paths) {
 	if (path === '_id') continue
