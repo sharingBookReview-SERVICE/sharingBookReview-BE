@@ -12,28 +12,40 @@ const userSchema = new mongoose.Schema({
 		type: String,
 		enum: ['naver','kakao','google']
 	},
-    level: {
-        type: Number,
-        default: 1
-    },
     exp: {
         type: Number,
         default: 0
     }
-})
-// 특정상황에 따른 exp 더하기(상황에 따라 exp` 달라짐) -> exp 저장
-
-// levelup 가능한지 현재exp, 필요exp check(현재 레벨에 따라 필요exp 달라짐) -> 현재 exp > 필요 exp 이면 levelUp 호출
-// levelUp 후에 남는 경험치는 exp에 넘겨줌(레벨업이 두번되는 경우가 있을까? 없도록 설계하는게 비즈니스 로직으로 맞다고 생각한다.) -> levelup저장, exp 저장
-async function checkExpAndLevelup() {
-    const requiredExp = 3**(1.06^(this.level - 1))
-    if (this.exp >= requiredExp){
-        this.level += 1
-        this.exp -= requiredExp
-    }
+},
+{
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
 }
+)
 
-userSchema.pre('save', {document: true}, checkExpAndLevelup )
+// todo 발생되는 event의 target instance id과 event를 수행하는 user id를 저장해서 level과 exp를 virtual로 표현
+// why 누가 어디에 event를 실행했는지를 저장하는것이 확장성이 높다.
+userSchema.methods.Levelup = () => {
+    function requiredExp(level) {
+        if(level = 0){
+            return 0
+        }
+        return 3**(1.05^(level - 1))
+    }
+    
+    function checkExpAndLevelup(user, level, sumRequiredExp){
+        sumRequiredExp += requiredExp(level)
+        if((user.exp - requiredExp(level - 1)) < sumRequiredExp){
+            return level
+            }
+        return checkExpAndLevelup(level + 1, sumRequiredExp)
+        
+    }
+    user = this.toJSON
+    let level = 1
+    let sumRequiredExp = 0
+    return checkExpAndLevelup(user, level, sumRequiredExp)
+}
 
 for(const path in userSchema.paths) {
 	if (path === '_id') continue
