@@ -42,3 +42,8 @@ const job = schedule.scheduleJob('0 * * * * *', async () => {
 	})
 })
 
+// Test code for debugging
+debugger
+const input = await Book.findOne()
+await ChangeIndex.create({ isbn: input._id })
+/************************************************/
