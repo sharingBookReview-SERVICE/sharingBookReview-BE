@@ -2,6 +2,9 @@ import express from 'express'
 import { User, Review } from '../models/index.js'
 import passport from 'passport'
 import jwt from 'jsonwebtoken'
+import dotenv from 'dotenv'
+
+dotenv.config()
 
 const router = new express.Router()
 
@@ -55,10 +58,7 @@ router.put('/nickname/:userId', async (req, res, next) => {
 
 		const user = await User.findByIdAndUpdate(userId, { nickname })
 
-		const token = jwt.sign(
-			{ userId: user._id, nickname: user.nickname },
-			'ohbinisthebest'
-		)
+        const token = jwt.sign({ userId: user._id, nickname : user.nickname }, process.env.TOKEN_KEY)
 
 		return res.json(token)
 	} catch (e) {

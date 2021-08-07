@@ -15,7 +15,7 @@ const authMiddleware = (req, res, next) => {
             return next(new Error("토큰 인증 방식이 잘못되었습니다."))
         }
     
-        const user = jwt.verify(tokenValue, "ohbinisthebest")
+        const user = jwt.verify(tokenValue, process.env.TOKEN_KEY)
         const { userId } = user
     
         User.findById(userId)
