@@ -87,11 +87,10 @@ router.put('/:userId', async (req, res, next) => {
 		
         if (user == null)return next(new Error('등록되지 않은 유저입니다'))
 		
-        const token = jwt.sign({ userId: user._id, nickname : user.nickname }, 'ohbinisthebest')
+        const token = jwt.sign({ userId: user._id, nickname : user.nickname }, process.env.TOKEN_KEY)
 
 		return res.json(token)
 
-		return res.sendStatus(200)
 	} catch (e) {
 		return next(new Error('수정에 실패했습니다.'))
 	}
