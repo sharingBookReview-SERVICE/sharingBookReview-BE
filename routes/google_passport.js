@@ -12,7 +12,7 @@ const googlePassportConfig = () => {
 			{
 				clientID: process.env.GOOGLE_CLIENT_ID,
 				clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-				callbackURL: 'http://localhost:3000/api/users/google/callback',
+				callbackURL: 'http://13.124.63.103/api/users/kakao/callback',
 			},
 
 			async (accessToken, refreshToken, profile, done) => {

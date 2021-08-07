@@ -2,6 +2,9 @@ import express from 'express'
 import { User, Review } from '../models/index.js'
 import passport from 'passport'
 import jwt from 'jsonwebtoken'
+import dotenv from 'dotenv'
+
+dotenv.config()
 
 const router = new express.Router()
 
@@ -55,10 +58,7 @@ router.put('/nickname/:userId', async (req, res, next) => {
 
 		const user = await User.findByIdAndUpdate(userId, { nickname })
 
-		const token = jwt.sign(
-			{ userId: user._id, nickname: user.nickname },
-			'ohbinisthebest'
-		)
+        const token = jwt.sign({ userId: user._id, nickname : user.nickname }, process.env.TOKEN_KEY)
 
 		return res.json(token)
 	} catch (e) {
@@ -78,14 +78,19 @@ router.get('/:userId', async (req, res, next) => {
 })
 
 router.put('/:userId', async (req, res, next) => {
-	const { userId } = req.params
-	const { nickname } = req.body
-	try {
-		const user = await User.findByIdAndUpdate(userId, { nickname })
+    const { userId } = req.params
+    const { nickname } = req.body
+    try{
+        if (await User.findOne({nickname})) return next(new Error('해당 닉네임이 존재합니다.'))
 
-		if (user == null) return next(new Error('등록되지 않은 유저입니다'))
+        const user = await User.findByIdAndUpdate(userId,{nickname})
+		
+        if (user == null)return next(new Error('등록되지 않은 유저입니다'))
+		
+        const token = jwt.sign({ userId: user._id, nickname : user.nickname }, process.env.TOKEN_KEY)
 
-		return res.sendStatus(200)
+		return res.json(token)
+
 	} catch (e) {
 		return next(new Error('수정에 실패했습니다.'))
 	}

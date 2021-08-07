@@ -8,12 +8,11 @@ const reviewImage = {
     uploadImage: async(req, res, next) => {
         const file = req.file
         if (file === undefined) {
-            return next(new Error("이미지가 존재하지 않습니다."))
+            return next()
         }
         const result = await uploadFile(file)
         await unlinkFile(file.path)
         res.locals.url = result.Location
-        res.locals.body = req.body
         return next()
         
     }
