@@ -13,9 +13,10 @@ const upload = multer({
 router.post('/', authMiddleware, upload.single('image'), reviewImage.uploadImage, async (req, res, next) => {
     const { _id : userId } = res.locals.user
     const { bookId } = req.params
-    const image = res.locals.url
-    const { quote, content } = res.locals.body
-    const hashtags = JSON.parse(res.locals.body.hashtags)
+    // res.locals가 존재하지 않으면 undefined 반환
+    const image = res.locals?.url
+    const { quote, content } = req.body
+    const hashtags = JSON.parse(req.body.hashtags)
     
 	// Check if the book is saved on DB
 	const existBook = await Book.findById(bookId)
@@ -90,7 +91,7 @@ router.get('/', authMiddleware, async (req, res, next) => {
 		/**
 		 * Add myLike and likes properties and Delete liked_users property.
 		 */
-		const result = reviews.map(review => processLikesInfo(review, userId))
+		const result = reviews.map(review => Review.processLikesInfo(review, userId))
 
 		return res.json({review: result})
 	} catch (e) {
@@ -105,7 +106,7 @@ router.get('/:reviewId', authMiddleware ,async (req, res, next) => {
 
 	try {
 		const review = await Review.findById(reviewId).populate('book')
-		const result = processLikesInfo(review, userId)
+		const result = Review.processLikesInfo(review, userId)
 		return res.json({ review: result })
 	} catch (e) {
 		return next(new Error('리뷰 조회를 실패했습니다.'))
