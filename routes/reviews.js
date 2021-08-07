@@ -5,7 +5,7 @@ import searchBooks from './controllers/searchbooks.js'
 import authMiddleware from '../middleware/auth_middleware.js'
 import multer from 'multer'
 import reviewImage from './controllers/review_image.js'
-
+import expList from '../exp_list.js'
 const router = new express.Router({ mergeParams: true })
 const upload = multer({
 	dest: 'uploads/',
@@ -32,6 +32,14 @@ router.post('/', authMiddleware, upload.single('image'), reviewImage.uploadImage
 		}
 	}
 
+    try{
+        const user = await User.findById(userId)
+        user.exp += expList.review
+        await user.save()
+    }catch (e) {
+        return next(new Error('별점 등록을 실패했습니다.'))
+    }
+
 	try {
 		const review = await Review.create({
 			quote,
@@ -54,12 +62,6 @@ router.post('/', authMiddleware, upload.single('image'), reviewImage.uploadImage
 		return next(new Error('리뷰작성을 실패했습니다.'))
 	}
     
-    try{
-        const user = await User.findById(userId)
-        user.exp += exp.review
-    }catch (e) {
-        return next(new Error('별점 등록을 실패했습니다.'))
-    }
 })
 
 router.get('/', authMiddleware, async (req, res, next) => {
