@@ -24,37 +24,28 @@ const getChanges = async () => {
 }
 
 const job = schedule.scheduleJob('0 * * * * *', async () => {
-
-})
-
-// Test code for debugging
-debugger
-const input = await Book.findOne()
-await ChangeIndex.create({ isbn: input._id })
-/************************************************/
-
 // Get list of unique isbns which have changed
-const changedISBNs = await getChanges()
+	const changedISBNs = await getChanges()
 // Clear ChangeIndexes table
-await ChangeIndex.deleteMany({ indexed: true })
+	await ChangeIndex.deleteMany({ indexed: true })
 // Books to be indexed
-const books = await Book.find({
-	_id: {
-		$in: [...changedISBNs],
-	},
-}).populate('reviews')
+	const books = await Book.find({
+		_id: {
+			$in: [...changedISBNs],
+		},
+	}).populate('reviews')
 
-books.forEach(async (book) => {
-	// Array of all tags used to describe the book in its reviews
-	const allTags = book.reviews.reduce((acc, review) => {
-		return [...acc, ...review.hashtags]
-	}, [])
+	books.forEach(async (book) => {
+		// Array of all tags used to describe the book in its reviews
+		const allTags = book.reviews.reduce((acc, review) => {
+			return [...acc, ...review.hashtags]
+		}, [])
 
-	// Unique values of tag list
-	const uniqueTags = [...new Set(allTags)]
+		// Unique values of tag list
+		const uniqueTags = [...new Set(allTags)]
 
-	// List of a tag name and its occurrence pairs
-	book.topTags = uniqueTags
+		// List of a tag name and its occurrence pairs
+		book.topTags = uniqueTags
 		.map((tag) => {
 			return {
 				name: tag,
@@ -64,6 +55,8 @@ books.forEach(async (book) => {
 		.sort((a, b) => b.occurrence - a.occurrence)
 		.slice(0, 10)
 		.map((tag) => tag.name)
-	
-	await book.save()
+
+		await book.save()
+	})
 })
+
