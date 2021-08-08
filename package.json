@@ -3,8 +3,10 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "npx nodemon app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "NODE_ENV=production nodemon app.js",
+    "dev": "NODE_ENV=development nodemon app.js",
+    "test": "NODE_ENV=test nodemon app.js"
+    
   },
   "repository": {
     "type": "git",
@@ -33,6 +35,7 @@
     "passport": "^0.4.1",
     "passport-google-oauth": "^2.0.0",
     "passport-kakao": "^1.0.1",
+    "path": "^0.12.7",
     "puppeteer": "^10.1.0",
     "xml2js": "^0.4.23"
   },
