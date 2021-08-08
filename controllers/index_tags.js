@@ -33,7 +33,9 @@ const input = await Book.findOne()
 await ChangeIndex.create({ isbn: input._id })
 /************************************************/
 
+// Get list of unique isbns which have changed
 const changedISBNs = await getChanges()
+// Clear ChangeIndexes table
 await ChangeIndex.deleteMany({ indexed: true })
 // Books to be indexed
 const books = await Book.find({
@@ -51,6 +53,7 @@ books.forEach((book) => {
 	// Unique values of tag list
 	const uniqueTags = [...new Set(allTags)]
 
+	// List of a tag name and its occurrence pairs
 	const tagOccurrence = uniqueTags.map((tag) => {
 		return { name: tag, occurrence : allTags.filter((_tag) => _tag === tag).length }
 	}).sort((a,b) => {
