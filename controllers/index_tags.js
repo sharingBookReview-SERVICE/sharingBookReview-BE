@@ -23,37 +23,45 @@ const getChanges = async () => {
 	return new Set(changes.map(change => change.isbn))
 }
 
+/**
+ * 1. Execute callback every minute.
+ * @type {Job}
+ */
 const job = schedule.scheduleJob('0 * * * * *', async () => {
-// Get list of unique isbns which have changed
+	// 2. Get set of isbn which have changed after last execution.
 	const changedISBNs = await getChanges()
-// Clear ChangeIndexes table
+	// 3. Clear ChangeIndexes table
+	// 3.1. In case of addition to the table while executing the function above, use indexed property to only delete appropriate ones.
 	await ChangeIndex.deleteMany({ indexed: true })
-// Books to be indexed
+	// 4. Find corresponding book documents by set of isbn and populate reviews.
 	const books = await Book.find({
 		_id: {
 			$in: [...changedISBNs],
 		},
 	}).populate('reviews')
 
+	// 5. Traverse the books
+	// noinspection ES6MissingAwait
 	books.forEach(async (book) => {
-		// Array of all tags used to describe the book in its reviews
+		// 6. Get array of all the tags of all the reviews of a book
 		const allTags = book.reviews.reduce((acc, review) => {
 			return [...acc, ...review.hashtags]
 		}, [])
 
-		// Unique values of tag list
+		// Unique values of tag array
 		const uniqueTags = [...new Set(allTags)]
 
-		// List of a tag name and its occurrence pairs
+		// Get top 10 tags
 		book.topTags = uniqueTags
 		.map((tag) => {
+			// Traverse the set of tags of the book and map it to pairs of tag's name and its number of occurrence in array of all tags of the book.
 			return {
 				name: tag,
 				occurrence: allTags.filter((_tag) => _tag === tag).length,
 			}
 		})
 		.sort((a, b) => b.occurrence - a.occurrence)
-		.slice(0, 10)
+		.slice(0, 9)
 		.map((tag) => tag.name)
 
 		await book.save()
