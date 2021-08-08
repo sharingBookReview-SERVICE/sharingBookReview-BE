@@ -5,7 +5,7 @@ import searchBooks from './controllers/searchbooks.js'
 import authMiddleware from '../middleware/auth_middleware.js'
 import multer from 'multer'
 import reviewImage from './controllers/review_image.js'
-import expList from '../exp_list.js'
+
 const router = new express.Router({ mergeParams: true })
 const upload = multer({
 	dest: 'uploads/',
@@ -33,9 +33,8 @@ router.post('/', authMiddleware, upload.single('image'), reviewImage.uploadImage
 	}
 
     try{
-        const user = await User.findById(userId)
-        user.exp += expList.review
-        await user.save()
+        const user = await User.getExpAndLevelUp(userId, "review")
+        console.log(user)
     }catch (e) {
         return next(new Error('별점 등록을 실패했습니다.'))
     }
