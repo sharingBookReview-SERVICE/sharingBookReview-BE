@@ -25,6 +25,7 @@ mongoose.connect(
 		pass: process.env.DB_PASSWORD,
 		useNewUrlParser: true,
 		useUnifiedTopology: true,
+		useFindAndModify: false,
 		// user:'BNS',
 		// pass:'BNS'
 	},
