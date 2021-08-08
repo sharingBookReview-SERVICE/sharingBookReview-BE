@@ -21,25 +21,18 @@ const bookSchema = new mongoose.Schema(
 			default: [],
 			ref: 'Review',
 		},
+		topTags: [String],
 	},
 	{
 		toJSON: { virtuals: true },
 		toObject: { virtuals: true },
-	}
+	},
 )
 
-class Book {
-	/**
-	 *
-	 * @returns {[string]}
-	 */
-	get topTags() {
-		const topTags = '1234'
-		return topTags
-	}
-}
-
-bookSchema.loadClass(Book)
+// class Book {
+// }
+//
+// bookSchema.loadClass(Book)
 
 /**
  * Saves updated book's isbn in ChangeIndex for tag indexing.
