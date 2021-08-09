@@ -1,5 +1,5 @@
 import mongoose from 'mongoose'
-import { ChangeIndex } from './index.js'
+import { ChangesIndex } from './index.js'
 
 const bookSchema = new mongoose.Schema(
 	{
@@ -39,7 +39,7 @@ const bookSchema = new mongoose.Schema(
  */
 bookSchema.post('save', async function () {
 	const updatedBookISBN = this.isbn
-	await ChangeIndex.create({ isbn: updatedBookISBN })
+	await ChangesIndex.create({ isbn: updatedBookISBN })
 })
 
 export default mongoose.model('Book', bookSchema)

@@ -2,7 +2,7 @@
  * Index tags of each book's reviews.
  * Operates every one hour
  */
-import { Book, ChangeIndex } from '../models/index.js'
+import { Book, ChangesIndex } from '../models/index.js'
 import schedule from 'node-schedule'
 
 /**
@@ -12,13 +12,7 @@ import schedule from 'node-schedule'
  */
 const getChanges = async () => {
 
-	const changes = await ChangeIndex.find({})
-
-	await Promise.allSettled([
-		...changes.map(change => {
-			change.indexed = true
-			return change.save()
-		})])
+	const changes = await ChangesIndex.find()
 
 	return new Set(changes.map(change => change.isbn))
 }
@@ -32,7 +26,7 @@ const job = schedule.scheduleJob('0 * * * * *', async () => {
 	const changedISBNs = await getChanges()
 	// 3. Clear ChangeIndexes table
 	// 3.1. In case of addition to the table while executing the function above, use indexed property to only delete appropriate ones.
-	await ChangeIndex.deleteMany({ indexed: true })
+
 	// 4. Find corresponding book documents by set of isbn and populate reviews.
 	const books = await Book.find({
 		_id: {
@@ -42,7 +36,7 @@ const job = schedule.scheduleJob('0 * * * * *', async () => {
 
 	// 5. Traverse the books
 	// noinspection ES6MissingAwait
-	books.forEach(async (book) => {
+	for (const book of books) {
 		// 6. Get array of all the tags of all the reviews of a book
 		const allTags = book.reviews.reduce((acc, review) => {
 			return [...acc, ...review.hashtags]
@@ -65,6 +59,8 @@ const job = schedule.scheduleJob('0 * * * * *', async () => {
 		.map((tag) => tag.name)
 
 		await book.save()
-	})
+	}
+
+	await ChangesIndex.deleteMany()
 })
 

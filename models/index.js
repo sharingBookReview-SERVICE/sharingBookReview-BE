@@ -4,7 +4,7 @@ import Book from './book.js'
 import Review from './review.js'
 import Comment from './comment.js'
 import User from './user.js'
-import ChangeIndex from './changes_index.js'
+import ChangesIndex from './changes_index.js'
 
 dotenv.config()
 
@@ -36,4 +36,4 @@ mongoose.connection.on('error', (err) => {
 
 connect()
 
-export { Book, Review, Comment, User, ChangeIndex }
+export { Book, Review, Comment, User, ChangesIndex }
