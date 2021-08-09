@@ -158,6 +158,7 @@ router.delete('/:reviewId', authMiddleware, async (req, res) => {
 
 		return res.sendStatus(202)
 	} catch (e) {
+    	console.error(e)
 		return next(new Error('리뷰 삭제를 실패했습니다.'))
 	}
 })
@@ -184,6 +185,7 @@ router.put('/:reviewId/likes', authMiddleware, async (req, res, next) => {
 
 		return res.json({result: message})
 	} catch (e) {
+		console.error(e)
 		return next(new Error('좋아요/좋아요취소 를 실패했습니다.'))
 	}
 })
