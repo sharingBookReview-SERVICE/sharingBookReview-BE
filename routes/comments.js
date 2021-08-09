@@ -10,8 +10,13 @@ router.post('/', authMiddleware, async (req, res, next) => {
 	const { reviewId } = req.params
 	const { content } = req.body
 
-	if (!(await Review.findById(reviewId)))
-		return next(new Error('존재하지 않는 리뷰입니다.'))
+	try {
+		if (!(await Review.findById(reviewId)))
+			return next(new Error('존재하지 않는 리뷰입니다.'))
+	} catch (e) {
+		console.error(e)
+		return next(new Error('댓글이 작성될 리뷰의 조회를 실패했습니다.'))
+	}
 
 	try {
 		// todo: Is there a way not to create the comments collection when creating a comment document?
