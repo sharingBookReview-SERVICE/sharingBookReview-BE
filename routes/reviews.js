@@ -5,43 +5,52 @@ import searchBooks from './controllers/searchbooks.js'
 import authMiddleware from '../middleware/auth_middleware.js'
 import multer from 'multer'
 import reviewImage from './controllers/review_image.js'
+
 const router = new express.Router({ mergeParams: true })
 const upload = multer({
-    dest: 'uploads/'
+	dest: 'uploads/',
 })
 
 router.post('/', authMiddleware, upload.single('image'), reviewImage.uploadImage, async (req, res, next) => {
-    const { _id : userId } = res.locals.user
-    const { bookId } = req.params
-    // res.locals가 존재하지 않으면 undefined 반환
-    const image = res.locals?.url
-    const { quote, content } = req.body
-    const hashtags = JSON.parse(req.body.hashtags)
-    
-	// Check if the book is saved on DB
-	const existBook = await Book.findById(bookId)
+	const { _id: userId } = res.locals.user
+	const { bookId } = req.params
+	// res.locals가 존재하지 않으면 undefined 반환
+	const image = res.locals?.url
+	const { quote, content } = req.body
+	const hashtags = JSON.parse(req.body.hashtags)
 
-	if (!existBook) {
+	// Check if the book is saved on DB
+	const book = await Book.findById(bookId)
+
+	if (!book) {
 		try {
 			const [searchResult] = await searchBooks('isbn', bookId)
 			await saveBook(searchResult)
 		} catch (e) {
+			console.error(e)
 			return next(new Error('책 정보 저장을 실패했습니다.'))
 		}
 	}
 
 	try {
-		const review = await Review.create({ quote, content, hashtags, image, book: bookId, user: userId })
-        
-        const book = await Book.findById(bookId)
+		const review = await Review.create({
+			quote,
+			content,
+			hashtags,
+			image,
+			book: bookId,
+			user: userId,
+		})
+		const book = await Book.findById(bookId)
+
 		await book.reviews.push(review._id)
 		await book.save()
-    
-        return res.json({review})
+
+		return res.json({ review })
 	} catch (e) {
+		console.error(e)
 		return next(new Error('리뷰작성을 실패했습니다.'))
 	}
-    
 })
 
 router.post('/', authMiddleware, async (req, res, next) => {
