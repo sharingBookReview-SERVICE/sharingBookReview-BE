@@ -33,8 +33,7 @@ router.post('/', authMiddleware, upload.single('image'), reviewImage.uploadImage
 	}
 
     try{
-        const user = await User.getExpAndLevelUp(userId, "review")
-        console.log(user)
+        await User.getExpAndLevelUp(userId, "review")
     }catch (e) {
         return next(new Error('별점 등록을 실패했습니다.'))
     }
@@ -53,7 +52,7 @@ router.post('/', authMiddleware, upload.single('image'), reviewImage.uploadImage
 		await book.reviews.push(review._id)
 		await book.save()
         
-        const result = await Review.findById(review._id).populate('book')
+        const result = await Review.findById(review._id).populate('book user')
 
 		return res.json({ review: result })
 	} catch (e) {
