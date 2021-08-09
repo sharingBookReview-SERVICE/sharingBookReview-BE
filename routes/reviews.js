@@ -141,18 +141,18 @@ router.put('/:reviewId/likes', authMiddleware, async (req, res, next) => {
 
 		if (!review) return next(new Error('존재하지 않는 리뷰입니다.'))
 
-		let message = ''
+		let result
 
 		if (review.getMyLike(userId)) {
 			review.liked_users.pull(userId)
-			message = '좋아요 취소를 성공했습니다.'
+			result = 'unlike'
 		} else {
 			review.liked_users.push(userId)
-			message = '좋아요를 성공했습니다.'
+			result = 'like'
 		}
 		await review.save()
 
-		return res.json({result: message})
+		return res.json({review, result})
 	} catch (e) {
 		console.error(e)
 		return next(new Error('좋아요/좋아요취소 를 실패했습니다.'))
