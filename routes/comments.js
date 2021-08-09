@@ -19,7 +19,6 @@ router.post('/', authMiddleware, async (req, res, next) => {
 	}
 
 	try {
-		// todo: Is there a way not to create the comments collection when creating a comment document?
 		const comment = new Comment({ content, user: userId })
 
 		await Review.findByIdAndUpdate(reviewId, {
@@ -43,8 +42,6 @@ router.patch('/:commentId', authMiddleware, async (req, res, next) => {
 	try {
 		const review = await Review.findById(reviewId)
 		const comment = review.comments.id(commentId)
-		// todo : 나중에 밑에 녀석으로 해보기($표시)
-		// const review = await Review.find({comments: { _id : commentId }})
 
 		if (comment === null)
 			return next(new Error('댓글이 존재하지 않습니다.'))
