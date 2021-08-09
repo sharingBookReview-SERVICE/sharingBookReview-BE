@@ -137,9 +137,7 @@ router.put('/:reviewId/likes', authMiddleware, async (req, res, next) => {
 	const { reviewId } = req.params
 
 	try {
-		const review = await Review.findById(reviewId)
-
-		if (!review) return next(new Error('존재하지 않는 리뷰입니다.'))
+		let review = await Review.findById(reviewId) ?? next(new Error('존재하지 않는 리뷰입니다.'))
 
 		let result
 
