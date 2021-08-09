@@ -150,6 +150,8 @@ router.put('/:reviewId/likes', authMiddleware, async (req, res, next) => {
 		}
 		await review.save()
 
+		review = Review.processLikesInfo(review, userId)
+
 		return res.json({review, result})
 	} catch (e) {
 		console.error(e)
