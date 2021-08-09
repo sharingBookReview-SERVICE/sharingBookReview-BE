@@ -6,10 +6,6 @@ const changesIndexSchema = new mongoose.Schema({
 		type: Date,
 		default: Date.now,
 	},
-	indexed: {
-		type: Boolean,
-		default: false,
-	},
 })
 
 export default mongoose.model('ChangesIndex', changesIndexSchema)
