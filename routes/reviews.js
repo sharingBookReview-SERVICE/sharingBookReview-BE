@@ -45,8 +45,10 @@ router.post('/', authMiddleware, upload.single('image'), reviewImage.uploadImage
 
 		await book.reviews.push(review._id)
 		await book.save()
+        
+        const result = await Review.findById(review._id).populate('book')
 
-		return res.json({ review })
+		return res.json({ review: result })
 	} catch (e) {
 		console.error(e)
 		return next(new Error('리뷰작성을 실패했습니다.'))
@@ -104,8 +106,8 @@ router.put('/:reviewId', authMiddleware, async (req, res, next) => {
 			content,
 			hashtags,
 		})
-        const review = await Review.findById(reviewId)
-		return res.status(202).json({review})
+        const result = await Review.findById(reviewId).populate('book')
+		return res.status(202).json({review: result})
 	} catch (e) {
 		return next(new Error('리뷰 수정을 실패했습니다.'))
 	}
@@ -125,7 +127,7 @@ router.delete('/:reviewId', authMiddleware, async (req, res) => {
 
 		return res.sendStatus(202)
 	} catch (e) {
-    	console.error(e)
+        console.error(e)
 		return next(new Error('리뷰 삭제를 실패했습니다.'))
 	}
 })
