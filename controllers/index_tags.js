@@ -13,7 +13,6 @@ import schedule from 'node-schedule'
 const getChanges = async () => {
 
 	const changes = await ChangesIndex.find()
-	console.log(changes)
 
 	return new Set(changes.map(change => change.isbn))
 }
