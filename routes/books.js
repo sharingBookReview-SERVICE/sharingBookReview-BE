@@ -1,4 +1,5 @@
 import express from 'express'
+import { Book } from '../models/index.js'
 import searchBooks from './controllers/searchbooks.js'
 import getBestsellers from './controllers/bestseller_crawling.js'
 import authMiddleware from '../middleware/auth_middleware.js'
@@ -37,7 +38,16 @@ router.get('/bestsellers', async(req, res, next) => {
 // 개별 책 선택
 router.get('/:bookId', async (req, res, next) => {
     const { bookId } = req.params
-    
+	try {
+		const book = await Book.findById(Number(bookId))
+		if (book) {
+			return res.json({book})
+		}
+	} catch (e) {
+    	console.error(e)
+		return next(new Error('DB 에서 책 검색을 실패했습니다.'))
+	}
+
 	try {
 		const searchList = await searchBooks(
 			"isbn",
