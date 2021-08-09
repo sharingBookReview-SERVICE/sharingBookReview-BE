@@ -43,16 +43,17 @@ router.patch('/:commentId', authMiddleware, async (req, res, next) => {
 		const review = await Review.findById(reviewId)
 		const comment = review.comments.id(commentId)
 
-		if (comment === null)
-			return next(new Error('댓글이 존재하지 않습니다.'))
-		if (String(comment.user) !== String(userId))
-			return next(new Error('본인이 아닙니다.'))
+		if (!comment) return next(new Error('수정하려는 댓글이 존재하지 않습니다.'))
+
+		if (String(comment.user) !== String(userId)) return next(new Error('댓글 작성자와 토큰에 담긴 사용자의 정보가 일치하지 않습니다.'))
+
 		comment.content = content
 
 		await review.save()
 
 		return res.status(200).json({ comment })
 	} catch (e) {
+		console.error(e)
 		return next(new Error('댓글 수정을 실패했습니다.'))
 	}
 })
