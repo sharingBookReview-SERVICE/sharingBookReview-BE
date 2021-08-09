@@ -72,7 +72,7 @@ router.get('/', authMiddleware, async (req, res, next) => {
 		 */
 		const result = reviews.map(review => Review.processLikesInfo(review, userId))
 
-		return res.json({review: result})
+		return res.json({reviews: result})
 	} catch (e) {
 		console.error(e)
 		return next(new Error('리뷰 목록 가져오기를 실패했습니다.'))
