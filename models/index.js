@@ -15,9 +15,9 @@ const connect = () => {
 }
 
 mongoose.set('toJSON', { virtuals: true })
-
 mongoose.connect(
-	process.env.MONGO_ATLAS_URI,
+    // 'mongodb://localhost:27017/admin',
+	`mongodb+srv://BNS:${process.env.MONGO_ATLAS_PASSWORD}@bns.00wfq.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`,
 	{
 		useNewUrlParser: true,
 		useUnifiedTopology: true,
