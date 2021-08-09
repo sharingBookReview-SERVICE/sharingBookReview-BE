@@ -19,6 +19,7 @@
   "homepage": "https://github.com/sharingBookReview-SERVICE/sharingBookReview-BE#readme",
   "type": "module",
   "dependencies": {
+    "aws-sdk": "^2.963.0",
     "axios": "^0.21.1",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
