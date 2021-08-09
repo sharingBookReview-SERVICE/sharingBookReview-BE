@@ -45,43 +45,13 @@ router.post('/', authMiddleware, upload.single('image'), reviewImage.uploadImage
 
 		await book.reviews.push(review._id)
 		await book.save()
+        
+        const result = await Review.findById(review._id).populate('book')
 
-		return res.json({ review })
+		return res.json({ review: result })
 	} catch (e) {
 		console.error(e)
 		return next(new Error('리뷰작성을 실패했습니다.'))
-	}
-})
-
-router.post('/', authMiddleware, async (req, res, next) => {
-	const { _id: userId } = res.locals.user
-	const { bookId } = req.params
-
-	// Check if the book is saved on DB
-	const book = await Book.findById(bookId)
-
-	if (!book) {
-		try {
-			const [searchResult] = await searchBooks('isbn', bookId)
-			await saveBook(searchResult)
-		} catch (e) {
-			console.error(e)
-			return next(new Error('책 정보 저장을 실패했습니다.'))
-		}
-	}
-
-	try {
-		const review = await Review.create({
-			...req.body,
-			book: bookId,
-			user: userId,
-		})
-		await book.reviews.push(review._id)
-		await book.save()
-
-		return res.json({ review })
-	} catch (e) {
-		return next(new Error('리뷰 작성을 실패했습니다.'))
 	}
 })
 
@@ -125,7 +95,7 @@ router.get('/:reviewId', authMiddleware ,async (req, res, next) => {
 router.put('/:reviewId', authMiddleware, async (req, res, next) => {
     const userId = res.locals.user._id
 	const { reviewId } = req.params
-	const { quote, content, hashtags, image } = req.body
+	const { quote, content, hashtags } = req.body
 
 	try {
 		const targetReview = await Review.findById(reviewId)
@@ -135,10 +105,9 @@ router.put('/:reviewId', authMiddleware, async (req, res, next) => {
 			quote,
 			content,
 			hashtags,
-			image,
 		})
-        const review = await Review.findById(reviewId)
-		return res.status(202).json({review})
+        const result = await Review.findById(reviewId).populate('book')
+		return res.status(202).json({review: result})
 	} catch (e) {
 		return next(new Error('리뷰 수정을 실패했습니다.'))
 	}
@@ -158,7 +127,7 @@ router.delete('/:reviewId', authMiddleware, async (req, res) => {
 
 		return res.sendStatus(202)
 	} catch (e) {
-    	console.error(e)
+        console.error(e)
 		return next(new Error('리뷰 삭제를 실패했습니다.'))
 	}
 })
