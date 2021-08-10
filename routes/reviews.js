@@ -52,7 +52,7 @@ router.post('/', authMiddleware, upload.single('image'), reviewImage.uploadImage
 		await book.reviews.push(review._id)
 		await book.save()
         
-        const result = await Review.findById(review._id).populate('book user')
+        const result = await Review.findById(review._id).populate('book').populate({path:'user', select:'_id level nickname'})
 
 		return res.json({ review: result })
 	} catch (e) {
@@ -91,7 +91,7 @@ router.get('/:reviewId', authMiddleware ,async (req, res, next) => {
 	const { _id: userId } = res.locals.user
 
 	try {
-		let review = await Review.findById(reviewId).populate('book user')
+		let review = await Review.findById(reviewId).populate('book').populate({path:'user', select:'_id level nickname'})
 		const { comments } = review
 		
 		review = Review.processLikesInfo(review, userId)
