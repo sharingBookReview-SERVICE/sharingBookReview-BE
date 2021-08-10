@@ -1,12 +1,12 @@
 import mongoose from 'mongoose'
-import dotenv from 'dotenv'
+import config from '../config.js'
 import Book from './book.js'
 import Review from './review.js'
 import Comment from './comment.js'
 import User from './user.js'
 import ChangesIndex from './changes_index.js'
 
-dotenv.config()
+config()
 
 const connect = () => {
 	if (process.env.NODE_ENV !== 'production') {
@@ -16,8 +16,12 @@ const connect = () => {
 
 mongoose.set('toJSON', { virtuals: true })
 
+let uri = 'mongodb://localhost:27017/admin'
+if (process.env.NODE_ENV === 'production') {
+    uri = `mongodb+srv://BNS:${process.env.MONGO_ATLAS_PASSWORD}@bns.00wfq.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`
+}
 mongoose.connect(
-	process.env.MONGO_ATLAS_URI,
+    uri,    
 	{
 		useNewUrlParser: true,
 		useUnifiedTopology: true,

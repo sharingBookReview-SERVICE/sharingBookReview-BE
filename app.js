@@ -1,26 +1,18 @@
 import express from 'express'
-import dotenv from 'dotenv'
+import config from './config.js'
 import cors from 'cors'
 import './models/index.js'
 import router from './routes/index.js'
-import session from "express-session";
-import passport from "passport";
 import kakaoPassportConfig from "./routes/kakao_passport.js";
 import googlePassportConfig from './routes/google_passport.js'
 
-dotenv.config()
+config()
 
 const app = new express()
 
 app.set('port', process.env.PORT)
 
 app.use(cors())
-app.use(
-	session({ secret: 'secret key', resave: false, saveUninitialized: false })
-)
-
-app.use(passport.initialize())
-app.use(passport.session())
 
 app.use(router)
 

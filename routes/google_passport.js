@@ -1,10 +1,15 @@
+import config from '../config.js'
 import passport from 'passport'
 import { OAuth2Strategy } from 'passport-google-oauth'
 import { User } from '../models/index.js'
-import dotenv from 'dotenv'
 import jwt from 'jsonwebtoken'
 
-dotenv.config()
+config()
+
+let callbackURL = 'http://localhost:3000/api/users/google/callback'
+if (process.env.NODE_ENV === 'production') {
+    callbackURL = process.env.GOOGLE_CALLBACK_URL
+}
 
 const googlePassportConfig = () => {
 	passport.use(
@@ -12,7 +17,7 @@ const googlePassportConfig = () => {
 			{
 				clientID: process.env.GOOGLE_CLIENT_ID,
 				clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-				callbackURL: 'http://13.124.63.103/api/users/kakao/callback',
+				callbackURL,
 			},
 
 			async (accessToken, refreshToken, profile, done) => {
