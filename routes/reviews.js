@@ -91,9 +91,19 @@ router.get('/:reviewId', authMiddleware ,async (req, res, next) => {
 	const { _id: userId } = res.locals.user
 
 	try {
-		const review = await Review.findById(reviewId).populate('book')
-		const result = Review.processLikesInfo(review, userId)
-		return res.json({ review: result })
+		let review = await Review.findById(reviewId).populate('book user')
+		const { comments } = review
+		
+		review = Review.processLikesInfo(review, userId)
+		
+		review.comments = (await Promise.allSettled(comments.map(async (comment) => {
+			const user = await User.findById(comment.user).select('_id level nickname')
+			comment = comment.toJSON()
+			comment.user = user
+			return comment
+		}))).map((p) => p.value)
+
+		return res.json({ review })
 	} catch (e) {
 		return next(new Error('리뷰 조회를 실패했습니다.'))
 	}
