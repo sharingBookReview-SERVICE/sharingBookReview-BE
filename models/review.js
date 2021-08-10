@@ -33,7 +33,12 @@ const reviewSchema = new mongoose.Schema({
 class Review {
 	static processLikesInfo = (review, userId) => {
 		review = review.toJSON()
-		review.myLike = review.liked_users.includes(userId)
+
+		review.myLike = Boolean(
+			review.liked_users.filter((_user) => {
+				return String(_user) === String(userId)
+			}).length
+		)
 		delete review.liked_users
 		return review
 	}
