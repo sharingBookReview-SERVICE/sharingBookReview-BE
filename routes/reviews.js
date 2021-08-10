@@ -1,5 +1,5 @@
 import express from 'express'
-import { Book, Review } from '../models/index.js'
+import { Book, Review, User } from '../models/index.js'
 import saveBook from './controllers/save_book.js'
 import searchBooks from './controllers/searchbooks.js'
 import authMiddleware from '../middleware/auth_middleware.js'
@@ -32,6 +32,12 @@ router.post('/', authMiddleware, upload.single('image'), reviewImage.uploadImage
 		}
 	}
 
+    try{
+        await User.getExpAndLevelUp(userId, "review")
+    }catch (e) {
+        return next(new Error('별점 등록을 실패했습니다.'))
+    }
+
 	try {
 		const review = await Review.create({
 			quote,
@@ -46,13 +52,14 @@ router.post('/', authMiddleware, upload.single('image'), reviewImage.uploadImage
 		await book.reviews.push(review._id)
 		await book.save()
         
-        const result = await Review.findById(review._id).populate('book')
+        const result = await Review.findById(review._id).populate('book user')
 
 		return res.json({ review: result })
 	} catch (e) {
 		console.error(e)
 		return next(new Error('리뷰작성을 실패했습니다.'))
 	}
+    
 })
 
 router.get('/', authMiddleware, async (req, res, next) => {
