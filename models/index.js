@@ -5,6 +5,7 @@ import Review from './review.js'
 import Comment from './comment.js'
 import User from './user.js'
 import ChangesIndex from './changes_index.js'
+import Collection from './collection.js'
 
 config()
 
@@ -40,4 +41,4 @@ mongoose.connection.on('error', (err) => {
 
 connect()
 
-export { Book, Review, Comment, User, ChangesIndex }
+export { Book, Review, Comment, User, ChangesIndex, Collection }
