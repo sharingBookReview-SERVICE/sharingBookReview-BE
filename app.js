@@ -1,5 +1,5 @@
 import express from 'express'
-import dotenv from 'dotenv'
+import config from './config.js'
 import cors from 'cors'
 import './models/index.js'
 import router from './routes/index.js'
@@ -7,23 +7,8 @@ import session from "express-session";
 import passport from "passport";
 import kakaoPassportConfig from "./routes/kakao_passport.js";
 import googlePassportConfig from './routes/google_passport.js'
-import path from 'path'
 
-if(process.env.NODE_ENV === 'production'){
-    dotenv.config({
-        path: path.join(process.cwd(), './config/server.env')
-    })
-} else if(process.env.NODE_ENV === 'test'){
-    dotenv.config({
-        path: path.join(process.cwd(), './config/test.env')
-    })
-}else{
-    dotenv.config({
-        path: path.join(process.cwd(), './config/dev.env')
-    })
-}
-    
-
+config()
 
 const app = new express()
 
