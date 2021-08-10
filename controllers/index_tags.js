@@ -2,7 +2,7 @@
  * Index tags of each book's reviews.
  * Operates every one hour
  */
-import { Book, ChangesIndex } from '../models/index.js'
+import { Book, ChangesIndex, Collection } from '../models/index.js'
 import schedule from 'node-schedule'
 
 /**
@@ -21,7 +21,7 @@ const getChanges = async () => {
  * 1. Execute callback every minute.
  * @type {Job}
  */
-const job = schedule.scheduleJob('0 * * * * *', async () => {
+const job = schedule.scheduleJob('30 * * * * *', async () => {
 	// 2. Get set of isbn which have changed after last execution.
 	const changedISBNs = await getChanges()
 	// 3. Clear ChangeIndexes table
@@ -47,16 +47,25 @@ const job = schedule.scheduleJob('0 * * * * *', async () => {
 
 		// Get top 10 tags
 		book.topTags = uniqueTags
-		.map((tag) => {
-			// Traverse the set of tags of the book and map it to pairs of tag's name and its number of occurrence in array of all tags of the book.
-			return {
-				name: tag,
-				occurrence: allTags.filter((_tag) => _tag === tag).length,
-			}
-		})
-		.sort((a, b) => b.occurrence - a.occurrence)
-		.slice(0, 9)
-		.map((tag) => tag.name)
+			.map((tag) => {
+				// Traverse the set of tags of the book and map it to pairs of tag's name and its number of occurrence in array of all tags of the book.
+				return {
+					name: tag,
+					occurrence: allTags.filter((_tag) => _tag === tag).length,
+				}
+			})
+			.sort((a, b) => b.occurrence - a.occurrence)
+			.slice(0, 9)
+			.map((tag) => tag.name)
+
+		// Update Collection
+		for (const _tag of book.topTags) {
+			const tag =
+				(await Collection.findOne({ name: _tag, type: 'tag' })) ??
+				(await Collection.create({ name: _tag, type: 'tag' }))
+			tag.books.addToSet(book)
+			await tag.save()
+		}
 
 		await book.save()
 	}
