@@ -156,20 +156,12 @@ router.put('/:reviewId/likes', authMiddleware, async (req, res, next) => {
 	try {
 		let review = await Review.findById(reviewId) ?? next(new Error('존재하지 않는 리뷰입니다.'))
 
-		let result
-
-		if (review.getMyLike(userId)) {
-			review.liked_users.pull(userId)
-			result = 'unlike'
-		} else {
-			review.liked_users.push(userId)
-			result = 'like'
-		}
+		review.getMyLike(userId) ? review.liked_users.pull(userId) : review.liked_users.push(userId)
 		await review.save()
 
 		review = Review.processLikesInfo(review, userId)
 
-		return res.json({review, result})
+		return res.json({ review })
 	} catch (e) {
 		console.error(e)
 		return next(new Error('좋아요/좋아요취소 를 실패했습니다.'))
