@@ -6,7 +6,6 @@
     "start": "NODE_ENV=production nodemon app.js",
     "dev": "NODE_ENV=development nodemon app.js",
     "test": "NODE_ENV=test nodemon app.js"
-    
   },
   "repository": {
     "type": "git",
@@ -21,6 +20,7 @@
   "homepage": "https://github.com/sharingBookReview-SERVICE/sharingBookReview-BE#readme",
   "type": "module",
   "dependencies": {
+    "aws-sdk": "^2.964.0",
     "axios": "^0.21.1",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
