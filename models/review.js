@@ -34,7 +34,7 @@ class Review {
 	static processLikesInfo = (review, userId) => {
 		review = review.toJSON()
 
-		review.myLike = !Boolean(
+		review.myLike = Boolean(
 			review.liked_users.filter((_user) => {
 				return String(_user) === String(userId)
 			}).length
