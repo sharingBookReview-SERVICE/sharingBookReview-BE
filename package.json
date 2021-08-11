@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "server": "cross-env NODE_ENV=production pm2 start app.js",
     "start": "cross-env NODE_ENV=production nodemon app.js",
-    "dev": "NODE_ENV=development nodemon app.js",
+    "dev": "cross-env NODE_ENV=development nodemon app.js",
     "test": "NODE_ENV=test nodemon app.js"
   },
   "repository": {

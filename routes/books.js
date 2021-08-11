@@ -41,10 +41,10 @@ router.get('/:bookId', async (req, res, next) => {
 	try {
 		const book = await Book.findById(Number(bookId))
 		if (book) {
-			return res.json({book})
+			return res.json(book)
 		}
 	} catch (e) {
-    	console.error(e)
+        console.error(e)
 		return next(new Error('DB 에서 책 검색을 실패했습니다.'))
 	}
 
