@@ -2,8 +2,8 @@ const expList = {
     review : 3,
     collection : 3,
     firstComment : 1,
-    like_1 : 0.1,
-    follow_1 : 2,
+    like : 0.1,
+    follow : 2,
 }
 
 export default expList

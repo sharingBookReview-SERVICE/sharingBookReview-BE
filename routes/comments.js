@@ -1,6 +1,6 @@
 // /api/books/:bookId/reviews/:reviewId/
 import express from 'express'
-import { Review, Comment } from '../models/index.js'
+import { Review, Comment, User } from '../models/index.js'
 import authMiddleware from '../middleware/auth_middleware.js'
 
 const router = new express.Router({ mergeParams: true })
@@ -17,6 +17,28 @@ router.post('/', authMiddleware, async (req, res, next) => {
 		console.error(e)
 		return next(new Error('댓글이 작성될 리뷰의 조회를 실패했습니다.'))
 	}
+
+    try{
+        const { comments } = await Review.findById(reviewId)
+        let isGetExp = false
+        console.log(comments.length)
+        if(comments.length === 0){
+            await User.getExpAndLevelUp(userId, "firstComment")
+        } else{
+            for (let comment of comments){
+
+                if(String(userId) === String(comment.user)){
+                    isGetExp = true
+                    break
+                }
+        }
+        if(!isGetExp){await User.getExpAndLevelUp(userId, "firstComment")}
+    }
+        
+    }catch(e){
+        console.error(e)
+		return next(new Error('별점 등록에 실패했습니다.'))
+    }
 
 	try {
 		const comment = new Comment({ content, user: userId })
