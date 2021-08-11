@@ -21,9 +21,9 @@ router.post('/', authMiddleware, async (req, res, next) => {
     try{
         const { comments } = await Review.findById(reviewId)
         let isGetExp = false
-        console.log(comments.length)
         if(comments.length === 0){
             await User.getExpAndLevelUp(userId, "firstComment")
+            isGetExp = true
         } else{
             for (let comment of comments){
 
@@ -42,6 +42,9 @@ router.post('/', authMiddleware, async (req, res, next) => {
 
 	try {
 		const comment = new Comment({ content, user: userId })
+
+        // if(!isGetExp){ comment.getExpUser.push(comment._id)}
+        // console.log(comment)
 
 		await Review.findByIdAndUpdate(reviewId, {
 			$push: {
