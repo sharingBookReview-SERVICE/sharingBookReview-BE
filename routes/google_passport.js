@@ -32,7 +32,8 @@ const googlePassportConfig = () => {
 
 				const token = jwt.sign(
 					{ userId: user._id, nickname: user.nickname },
-					process.env.TOKEN_KEY
+					process.env.TOKEN_KEY,
+					{ expiresIn: '24h' }
 				)
 
 				return done(null, user, token)
