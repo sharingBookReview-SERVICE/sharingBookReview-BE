@@ -1,12 +1,12 @@
 import mongoose from 'mongoose'
 
 const followSchema = new mongoose.Schema({
-    receiver:{
+    followee:{
         type: mongoose.Schema.Types.ObjectId,
 		ref: 'User',
 		immutable: true,
     },
-    sender: {
+    follower: {
         type: mongoose.Schema.Types.ObjectId,
 		ref: 'User',
 		immutable: true,

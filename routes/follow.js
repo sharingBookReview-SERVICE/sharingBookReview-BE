@@ -9,9 +9,9 @@ router.get('/followingList', authMiddleware, async (req, res, next) => {
     try{
         const { _id : userId } = res.locals.user
 
-        const followList = await Follow.find({sender : userId}).populate({path : 'receiver', select : 'level _id nickname'})
+        const followList = await Follow.find({follower : userId}).populate({path : 'followee', select : 'level _id nickname'})
         const followingList = followList.map((follow) => {
-            return follow.receiver
+            return follow.followee
         })
         res.json({followingList})
     }catch(e){
@@ -24,9 +24,9 @@ router.get('/followerList', authMiddleware, async (req, res, next) => {
     try{
         const { _id : userId } = res.locals.user
 
-        const followList = await Follow.find({receiver : userId}).populate({path : 'sender', select : 'level _id nickname'})
+        const followList = await Follow.find({followee : userId}).populate({path : 'follower', select : 'level _id nickname'})
         const followerList = followList.map((follow) => {
-            return follow.sender
+            return follow.follower
         })
         res.json({followerList})
     }catch(e){
@@ -35,29 +35,30 @@ router.get('/followerList', authMiddleware, async (req, res, next) => {
 })
 
 // switch follow
+// todo like랑 비슷하게 refactoring
 router.put('/:userId', authMiddleware, async (req, res, next) => {
-    const { _id : sender } = res.locals.user
-    const { userId : receiver } = req.params
+    const { _id : follower } = res.locals.user
+    const { userId : followee } = req.params
     try{
         let status
-    const follow = await Follow.findOne({sender, receiver})
+    const follow = await Follow.findOne({follower, followee})
 
     if(follow){
         await follow.delete()
         status = false
     } else{
         await Follow.create({
-            sender,
-            receiver
+            follower,
+            followee
         })
         status = true
     }
     
-    const followingCount = (await Follow.find({sender})).length
-    const followerCount = (await Follow.find({receiver})).length
+    const followingCount = (await Follow.find({follower})).length
+    const followerCount = (await Follow.find({followee})).length
 
-    await User.findByIdAndUpdate(sender, {followingCount})
-    await User.findByIdAndUpdate(receiver, {followerCount})
+    await User.findByIdAndUpdate(follower, {followingCount})
+    await User.findByIdAndUpdate(followee, {followerCount})
     return res.json({status})
     } catch(e){
         return next(new Error('팔로우를 실패했습니다.'))
