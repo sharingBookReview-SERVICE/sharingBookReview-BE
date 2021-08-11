@@ -4,10 +4,11 @@ import { Review } from '../models/index.js'
 const router = new express.Router()
 
 router.get('/', async (req, res, next) => {
+	const SCROLL_SIZE = 10
+	const { lastItemId } = req.body
 
 	const userId = 'temp' //todo 로그인 안 된 상태에서 어떻게 처리할지 정해야함
 	// Set page as 1 if not specified by the client
-	const page = req.query.page ?? 1
 
 	try {
 		const reviews = await Review.find({}).populate('book user').sort('-created_at')
