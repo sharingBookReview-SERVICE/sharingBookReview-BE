@@ -47,6 +47,16 @@ router.get('/google/callback', (req, res, next) => {
 	)(req, res, next)
 })
 
+//log-out
+router.get('/logout', (req, res, next) => {
+	try { 
+		req.logout()
+		res.redirect('http://diver.shop.s3-website.ap-northeast-2.amazonaws.com')
+	} catch (e) {
+		return next(new Error('로그아웃에 실패했습니다.'))
+	}
+})
+
 router.put('/nickname/:userId', async (req, res, next) => {
 	// if user do not have nickname use this router
 	const { userId } = req.params
@@ -58,7 +68,10 @@ router.put('/nickname/:userId', async (req, res, next) => {
 
 		const user = await User.findByIdAndUpdate(userId, { nickname })
 
-        const token = jwt.sign({ userId: user._id, nickname : user.nickname }, process.env.TOKEN_KEY)
+		const token = jwt.sign(
+			{ userId: user._id, nickname: user.nickname },
+			process.env.TOKEN_KEY
+		)
 
 		return res.json(token)
 	} catch (e) {
@@ -78,19 +91,22 @@ router.get('/:userId', async (req, res, next) => {
 })
 
 router.put('/:userId', async (req, res, next) => {
-    const { userId } = req.params
-    const { nickname } = req.body
-    try{
-        if (await User.findOne({nickname})) return next(new Error('해당 닉네임이 존재합니다.'))
+	const { userId } = req.params
+	const { nickname } = req.body
+	try {
+		if (await User.findOne({ nickname }))
+			return next(new Error('해당 닉네임이 존재합니다.'))
 
-        const user = await User.findByIdAndUpdate(userId,{nickname})
-		
-        if (user == null)return next(new Error('등록되지 않은 유저입니다'))
-		
-        const token = jwt.sign({ userId: user._id, nickname : user.nickname }, process.env.TOKEN_KEY)
+		const user = await User.findByIdAndUpdate(userId, { nickname })
+
+		if (user == null) return next(new Error('등록되지 않은 유저입니다'))
+
+		const token = jwt.sign(
+			{ userId: user._id, nickname: user.nickname },
+			process.env.TOKEN_KEY
+		)
 
 		return res.json(token)
-
 	} catch (e) {
 		return next(new Error('수정에 실패했습니다.'))
 	}

@@ -8,7 +8,7 @@ config()
 
 let callbackURL = 'http://localhost:3000/api/users/google/callback'
 if (process.env.NODE_ENV === 'production') {
-    callbackURL = process.env.GOOGLE_CALLBACK_URL
+	callbackURL = process.env.GOOGLE_CALLBACK_URL
 }
 
 const googlePassportConfig = () => {
@@ -30,9 +30,11 @@ const googlePassportConfig = () => {
 					user = await User.create({ provider, providerKey })
 				}
 
+				const EXPIRATION = '24h'
 				const token = jwt.sign(
 					{ userId: user._id, nickname: user.nickname },
-					process.env.TOKEN_KEY
+					process.env.TOKEN_KEY,
+					{ expiresIn: EXPIRATION }
 				)
 
 				return done(null, user, token)
