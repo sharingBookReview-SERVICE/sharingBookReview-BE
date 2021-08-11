@@ -20,7 +20,7 @@ router.get('/kakao/callback', (req, res, next) => {
 		(err, profile, token) => {
 			if (err) return next(new Error('소셜로그인 에러'))
 			return res.redirect(
-				`http://localhost:3000/logincheck/token=${token}`
+				`http://diver.shop.s3-website.ap-northeast-2.amazonaws.com/logincheck/token=${token}`
 			)
 		}
 	)(req, res, next)
@@ -41,7 +41,7 @@ router.get('/google/callback', (req, res, next) => {
 		(err, user, token) => {
 			if (err) return next(new Error('소셜로그인 에러'))
 			return res.redirect(
-				`http://localhost:3000/logincheck/token=${token}`
+				`http://diver.shop.s3-website.ap-northeast-2.amazonaws.com/logincheck/token=${token}`
 			)
 		}
 	)(req, res, next)
