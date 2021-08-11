@@ -5,7 +5,7 @@ const router = new express.Router()
 
 router.get('/', async (req, res, next) => {
 	const SCROLL_SIZE = 10
-	const { lastItemId } = req.body
+	const { lastItemId } = req.query
 
 	try {
 		let reviews
