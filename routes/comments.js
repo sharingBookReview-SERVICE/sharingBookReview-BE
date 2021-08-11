@@ -19,32 +19,35 @@ router.post('/', authMiddleware, async (req, res, next) => {
 	}
 
     try{
-        const { comments } = await Review.findById(reviewId)
-        let isGetExp = false
-        if(comments.length === 0){
-            await User.getExpAndLevelUp(userId, "firstComment")
+        const review = await Review.findById(reviewId)
+        const { getCommentExpUsers } = review
+        
+        let isGetExp
+        if(getCommentExpUsers.length === 0){
             isGetExp = true
-        } else{
-            for (let comment of comments){
-
-                if(String(userId) === String(comment.user)){
-                    isGetExp = true
+        }else{
+            for (let getCommentExpUser of getCommentExpUsers){
+                if (String(userId) === String(getCommentExpUser)){
+                    isGetExp = false
                     break
                 }
+                isGetExp = true
+            }
         }
-        if(!isGetExp){await User.getExpAndLevelUp(userId, "firstComment")}
+
+        if(isGetExp){
+            await User.getExpAndLevelUp(userId, "firstComment")
+            getCommentExpUsers.push(userId)
+            await review.save()
+        }
+
+    } catch(e){
+        console.error(e)
+		return next(new Error('별점 등록을 실패헀습니다.'))
     }
         
-    }catch(e){
-        console.error(e)
-		return next(new Error('별점 등록에 실패했습니다.'))
-    }
-
-	try {
-		const comment = new Comment({ content, user: userId })
-
-        // if(!isGetExp){ comment.getExpUser.push(comment._id)}
-        // console.log(comment)
+    try{
+        let comment = new Comment({ content, user: userId })
 
 		await Review.findByIdAndUpdate(reviewId, {
 			$push: {
