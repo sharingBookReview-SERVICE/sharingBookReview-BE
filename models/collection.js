@@ -18,6 +18,8 @@ const collectionSchema = new mongoose.Schema({
 		type: mongoose.Schema.Types.ObjectId,
 		ref: 'User',
 	},
+	image: String,
+	description: String,
 	comments: {
 		type: [commentSchema]
 	},
