@@ -9,7 +9,8 @@ const commentSchema = new mongoose.Schema({
 	created_at: {
 		type: Date,
 		default: Date.now,
-	},
+	}
+    
 })
 
 export default mongoose.model('Comment', commentSchema)

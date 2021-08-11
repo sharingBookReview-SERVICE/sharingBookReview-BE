@@ -35,7 +35,7 @@ router.post('/', authMiddleware, upload.single('image'), reviewImage.uploadImage
     try{
         await User.getExpAndLevelUp(userId, "review")
     }catch (e) {
-        return next(new Error('별점 등록을 실패했습니다.'))
+        return next(new Error('경험치 등록을 실패했습니다.'))
     }
 
 	try {
@@ -152,9 +152,11 @@ router.delete('/:reviewId', authMiddleware, async (req, res) => {
 router.put('/:reviewId/likes', authMiddleware, async (req, res, next) => {
 	const { _id: userId } = res.locals.user
 	const { reviewId } = req.params
+    
+    try{
+        let review = await Review.findById(reviewId) ?? next(new Error('존재하지 않는 리뷰입니다.'))
 
-	try {
-		let review = await Review.findById(reviewId) ?? next(new Error('존재하지 않는 리뷰입니다.'))
+        await User.getExpAndLevelUp(review.user, "like")
 
 		review.getMyLike(userId) ? review.liked_users.pull(userId) : review.liked_users.push(userId)
 		await review.save()
