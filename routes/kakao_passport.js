@@ -29,10 +29,11 @@ const kakaoPassportConfig = () => {
 					user = await User.create({ provider, providerKey })
 				}
 
+				const EXPIRATION = '24h'
 				const token = jwt.sign(
 					{ userId: user._id, nickname: user.nickname },
 					process.env.TOKEN_KEY,
-					{ expiresIn: '24h' }
+					{ expiresIn: EXPIRATION }
 				)
 
 				return done(null, user, token)

@@ -48,9 +48,13 @@ router.get('/google/callback', (req, res, next) => {
 })
 
 //log-out
-router.get('/logout', function (req, res) {
-	req.logout()
-	res.redirect('http://diver.shop.s3-website.ap-northeast-2.amazonaws.com')
+router.get('/logout', (req, res, next) => {
+	try { 
+		req.logout()
+		res.redirect('http://diver.shop.s3-website.ap-northeast-2.amazonaws.com')
+	} catch (e) {
+		return next(new Error('로그아웃에 실패했습니다.'))
+	}
 })
 
 router.put('/nickname/:userId', async (req, res, next) => {
