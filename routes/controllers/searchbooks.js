@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { parseString } from 'xml2js'
+import getDescription from './book_detail_crawling.js'
 
 const removeArrayInValue = async (array) => {
     const bookList =[]
@@ -8,8 +9,11 @@ const removeArrayInValue = async (array) => {
         for (const [key,value] of Object.entries(array[i])){
             if(key == 'isbn'){
                 book[key] = value[0].split(' ')[1]
+            }else if(key == "description"){
+                const description = await getDescription(array[i].link[0])
+                book[key] = description
             }else{
-                book[key] = value[0]     
+                book[key] = value[0]
             }                           
         }
         bookList.push(book)
