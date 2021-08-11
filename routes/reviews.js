@@ -35,7 +35,7 @@ router.post('/', authMiddleware, upload.single('image'), reviewImage.uploadImage
     try{
         await User.getExpAndLevelUp(userId, "review")
     }catch (e) {
-        return next(new Error('별점 등록을 실패했습니다.'))
+        return next(new Error('경험치 등록을 실패했습니다.'))
     }
 
 	try {

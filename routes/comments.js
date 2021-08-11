@@ -20,30 +20,19 @@ router.post('/', authMiddleware, async (req, res, next) => {
 
     try{
         const review = await Review.findById(reviewId)
-        const { getCommentExpUsers } = review
+        const { commented_users } = review
         
-        let isGetExp
-        if(getCommentExpUsers.length === 0){
-            isGetExp = true
-        }else{
-            for (let getCommentExpUser of getCommentExpUsers){
-                if (String(userId) === String(getCommentExpUser)){
-                    isGetExp = false
-                    break
-                }
-                isGetExp = true
-            }
-        }
+        const canGetExp = Boolean(commented_users.filter((_id)=>String(_id) === String(userId)).length)
 
-        if(isGetExp){
+        if(canGetExp){
             await User.getExpAndLevelUp(userId, "firstComment")
-            getCommentExpUsers.push(userId)
+            commented_users.push(userId)
             await review.save()
         }
 
     } catch(e){
         console.error(e)
-		return next(new Error('별점 등록을 실패헀습니다.'))
+		return next(new Error('경험치 등록을 실패헀습니다.'))
     }
         
     try{

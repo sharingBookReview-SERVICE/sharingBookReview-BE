@@ -28,8 +28,9 @@ const reviewSchema = new mongoose.Schema({
 		type: [mongoose.Schema.Types.ObjectId],
 		ref: 'User',
 	},
-    getCommentExpUsers:{
-        type: Array
+    commented_users:{
+        type: [mongoose.Schema.Types.ObjectId],
+		ref: 'User',
     }
 })
 
