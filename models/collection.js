@@ -21,10 +21,6 @@ const collectionSchema = new mongoose.Schema({
 		type: String,
 		enum: ['tag', 'custom'],
 	},
-	books: {
-		type: [mongoose.Schema.Types.ObjectId],
-		ref: 'Book',
-	},
 	user: {
 		type: mongoose.Schema.Types.ObjectId,
 		ref: 'User',
