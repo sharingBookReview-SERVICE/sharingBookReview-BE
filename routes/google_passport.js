@@ -8,7 +8,7 @@ config()
 
 let callbackURL = 'http://localhost:3000/api/users/google/callback'
 if (process.env.NODE_ENV === 'production') {
-    callbackURL = process.env.GOOGLE_CALLBACK_URL
+	callbackURL = process.env.GOOGLE_CALLBACK_URL
 }
 
 const googlePassportConfig = () => {
