@@ -4,7 +4,7 @@
  */
 import { Book, ChangesIndex, Collection } from '../models/index.js'
 import schedule from 'node-schedule'
-
+import mongoose from 'mongoose'
 /**
  * Returns unique isbns which have changed after the last run.
  * Marks returned documents' indexed property as true, so it can be deleted later.
@@ -63,7 +63,7 @@ const job = schedule.scheduleJob('30 * * * * *', async () => {
 			const tag =
 				(await Collection.findOne({ name: _tag, type: 'tag' })) ??
 				(await Collection.create({ name: _tag, type: 'tag' }))
-			tag.books.addToSet(book)
+			tag.books.addToSet(mongoose.Types.ObjectId(book._id))
 			await tag.save()
 		}
 
