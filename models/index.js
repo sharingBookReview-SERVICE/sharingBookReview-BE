@@ -19,7 +19,7 @@ mongoose.set('toJSON', { virtuals: true })
 
 let uri = 'mongodb://localhost:27017/admin'
 if (process.env.NODE_ENV === 'production') {
-    uri = `mongodb+srv://BNS:${process.env.MONGO_ATLAS_PASSWORD}@bns.00wfq.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`
+    uri = `mongodb+srv://bns-admin:${process.env.MONGO_ATLAS_PASSWORD}@bns.00wfq.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`
 }
 mongoose.connect(
     uri,    
