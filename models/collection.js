@@ -3,7 +3,7 @@ import { commentSchema } from './comment.js'
 
 const contentSchema = new mongoose.Schema({
 	book: {
-		type: [mongoose.Schema.Types.ObjectId],
+		type: String,
 		ref: 'Book',
 		required: true,
 	},
