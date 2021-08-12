@@ -4,9 +4,8 @@
  */
 import { Book, ChangesIndex, Collection } from '../models/index.js'
 import schedule from 'node-schedule'
-import mongoose from 'mongoose'
 /**
- * Returns unique isbns which have changed after the last run.
+ * Returns set of isbn which have changed after the last run.
  * Marks returned documents' indexed property as true, so it can be deleted later.
  * @returns {Promise<Set<Number>>}
  */
