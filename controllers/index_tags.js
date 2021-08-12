@@ -4,9 +4,8 @@
  */
 import { Book, ChangesIndex, Collection } from '../models/index.js'
 import schedule from 'node-schedule'
-import mongoose from 'mongoose'
 /**
- * Returns unique isbns which have changed after the last run.
+ * Returns set of isbn which have changed after the last run.
  * Marks returned documents' indexed property as true, so it can be deleted later.
  * @returns {Promise<Set<Number>>}
  */
@@ -24,6 +23,9 @@ const getChanges = async () => {
 const job = schedule.scheduleJob('30 * * * * *', async () => {
 	// 2. Get set of isbn which have changed after last execution.
 	const changedISBNs = await getChanges()
+
+	// Indexing-needed-tag-based-collection
+	const changedTags = new Set()
 	// 3. Clear ChangeIndexes table
 	// 3.1. In case of addition to the table while executing the function above, use indexed property to only delete appropriate ones.
 
@@ -58,18 +60,22 @@ const job = schedule.scheduleJob('30 * * * * *', async () => {
 			.slice(0, 9)
 			.map((tag) => tag.name)
 
-		// Update Collection
-		for (const _tag of book.topTags) {
-			const tag =
-				(await Collection.findOne({ name: _tag, type: 'tag' })) ??
-				(await Collection.create({ name: _tag, type: 'tag' }))
-			tag.books.addToSet(mongoose.Types.ObjectId(book._id))
-			await tag.save()
-		}
-
+		changedTags.add(book.topTags)
 		await book.save()
 	}
 
+	// Update Collection
+	for (const tag of changedTags) {
+		const collection =
+			(await Collection.findOne({ name: tag, type: 'tag' })) ??
+			(await Collection.create({ name: tag, type: 'tag' }))
+		const books = await Book.find({ topTags: tag })
+		collection.contents = books.map((book) => {
+			return { book: book.isbn }
+		})
+		await collection.save()
+	}
+	
 	await ChangesIndex.deleteMany()
 })
 
