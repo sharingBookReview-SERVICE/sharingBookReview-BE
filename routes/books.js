@@ -10,8 +10,18 @@ const router = new express.Router({ mergeParams: true })
 // 책 목록
 router.get('/', async (req, res, next) => {
 	const { target, query } = req.query
-	
-	//todo 나중에 맵으로 고치기	
+
+	if (target === 'tag') {
+		try {
+			const books = await Book.find({ topTags: query })
+
+			return res.json({ books })
+		} catch (e) {
+			console.error(e)
+			return next(new Error('태그를 이용한 책 목록 불러오기를 실패했습니다.'))
+		}
+	}
+
 	try {
 		const searchList = await searchBooks(
 			target,
