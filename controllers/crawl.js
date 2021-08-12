@@ -45,4 +45,21 @@ const getBestsellers = async () => {
 		.map((p)=>p.value)
 }
 
-export { getBestsellers }
+/**
+ * Crawl detailed book description from link
+ * @param link Link for detailed book description from naver book api
+ * @returns {Promise<String>} Detailed description of book
+ */
+const getBookDescription = async (link) => {
+	const page = launchBrowserAndGotoURL(link)
+
+	const bookDescription = await page.$eval(
+		'#bookIntroContent',
+		(element) => element.textContent
+	)
+
+	await browser.close()
+
+	return bookDescription
+}
+export { getBestsellers, getBookDescription }
