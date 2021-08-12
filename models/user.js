@@ -69,7 +69,7 @@ userSchema.statics.deleteExp = async function(userId, event) {
     const user = await this.findById(userId)
 
     user.exp -= expList[event]
-    console.log(user.exp)
+    
     await user.save()
 
 }

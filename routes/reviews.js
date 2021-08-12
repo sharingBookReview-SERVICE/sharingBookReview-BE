@@ -18,7 +18,7 @@ router.post('/', authMiddleware, upload.single('image'), ImageUpload.uploadImage
 	const image = res.locals?.url
 	const { quote, content } = req.body
 	const hashtags = JSON.parse(req.body.hashtags)
-    let reaching_10
+    let treasure
 
 	// Check if the book is saved on DB
 	const book = await Book.findById(bookId)
