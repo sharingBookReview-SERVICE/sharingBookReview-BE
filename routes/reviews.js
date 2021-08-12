@@ -34,7 +34,7 @@ router.post('/', authMiddleware, upload.single('image'), ImageUpload.uploadImage
 	}
 
     try{
-        reaching_10 = await User.getExpAndLevelUp(userId, "review")
+        treasure = await User.getExpAndLevelUp(userId, "review")
     }catch (e) {
         return next(new Error('경험치 등록을 실패했습니다.'))
     }
@@ -56,7 +56,7 @@ router.post('/', authMiddleware, upload.single('image'), ImageUpload.uploadImage
         const result = await Review.findById(review._id).populate('book').populate({path:'user', select:'_id level nickname'})
         
 
-		return res.json({ review: result, reaching_10 })
+		return res.json({ review: result, treasure })
 	} catch (e) {
 		console.error(e)
 		return next(new Error('리뷰작성을 실패했습니다.'))
@@ -154,19 +154,19 @@ router.delete('/:reviewId', authMiddleware, async (req, res) => {
 router.put('/:reviewId/likes', authMiddleware, async (req, res, next) => {
 	const { _id: userId } = res.locals.user
 	const { reviewId } = req.params
-    let reaching_10
+    let treasure
     
     try{
         let review = await Review.findById(reviewId) ?? next(new Error('존재하지 않는 리뷰입니다.'))
 
-        reaching_10 = await User.getExpAndLevelUp(review.user, "like")
+        treasure = await User.getExpAndLevelUp(review.user, "like")
 
 		review.getMyLike(userId) ? review.liked_users.pull(userId) : review.liked_users.push(userId)
 		await review.save()
 
 		review = Review.processLikesInfo(review, userId)
 
-		return res.json({ review, reaching_10 })
+		return res.json({ review, treasure })
 	} catch (e) {
 		console.error(e)
 		return next(new Error('좋아요/좋아요취소 를 실패했습니다.'))
