@@ -8,9 +8,11 @@ router.post('/', authMiddleware, async (req, res, next) => {
 	try {
 		const { _id: userId } = res.locals.user
 
-		await Suggestion.create({ userId, ...req.body })
-		res.json('success')
+		const suggestion = await Suggestion.create({ userId, ...req.body })
+
+		return res.status(201).json({ suggestion })
 	} catch (e) {
+		console.error(e)
 		next(new Error('건의 사항 등록에 실패했습니다.'))
 	}
 })
