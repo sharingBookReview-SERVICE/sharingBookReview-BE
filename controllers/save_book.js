@@ -1,10 +1,5 @@
-import { Book } from '../../models/index.js'
-import getDescription from './book_detail_crawling.js'
-
-// else if(key == "description"){
-//     const description = await getDescription(array[i].link[0])
-//     book[key] = description
-// }
+import { Book } from '../models'
+import { getBookDescription } from './crawl.js'
 
 /**
  * Saves book search result into DB.
@@ -17,9 +12,8 @@ const saveBook = async (searchResult) => {
 	 * Fix search result's format into DB's format
 	 */
 	for (const [key, value] of Object.entries(searchResult)) {
-        if (key == 'description'){
-            const description = await getDescription(searchResult.link)
-            newBook[key] = description
+        if (key === 'description'){
+	        newBook[key] = await getBookDescription(searchResult.link)
         }else{
             newBook[key] = value
         }

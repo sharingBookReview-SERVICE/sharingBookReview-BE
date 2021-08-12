@@ -1,4 +1,4 @@
-import { uploadFile } from "../../s3.js"
+import { uploadFile } from "../s3.js"
 import fs from 'fs'
 import util from 'util'
 
