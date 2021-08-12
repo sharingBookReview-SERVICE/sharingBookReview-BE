@@ -9,7 +9,7 @@ const removeArrayInValue = async (array) => {
             if(key == 'isbn'){
                 book[key] = value[0].split(' ')[1]
             }else{
-                book[key] = value[0]     
+                book[key] = value[0]
             }                           
         }
         bookList.push(book)

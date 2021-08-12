@@ -2,7 +2,6 @@ import express from 'express'
 import { Book } from '../models/index.js'
 import searchBooks from './controllers/searchbooks.js'
 import getBestsellers from './controllers/bestseller_crawling.js'
-import getDescription from './controllers/book_detail_crawling.js'
 import dotenv from 'dotenv'
 dotenv.config()
 
@@ -36,15 +35,11 @@ router.get('/bestsellers', async(req, res, next) => {
 })
 
 // 개별 책 선택
-// todo booksave 함수로 옮기기
-// 없는 책에도 구현
 router.get('/:bookId', async (req, res, next) => {
     const { bookId } = req.params
 	try {
 		const book = await Book.findById(Number(bookId))
 		if (book) {
-            const description = await getDescription(book.link)
-            book.description = description
 			return res.json(book)
 		}
 	} catch (e) {
