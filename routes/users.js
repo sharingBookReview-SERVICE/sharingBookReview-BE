@@ -84,7 +84,7 @@ router.get('/:userId', async (req, res, next) => {
 	try {
 		const user = await User.findById(userId)
 
-		return res.json({ user })
+		return res.json( user )
 	} catch (e) {
 		return next(new Error('user를 찾는데 실패했습니다.'))
 	}
