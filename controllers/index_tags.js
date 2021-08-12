@@ -64,6 +64,18 @@ const job = schedule.scheduleJob('30 * * * * *', async () => {
 		await book.save()
 	}
 
+	// Update Collection
+	for (const tag of changedTags) {
+		const collection =
+			(await Collection.findOne({ name: tag, type: 'tag' })) ??
+			(await Collection.create({ name: tag, type: 'tag' }))
+		const books = await Book.find({ topTags: tag })
+		collection.contents = books.map((book) => {
+			return { book: book.isbn }
+		})
+		await collection.save()
+	}
+	
 	await ChangesIndex.deleteMany()
 })
 
