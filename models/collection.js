@@ -19,7 +19,7 @@ const collectionSchema = new mongoose.Schema({
 	},
 	type: {
 		type: String,
-		enum: ['tag', 'custom'],
+		enum: ['tag', 'custom', 'best', 'genre'],
 	},
 	user: {
 		type: mongoose.Schema.Types.ObjectId,
