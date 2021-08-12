@@ -34,6 +34,10 @@ const userSchema = new mongoose.Schema({
     },
     own_image:{
         type: [String]
+    },
+    reaching_10:{
+        type: Boolean,
+        default: false
     }
 })
 // todo following, followerCount virtual로 변환
@@ -52,6 +56,7 @@ userSchema.statics.getExpAndLevelUp = async function(userId, event) {
         user.exp -= requiredExp
         if(user.level % 10 === 0){
             reaching_10 = true
+            user.reaching_10 = reaching_10
         }
     }
         await user.save()
