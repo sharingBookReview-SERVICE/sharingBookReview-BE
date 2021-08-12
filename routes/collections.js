@@ -6,12 +6,13 @@ const router = new express.Router()
 // Get all collections
 router.get('/', authMiddleware, async (req, res, next) => {
 	try {
-		const collections = await Collection.find().populate('contents.book', '-reviews')
+		// query = { name, type }
+		const collections = await Collection.find(req.query).populate('contents.book', '-reviews')
 
 		return res.json({ collections })
 	} catch (e) {
 		console.error(e)
-		return next(new Error('모든 콜렉션 불러오기를 실패했습니다.'))
+		return next(new Error('콜렉션 불러오기를 실패했습니다.'))
 	}
 })
 
