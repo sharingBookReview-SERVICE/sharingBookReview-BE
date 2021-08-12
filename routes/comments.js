@@ -9,7 +9,7 @@ router.post('/', authMiddleware, async (req, res, next) => {
 	const userId = res.locals.user._id
 	const { reviewId } = req.params
 	const { content } = req.body
-    let reaching_10
+    let treasure = true
 
 	try {
 		if (!(await Review.findById(reviewId)))
