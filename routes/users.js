@@ -71,6 +71,8 @@ router.put('/nickname/:userId', async (req, res, next) => {
 
 		const user = await User.findByIdAndUpdate(userId, { nickname })
 
+        if (user == null) return next(new Error('DB에 등록되지 않은 userId입니다'))
+
 		const token = jwt.sign(
 			{ userId: user._id, nickname: user.nickname },
 			process.env.TOKEN_KEY
@@ -95,21 +97,11 @@ router.get('/:userId', async (req, res, next) => {
 
 router.put('/:userId', async (req, res, next) => {
 	const { userId } = req.params
-	const { nickname } = req.body
 	try {
-		if (await User.findOne({ nickname }))
-			return next(new Error('해당 닉네임이 존재합니다.'))
-
-		const user = await User.findByIdAndUpdate(userId, { nickname })
-
+		const user = await User.findByIdAndUpdate(userId, { ...req.body },{new: true})
 		if (user == null) return next(new Error('등록되지 않은 유저입니다'))
 
-		const token = jwt.sign(
-			{ userId: user._id, nickname: user.nickname },
-			process.env.TOKEN_KEY
-		)
-
-		return res.json(token)
+		return res.json(user)
 	} catch (e) {
 		return next(new Error('수정에 실패했습니다.'))
 	}
@@ -148,5 +140,24 @@ router.get('/:userId/reviews', async (req, res, next) => {
 		return next(new Error('nickname 등록을 실패했습니다.'))
 	}
 })
+// 프로필 이미지 획득
+router.put("/profile/:userId", async (req, res, next) => {
+    const { userId } = req.params
+    const { ImageName } = req.body
+    const treasure = true
+    try{
+        let user = await User.findByIdAndUpdate( userId, {treasure}, {new : true} )
+        let { own_image } = user
+        own_image.push(ImageName)
+
+        user = await user.save()
+
+        res.json(user)
+    }catch{
+        return next(new Error('프로필 이미지 획득을 실패헀습니다.'))
+    }
+    
+})
+
 
 export default router

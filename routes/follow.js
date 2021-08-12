@@ -9,7 +9,7 @@ router.get('/followingList', authMiddleware, async (req, res, next) => {
     try{
         const { _id : userId } = res.locals.user
 
-        const followList = await Follow.find({follower : userId}).populate({path : 'followee', select : 'level _id nickname'})
+        const followList = await Follow.find({follower : userId}).populate({path : 'followee', select : '_id level nickname profileImage'})
         const followingList = followList.map((follow) => {
             return follow.followee
         })
@@ -24,7 +24,7 @@ router.get('/followerList', authMiddleware, async (req, res, next) => {
     try{
         const { _id : userId } = res.locals.user
 
-        const followList = await Follow.find({followee : userId}).populate({path : 'follower', select : 'level _id nickname'})
+        const followList = await Follow.find({followee : userId}).populate({path : 'follower', select : '_id level nickname profileImage'})
         const followerList = followList.map((follow) => {
             return follow.follower
         })
