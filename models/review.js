@@ -9,8 +9,11 @@ const reviewSchema = new mongoose.Schema({
 	},
 	book: {
 		type: Number,
-		ref: 'Book',
+		required: true,
+		alias: 'isbn',
 		immutable: true,
+		min: 1000000000000,
+		max: 9999999999999,
 	},
 	comments: {
 		type: [commentSchema],

@@ -5,7 +5,10 @@ const bookSchema = new mongoose.Schema(
 	{
 		_id: {
 			type: Number,
+			required: true,
 			alias: 'isbn',
+			min: 1000000000000,
+			max: 9999999999999,
 		},
 		title: String,
 		link: String,
