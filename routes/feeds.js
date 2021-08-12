@@ -1,14 +1,17 @@
 import express from 'express'
 import { Review } from '../models/index.js'
+import nonAuthMiddleware from '../middleware/non_auth_middleware.js'
 
 const router = new express.Router()
 
-router.get('/', async (req, res, next) => {
+router.get('/', nonAuthMiddleware, async (req, res, next) => {
+    const {_id : userId} = res.locals.user
 	const SCROLL_SIZE = 10
 	const { lastItemId } = req.query
 
 	try {
 		let reviews
+        let result
 
 		if (!lastItemId) {
 			reviews = await Review.find()
@@ -24,7 +27,12 @@ router.get('/', async (req, res, next) => {
 			.populate('book user')
 		}
 
-		return res.json({reviews})
+        if( userId !== 'nonLogin' ){
+            result = reviews.map(review => Review.processLikesInfo(review, userId))
+        }else{
+            result = reviews
+        }
+		return res.json({result})
 	} catch (e) {
 		console.error(e)
 		return next(new Error('피드 불러오기를 실패했습니다.'))
