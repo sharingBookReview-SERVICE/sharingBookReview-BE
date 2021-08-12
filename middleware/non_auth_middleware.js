@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import User from "../models/user.js";
+import { User } from "../models/index.js";
 
 const authMiddleware = (req, res, next) => {
     const { authorization } = req.headers;
@@ -21,9 +21,9 @@ const authMiddleware = (req, res, next) => {
         if (authorization === null) {
 			return next(new Error('로그인을 위한 정보가 존재 하지 않습니다.'))
 		}
-        if (tokenScheme !== "Bearer"){
-            return next(new Error("토큰 인증 방식이 잘못되었습니다."))
-        }
+        if (tokenScheme !== 'Bearer') {
+			return next(new Error('토큰 인증 방식이 잘못되었습니다.'))
+		}
     
         const user = jwt.verify(tokenValue, process.env.TOKEN_KEY)
         const { userId } = user
