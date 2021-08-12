@@ -148,5 +148,17 @@ router.get('/:userId/reviews', async (req, res, next) => {
 		return next(new Error('nickname 등록을 실패했습니다.'))
 	}
 })
+// 프로필 이미지 획득
+router.put("/profile/:userId", async (req, res, next) => {
+    const { userId } = req.params
+    const { imageUrl } = req.body
+
+    let user = await User.findById( userId )
+    let { own_image } = user 
+    own_image.push(imageUrl)
+    user = await user.save()
+
+    res.json(user)
+})
 
 export default router
