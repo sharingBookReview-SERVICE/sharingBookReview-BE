@@ -24,6 +24,9 @@ const getChanges = async () => {
 const job = schedule.scheduleJob('30 * * * * *', async () => {
 	// 2. Get set of isbn which have changed after last execution.
 	const changedISBNs = await getChanges()
+
+	// Indexing-needed-tag-based-collection
+	const changedTags = new Set()
 	// 3. Clear ChangeIndexes table
 	// 3.1. In case of addition to the table while executing the function above, use indexed property to only delete appropriate ones.
 
