@@ -1,11 +1,6 @@
 import { Book } from '../models'
 import { getBookDescription } from './crawl.js'
 
-// else if(key == "description"){
-//     const description = await getDescription(array[i].link[0])
-//     book[key] = description
-// }
-
 /**
  * Saves book search result into DB.
  * @param {Object} searchResult Search result from naver dev api.
@@ -17,9 +12,8 @@ const saveBook = async (searchResult) => {
 	 * Fix search result's format into DB's format
 	 */
 	for (const [key, value] of Object.entries(searchResult)) {
-        if (key == 'description'){
-            const description = await getBookDescription(searchResult.link)
-            newBook[key] = description
+        if (key === 'description'){
+	        newBook[key] = await getBookDescription(searchResult.link)
         }else{
             newBook[key] = value
         }
