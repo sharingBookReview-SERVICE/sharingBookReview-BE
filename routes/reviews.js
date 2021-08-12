@@ -4,14 +4,14 @@ import saveBook from '../controllers/save_book.js'
 import searchBooks from '../controllers/searchbooks.js'
 import authMiddleware from '../middleware/auth_middleware.js'
 import multer from 'multer'
-import reviewImage from '../controllers/review_image.js'
+import ImageUpload from '../controllers/image_upload.js'
 
 const router = new express.Router({ mergeParams: true })
 const upload = multer({
 	dest: 'uploads/',
 })
 
-router.post('/', authMiddleware, upload.single('image'), reviewImage.uploadImage, async (req, res, next) => {
+router.post('/', authMiddleware, upload.single('image'), ImageUpload.uploadImage, async (req, res, next) => {
 	const { _id: userId } = res.locals.user
 	const { bookId } = req.params
 	// res.locals가 존재하지 않으면 undefined 반환

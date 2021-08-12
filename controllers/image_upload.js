@@ -4,7 +4,7 @@ import util from 'util'
 
 const unlinkFile = util.promisify(fs.unlink) 
 
-const reviewImage = {
+const ImageUpload = {
     uploadImage: async(req, res, next) => {
         const file = req.file
         if (file === undefined) {
@@ -18,4 +18,4 @@ const reviewImage = {
     }
 }
 
-export default reviewImage
+export default ImageUpload
