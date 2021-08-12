@@ -143,11 +143,11 @@ router.get('/:userId/reviews', async (req, res, next) => {
 // 프로필 이미지 획득
 router.put("/profile/:userId", async (req, res, next) => {
     const { userId } = req.params
-    const { imageUrl } = req.body
+    const { ImageName } = req.body
 
     let user = await User.findById( userId )
-    let { own_image } = user 
-    own_image.push(imageUrl)
+    let { own_image } = user
+    own_image.push(ImageName)
     user = await user.save()
 
     res.json(user)
