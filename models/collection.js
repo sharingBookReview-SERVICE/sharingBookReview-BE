@@ -9,16 +9,20 @@ const collectionSchema = new mongoose.Schema({
 	type: {
 		type: String,
 		enum: ['tag', 'custom', 'best', 'genre'],
+		required: true,
+		immutable: true,
 	},
 	user: {
 		type: mongoose.Schema.Types.ObjectId,
 		ref: 'User',
+		immutable: true,
 	},
 	contents: [{
 		book: {
 			type: String,
 			ref: 'Book',
 			required: true,
+			alias: 'isbn',
 		},
 		book_description: String,
 	}],

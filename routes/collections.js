@@ -3,8 +3,22 @@ import { Collection } from '../models/index.js'
 import authMiddleware from '../middleware/auth_middleware.js'
 const router = new express.Router()
 
+router.use(authMiddleware)
+
+router.post('/', async (req, res, next) => {
+	const { _id: userId } = res.locals.user
+	try {
+		const collection = await Collection.create({ ...req.body, type: 'custom', user: userId })
+
+		return res.status(201).json({collection})
+	} catch (e) {
+		console.error(e)
+		return next(new Error('컬렉션 작성을 실패했습니다.'))
+	}
+})
+
 // Get all collections
-router.get('/', authMiddleware, async (req, res, next) => {
+router.get('/', async (req, res, next) => {
 	try {
 		// query = { name, type }
 		const collections = await Collection.find(req.query).populate('contents.book', '-reviews')
@@ -16,26 +30,25 @@ router.get('/', authMiddleware, async (req, res, next) => {
 	}
 })
 
-router.post('/', authMiddleware ,async (req, res) => {
+router.put('/:collectionId', async (req, res, next) => {
+	const { collectionId } = req.params
 	const { _id: userId } = res.locals.user
-
 	try {
-		const collection = await Collection.create({
-			...req.body,
-			type: 'custom',
-			user: userId,
-		})
+		const collection = await Collection.findById(collectionId)
 
-		return res.json({collection})
+		if (!collection)
+			return next(new Error('존재하지 않는 컬렉션 아이디입니다.'))
+        
+		if (String(collection.user) !== String(userId))
+			return next(new Error('로그인된 사용자가 컬렉션 작성자가 아닙니다.'))
 
+		await collection.update(req.body)
+
+		return res.status(201).json({ collection })
 	} catch (e) {
 		console.error(e)
-		return next(new Error('컬렉션 작성을 실패했습니다.'))
+		return next(new Error('컬렉션 수정을 실패했습니다.'))
 	}
-})
-
-router.get('/', (req, res) => {
-
 })
 
 export default router
