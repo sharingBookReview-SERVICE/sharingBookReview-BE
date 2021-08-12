@@ -3,7 +3,9 @@ import { Collection } from '../models/index.js'
 import authMiddleware from '../middleware/auth_middleware.js'
 const router = new express.Router()
 
-router.post('/', authMiddleware, async (req, res, next) => {
+router.use(authMiddleware)
+
+router.post('/', async (req, res, next) => {
 	const { _id: userId } = res.locals.user
 	try {
 		const collection = await Collection.create({ ...req.body, type: 'custom', user: userId })
@@ -16,7 +18,7 @@ router.post('/', authMiddleware, async (req, res, next) => {
 })
 
 // Get all collections
-router.get('/', authMiddleware, async (req, res, next) => {
+router.get('/', async (req, res, next) => {
 	try {
 		// query = { name, type }
 		const collections = await Collection.find(req.query).populate('contents.book', '-reviews')
