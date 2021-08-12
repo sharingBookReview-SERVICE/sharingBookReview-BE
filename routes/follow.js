@@ -39,6 +39,7 @@ router.get('/followerList', authMiddleware, async (req, res, next) => {
 router.put('/:userId', authMiddleware, async (req, res, next) => {
     const { _id : follower } = res.locals.user
     const { userId : followee } = req.params
+    let treasure
     try{
         let status
     const follow = await Follow.findOne({follower, followee})
@@ -52,6 +53,7 @@ router.put('/:userId', authMiddleware, async (req, res, next) => {
             followee
         })
         status = true
+        treasure = await User.getExpAndLevelUp(followee, "follow")
     }
     
     const followingCount = (await Follow.find({follower})).length
@@ -59,7 +61,7 @@ router.put('/:userId', authMiddleware, async (req, res, next) => {
 
     await User.findByIdAndUpdate(follower, {followingCount})
     await User.findByIdAndUpdate(followee, {followerCount})
-    return res.json({status})
+    return res.json({status, treasure})
     } catch(e){
         return next(new Error('팔로우를 실패했습니다.'))
     }
