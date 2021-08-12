@@ -144,9 +144,9 @@ router.get('/:userId/reviews', async (req, res, next) => {
 router.put("/profile/:userId", async (req, res, next) => {
     const { userId } = req.params
     const { ImageName } = req.body
-    const reaching_10 = false
+    const treasure = true
     try{
-        let user = await User.findByIdAndUpdate( userId, {reaching_10}, {new : true} )
+        let user = await User.findByIdAndUpdate( userId, {treasure}, {new : true} )
         let { own_image } = user
         own_image.push(ImageName)
 
