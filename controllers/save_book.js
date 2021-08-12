@@ -1,4 +1,4 @@
-import { Book } from '../../models/index.js'
+import { Book } from '../models'
 import getDescription from './book_detail_crawling.js'
 
 // else if(key == "description"){
