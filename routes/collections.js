@@ -38,8 +38,8 @@ router.put('/:collectionId', async (req, res, next) => {
 
 		if (!collection)
 			return next(new Error('존재하지 않는 컬렉션 아이디입니다.'))
-
-		if (collection.user._id !== userId)
+        
+		if (String(collection.user) !== String(userId))
 			return next(new Error('로그인된 사용자가 컬렉션 작성자가 아닙니다.'))
 
 		await collection.update(req.body)
