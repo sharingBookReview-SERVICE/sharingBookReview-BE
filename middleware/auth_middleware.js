@@ -8,7 +8,7 @@ const authMiddleware = (req, res, next) => {
 		const tokenScheme = authorization.split(' ')[0]
 		const tokenValue = authorization.split(' ')[1]
 
-		if (authorization === null || authorization === undefined) {
+		if (authorization === null || authorization === undefined || tokenValue === 'null') {
 			return next(new Error('로그인을 위한 정보가 존재 하지 않습니다.'))
 		}
 		if (tokenScheme !== 'Bearer') {

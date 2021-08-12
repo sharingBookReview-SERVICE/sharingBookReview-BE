@@ -32,7 +32,7 @@ router.get('/', nonAuthMiddleware, async (req, res, next) => {
         }else{
             result = reviews
         }
-		return res.json({result})
+		return res.json(result)
 	} catch (e) {
 		console.error(e)
 		return next(new Error('피드 불러오기를 실패했습니다.'))
