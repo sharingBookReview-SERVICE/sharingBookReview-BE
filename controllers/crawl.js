@@ -2,12 +2,10 @@ import puppeteer from 'puppeteer'
 import searchBooks from './searchbooks.js'
 
 /**
- * Crawl 10 bestsellers from 'kyobobook'
- * @returns {Promise<*[String]>} Array of bestseller isbn
+ * Launch browser and goto given url
+ * @returns {Promise<Page>}
  */
-const getBestsellers = async () => {
-	const BESTSELLER_URL = 'https://www.kyobobook.co.kr/bestSellerNew/bestseller.laf'
-	
+const launchBrowserAndGotoURL = async (URL) => {
 	const browser = await puppeteer.launch({
 		args: ['--no-sandbox', '--disable-setuid-sandbox'],
 		headless: true,
@@ -16,7 +14,19 @@ const getBestsellers = async () => {
 
 	const [page] = await browser.pages()
 
-	await page.goto(BESTSELLER_URL)
+	await page.goto(URL)
+
+	return page
+}
+
+/**
+ * Crawl 10 bestsellers from 'kyobobook'
+ * @returns {Promise<*[String]>} Array of bestseller isbn
+ */
+const getBestsellers = async () => {
+	const BESTSELLER_URL = 'https://www.kyobobook.co.kr/bestSellerNew/bestseller.laf'
+	
+	const page = launchBrowserAndGotoURL(BESTSELLER_URL)
 
 	const isbnList = await page.$$eval(
 		'ul > input[name=barcode]',
