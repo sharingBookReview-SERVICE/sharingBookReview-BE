@@ -1,4 +1,4 @@
-import { Book } from '../models'
+import { Book } from '../models/index.js'
 import { getBookDescription } from './crawl.js'
 
 /**
