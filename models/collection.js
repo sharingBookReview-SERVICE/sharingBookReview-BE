@@ -19,6 +19,7 @@ const collectionSchema = new mongoose.Schema({
 			type: String,
 			ref: 'Book',
 			required: true,
+			alias: 'isbn',
 		},
 		book_description: String,
 	}],
