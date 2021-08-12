@@ -1,17 +1,6 @@
 import mongoose from 'mongoose'
 import { commentSchema } from './comment.js'
 
-const contentSchema = new mongoose.Schema({
-	book: {
-		type: String,
-		ref: 'Book',
-		required: true,
-	},
-	book_description: {
-		type: String,
-	},
-})
-
 const collectionSchema = new mongoose.Schema({
 	name: {
 		type: String,
@@ -25,7 +14,14 @@ const collectionSchema = new mongoose.Schema({
 		type: mongoose.Schema.Types.ObjectId,
 		ref: 'User',
 	},
-	contents: [contentSchema],
+	contents: [{
+		book: {
+			type: String,
+			ref: 'Book',
+			required: true,
+		},
+		book_description: String,
+	}],
 	image: String,
 	description: String,
 	comments: [commentSchema],
