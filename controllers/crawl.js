@@ -26,7 +26,7 @@ const launchBrowserAndGotoURL = async (URL) => {
 const getBestsellers = async () => {
 	const BESTSELLER_URL = 'https://www.kyobobook.co.kr/bestSellerNew/bestseller.laf'
 	
-	const page = launchBrowserAndGotoURL(BESTSELLER_URL)
+	const page = await launchBrowserAndGotoURL(BESTSELLER_URL)
 
 	const isbnList = await page.$$eval(
 		'ul > input[name=barcode]',
@@ -36,7 +36,7 @@ const getBestsellers = async () => {
 			})
 	)
 
-	await browser.close()
+	await (await page.browser()).close()
 
 	const top10 = isbnList.slice(0,9)
 	const promises = top10.map((isbn) => searchBooks('isbn', isbn))
@@ -51,14 +51,14 @@ const getBestsellers = async () => {
  * @returns {Promise<String>} Detailed description of book
  */
 const getBookDescription = async (link) => {
-	const page = launchBrowserAndGotoURL(link)
+	const page = await launchBrowserAndGotoURL(link)
 
 	const bookDescription = await page.$eval(
 		'#bookIntroContent',
 		(element) => element.textContent
 	)
 
-	await browser.close()
+	await (await page.browser()).close()
 
 	return bookDescription
 }
