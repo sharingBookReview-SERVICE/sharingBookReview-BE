@@ -19,12 +19,10 @@ const collectionSchema = new mongoose.Schema({
 	},
 	contents: [{
 		book: {
-			type: Number,
+			type: String,
 			ref: 'Book',
 			required: true,
 			alias: 'isbn',
-			min: 1000000000000,
-			max: 9999999999999,
 		},
 		book_description: String,
 	}],
