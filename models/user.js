@@ -34,18 +34,14 @@ const userSchema = new mongoose.Schema({
     },
     own_image:{
         type: [String]
-    },
-    reaching_multiple_10:{
-        type: Boolean,
-        default: false
     }
-        
 })
 // todo following, followerCount virtual로 변환
 // todo 발생되는 event의 target instance id과 event를 수행하는 user id를 저장해서 level과 exp를 virtual로 표현
 // why 누가 어디에 event를 실행했는지를 저장하는것이 확장성이 높다.
 userSchema.statics.getExpAndLevelUp = async function(userId, event) {
     const user = await this.findById(userId)
+    let reaching_10 = false
     // event에 따른 경험치를 획득
     user.exp += expList[event]
     // 필요 경험치 계산
@@ -54,10 +50,13 @@ userSchema.statics.getExpAndLevelUp = async function(userId, event) {
     if(user.exp >= requiredExp){
         user.level += 1
         user.exp -= requiredExp
+        if(user.level % 10 === 0){
+            reaching_10 = true
+        }
     }
         await user.save()
 
-        return user
+        return reaching_10
 }
 
 
