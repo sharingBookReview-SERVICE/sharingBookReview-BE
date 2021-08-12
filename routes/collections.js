@@ -6,11 +6,18 @@ import ImageUpload from '../controllers/image_upload.js'
 
 
 const router = new express.Router()
+const upload = multer({
+	dest: 'uploads/',
+})
 
 router.use(authMiddleware)
 
-router.post('/', async (req, res, next) => {
+router.post('/', upload.single('image'), ImageUpload.uploadImage, async (req, res, next) => {
 	const { _id: userId } = res.locals.user
+    const { bookId } = req.params
+    const image = res.locals?.url
+    const { name, description } = req.body
+    const contents = JSON.parse(req.body.hashtags)
 	try {
 		const collection = await Collection.create({ ...req.body, type: 'custom', user: userId })
 
