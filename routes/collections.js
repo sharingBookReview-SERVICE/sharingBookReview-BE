@@ -30,4 +30,25 @@ router.get('/', async (req, res, next) => {
 	}
 })
 
+router.put('/:collectionId', async (req, res, next) => {
+	const { collectionId } = req.params
+	const { _id: userId } = res.locals.user
+	try {
+		const collection = await Collection.findById(collectionId)
+
+		if (!collection)
+			return next(new Error('존재하지 않는 컬렉션 아이디입니다.'))
+
+		if (collection.user._id !== userId)
+			return next(new Error('로그인된 사용자가 컬렉션 작성자가 아닙니다.'))
+
+		await collection.update(req.body)
+
+		return res.status(201).json({ collection })
+	} catch (e) {
+		console.error(e)
+		return next(new Error('컬렉션 수정을 실패했습니다.'))
+	}
+})
+
 export default router
