@@ -30,7 +30,7 @@ const userSchema = new mongoose.Schema({
     },
     profileImage:{
         type: String,
-        default:"https://booknetworkservice.s3.ap-northeast-2.amazonaws.com/6dd5a982d719bdc3/%E1%84%81%E1%85%AE%E1%86%B7%E1%84%81%E1%85%AE%E1%84%82%E1%85%B3%E1%86%AB+%E1%84%8B%E1%85%A1%E1%84%86%E1%85%A6%E1%84%87%E1%85%A1-120px.svg"
+        default:"image_1"
     },
     own_image:{
         type: [String]
