@@ -60,12 +60,14 @@ const job = schedule.scheduleJob('30 * * * * *', async () => {
 			.slice(0, 9)
 			.map((tag) => tag.name)
 
-		changedTags.add(book.topTags)
+		changedTags.add(...book.topTags)
 		await book.save()
 	}
 
 	// Update Collection
 	for (const tag of changedTags) {
+		if (!tag) continue
+
 		const collection =
 			(await Collection.findOne({ name: tag, type: 'tag' })) ??
 			(await Collection.create({ name: tag, type: 'tag' }))
