@@ -60,15 +60,7 @@ const job = schedule.scheduleJob('30 * * * * *', async () => {
 			.slice(0, 9)
 			.map((tag) => tag.name)
 
-		// Update Collection
-		for (const _tag of book.topTags) {
-			const tag =
-				(await Collection.findOne({ name: _tag, type: 'tag' })) ??
-				(await Collection.create({ name: _tag, type: 'tag' }))
-			tag.books.addToSet(mongoose.Types.ObjectId(book._id))
-			await tag.save()
-		}
-
+		changedTags.add(book.topTags)
 		await book.save()
 	}
 
