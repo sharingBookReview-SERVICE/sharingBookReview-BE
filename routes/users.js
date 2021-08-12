@@ -71,7 +71,7 @@ router.put('/nickname/:userId', async (req, res, next) => {
 
 		const user = await User.findByIdAndUpdate(userId, { nickname })
 
-        if (user == null) return next(new Error('등록되지 않은 유저입니다'))
+        if (user == null) return next(new Error('DB에 등록되지 않은 userId입니다'))
 
 		const token = jwt.sign(
 			{ userId: user._id, nickname: user.nickname },
@@ -145,13 +145,18 @@ router.put("/profile/:userId", async (req, res, next) => {
     const { userId } = req.params
     const { ImageName } = req.body
     const reaching_10 = false
+    try{
+        let user = await User.findByIdAndUpdate( userId, {reaching_10}, {new : true} )
+        let { own_image } = user
+        own_image.push(ImageName)
 
-    let user = await User.findByIdAndUpdate( userId, {reaching_10}, {new : true} )
-    let { own_image } = user
-    own_image.push(ImageName)
-    user = await user.save()
+        user = await user.save()
 
-    res.json(user)
+        res.json(user)
+    }catch{
+        return next(new Error('프로필 이미지 획득을 실패헀습니다.'))
+    }
+    
 })
 
 
