@@ -5,7 +5,9 @@ const authMiddleware = (req, res, next) => {
     const { authorization } = req.headers;
     try{
         if (authorization === undefined){
-            res.locals.user = 'nonLogin'
+            let result = new Object
+            result._id = 'nonLogin'
+            res.locals.user = result
             return next()
         }
     }catch(e){
