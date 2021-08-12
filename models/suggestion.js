@@ -5,6 +5,7 @@ const suggestionSchema = new mongoose.Schema({
 		type: mongoose.Schema.Types.ObjectId,
 		ref: 'User',
 		immutable: true,
+		required: true,
 	},
 	content: {
 		type: String,
@@ -12,6 +13,7 @@ const suggestionSchema = new mongoose.Schema({
 	created_at: {
 		type: Date,
 		default: Date.now,
+		immutable: true,
 	},
 })
 
