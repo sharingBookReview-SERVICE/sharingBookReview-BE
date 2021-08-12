@@ -71,6 +71,8 @@ router.put('/nickname/:userId', async (req, res, next) => {
 
 		const user = await User.findByIdAndUpdate(userId, { nickname })
 
+        if (user == null) return next(new Error('등록되지 않은 유저입니다'))
+
 		const token = jwt.sign(
 			{ userId: user._id, nickname: user.nickname },
 			process.env.TOKEN_KEY
@@ -95,21 +97,11 @@ router.get('/:userId', async (req, res, next) => {
 
 router.put('/:userId', async (req, res, next) => {
 	const { userId } = req.params
-	const { nickname } = req.body
 	try {
-		if (await User.findOne({ nickname }))
-			return next(new Error('해당 닉네임이 존재합니다.'))
-
-		const user = await User.findByIdAndUpdate(userId, { nickname })
-
+		const user = await User.findByIdAndUpdate(userId, { ...req.body },{new: true})
 		if (user == null) return next(new Error('등록되지 않은 유저입니다'))
 
-		const token = jwt.sign(
-			{ userId: user._id, nickname: user.nickname },
-			process.env.TOKEN_KEY
-		)
-
-		return res.json(token)
+		return res.json(user)
 	} catch (e) {
 		return next(new Error('수정에 실패했습니다.'))
 	}
@@ -160,5 +152,6 @@ router.put("/profile/:userId", async (req, res, next) => {
 
     res.json(user)
 })
+
 
 export default router
