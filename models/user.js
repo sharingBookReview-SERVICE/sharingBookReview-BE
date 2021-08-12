@@ -65,4 +65,13 @@ userSchema.statics.getExpAndLevelUp = async function(userId, event) {
         return treasure
 }
 
+userSchema.statics.deleteExp = async function(userId, event) {
+    const user = await this.findById(userId)
+
+    user.exp -= expList[event]
+    console.log(user.exp)
+    await user.save()
+
+}
+
 export default mongoose.model('User', userSchema)

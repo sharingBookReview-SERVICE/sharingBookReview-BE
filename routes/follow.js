@@ -47,6 +47,7 @@ router.put('/:userId', authMiddleware, async (req, res, next) => {
     if(follow){
         await follow.delete()
         status = false
+        User.deleteExp(followee, "follow")
     } else{
         await Follow.create({
             follower,
