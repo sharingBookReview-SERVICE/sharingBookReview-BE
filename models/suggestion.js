@@ -1,5 +1,6 @@
 import mongoose from 'mongoose'
 
+const date = new Date()
 const suggestionSchema = new mongoose.Schema({
 	user: {
 		type: mongoose.Schema.Types.ObjectId,
@@ -11,8 +12,8 @@ const suggestionSchema = new mongoose.Schema({
 		type: String,
 	},
 	created_at: {
-		type: Date,
-		default: Date.now,
+		type: Object,
+		default: date,
 		immutable: true,
 	},
 })

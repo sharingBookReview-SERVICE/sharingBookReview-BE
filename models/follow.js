@@ -1,5 +1,6 @@
 import mongoose from 'mongoose'
 
+const date = new Date()
 const followSchema = new mongoose.Schema({
     sender:{
         type: mongoose.Schema.Types.ObjectId,
@@ -12,8 +13,8 @@ const followSchema = new mongoose.Schema({
 		immutable: true,
     },
     created_at: {
-		type: Date,
-		default: Date.now,
+		type: Object,
+		default: date,
 	},
 })
 

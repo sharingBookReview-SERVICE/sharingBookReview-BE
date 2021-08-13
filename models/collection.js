@@ -1,6 +1,7 @@
 import mongoose from 'mongoose'
 import { commentSchema } from './comment.js'
 
+const date = new Date()
 const collectionSchema = new mongoose.Schema({
 	name: {
 		type: String,
@@ -34,8 +35,8 @@ const collectionSchema = new mongoose.Schema({
 		ref: 'User',
 	},
 	created_at : {
-		type: Date,
-		default: Date.now,
+		type: Object,
+		default: date,
 		immutable: true
 	},
 	commented_users:{

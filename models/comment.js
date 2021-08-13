@@ -1,5 +1,6 @@
 import mongoose from 'mongoose'
 
+const date = new Date()
 const commentSchema = new mongoose.Schema({
 	user: {
 		type: mongoose.Schema.Types.ObjectId,
@@ -7,8 +8,8 @@ const commentSchema = new mongoose.Schema({
 	},
 	content: String,
 	created_at: {
-		type: Date,
-		default: Date.now,
+		type: Object,
+		default: date,
 	}
     
 })

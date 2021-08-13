@@ -1,10 +1,11 @@
 import mongoose from 'mongoose'
 
+const date = new Date()
 const changesIndexSchema = new mongoose.Schema({
 	isbn: Number,
 	created_at: {
-		type: Date,
-		default: Date.now,
+		type: Object,
+		default: date,
 	},
 })
 

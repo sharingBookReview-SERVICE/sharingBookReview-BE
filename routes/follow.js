@@ -3,16 +3,6 @@ import authMiddleware from '../middleware/auth_middleware.js'
 import { Follow, User } from '../models/index.js'
 
 const router = new express.Router()
-// const today = new Date()
-// const date = {
-//     year : today.getFullYear(),
-//     month : today.getMonth(),
-//     ddate : today.formatDate(),
-//     day : today.getDate(),
-// }
-const event = new Date(Date.UTC(2012, 11, 20, 3, 0, 0));
-const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-const date = event.toLocaleDateString(undefined, options)
 
 // 팔로잉 목록 조회
 router.get('/followingList', authMiddleware, async (req, res, next) => {
@@ -23,7 +13,7 @@ router.get('/followingList', authMiddleware, async (req, res, next) => {
         const followingList = followList.map((follow) => {
             return follow.receiver
         })
-        res.json({followingList,date})
+        res.json({followingList})
     }catch(e){
         return next(new Error('팔로잉 리스트 불러오기를 실패했습니다.'))
     }

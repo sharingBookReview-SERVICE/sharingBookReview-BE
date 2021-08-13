@@ -1,6 +1,7 @@
 import mongoose from 'mongoose'
 import { commentSchema } from './comment.js'
 
+const date = new Date()
 const reviewSchema = new mongoose.Schema({
 	user: {
 		type: mongoose.Schema.Types.ObjectId,
@@ -20,8 +21,8 @@ const reviewSchema = new mongoose.Schema({
 	image: String,
 	hashtags: [String],
 	created_at: {
-		type: Date,
-		default: Date.now,
+		type: Object,
+		default: date,
 		immutable: true,
 	},
 	liked_users: {
