@@ -130,4 +130,26 @@ router.post('/:collectionId/comments', async (req, res, next) => {
 	}
 })
 
+router.patch('/:collectionId/comments/:commentsId', async (req, res, next) => {
+	const { _id: userId } = res.locals.user
+	const { collectionId, commentId } = req.params
+	const { content } = req.body
+
+	try {
+		const collection = await Collection.findById(collectionId)
+
+		if (!collection) return next(new Error('존재하지 않는 컬렉션입니다.'))
+
+		const comment = new Comment({ content, user: usrId })
+
+		collection.comments.id(commentId).content = content
+		await collection.save()
+
+		return res.json({ comment })
+	} catch (e) {
+		console.error(e)
+		return next(new Error('댓글 수정을 실패했습니다.'))
+	}
+})
+
 export default router
