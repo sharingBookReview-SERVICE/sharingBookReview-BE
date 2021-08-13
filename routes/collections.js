@@ -1,5 +1,5 @@
 import express from 'express'
-import { Collection } from '../models/index.js'
+import { Collection, User } from '../models/index.js'
 import authMiddleware from '../middleware/auth_middleware.js'
 import multer from 'multer'
 import ImageUpload from '../controllers/image_upload.js'
@@ -17,6 +17,13 @@ router.post('/', upload.single('image'), ImageUpload.uploadImage, async (req, re
     const image = res.locals?.url
     const { name, description } = req.body
     const contents = JSON.parse(req.body.contents)
+
+    try{
+        await User.getExpAndLevelUp(userId, "collection")
+    }catch (e) {
+        return next(new Error('경험치 등록을 실패했습니다.'))
+    }
+
 	try {
 		const collection = await Collection.create({ image, name, description, contents, type: 'custom', user: userId })
 

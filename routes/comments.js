@@ -9,7 +9,6 @@ router.post('/', authMiddleware, async (req, res, next) => {
 	const userId = res.locals.user._id
 	const { reviewId } = req.params
 	const { content } = req.body
-    let reaching_10
 
 	try {
 		if (!(await Review.findById(reviewId)))
@@ -26,7 +25,7 @@ router.post('/', authMiddleware, async (req, res, next) => {
         const canGetExp = Boolean(commented_users.filter((_id)=>String(_id) === String(userId)).length)
 
         if(!canGetExp){
-            reaching_10 = await User.getExpAndLevelUp(userId, "firstComment")
+            await User.getExpAndLevelUp(userId, "firstComment")
             commented_users.push(userId)
             await review.save()
         }
@@ -45,7 +44,7 @@ router.post('/', authMiddleware, async (req, res, next) => {
 			},
 		})
 
-		return res.status(201).json({ comment, reaching_10 })
+		return res.status(201).json({ comment})
 	} catch (e) {
 		console.error(e)
 		return next(new Error('댓글 작성을 실패했습니다.'))

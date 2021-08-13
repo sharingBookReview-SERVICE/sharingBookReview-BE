@@ -143,12 +143,15 @@ router.get('/:userId/reviews', async (req, res, next) => {
 // 프로필 이미지 획득
 router.put("/profile/:userId", async (req, res, next) => {
     const { userId } = req.params
-    const { ImageName } = req.body
-    const treasure = true
+    const { imageName } = req.body
+    const treasure = false
     try{
         let user = await User.findByIdAndUpdate( userId, {treasure}, {new : true} )
         let { own_image } = user
-        own_image.push(ImageName)
+
+        if (own_image.includes(imageName)) return next(new Error('이미 프로필 이미지를 가지고 있습니다.'))
+
+        own_image.push(imageName)
 
         user = await user.save()
 

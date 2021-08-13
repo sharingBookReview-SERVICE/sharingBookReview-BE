@@ -39,6 +39,7 @@ router.get('/followerList', authMiddleware, async (req, res, next) => {
 router.put('/:userId', authMiddleware, async (req, res, next) => {
     const { _id : follower } = res.locals.user
     const { userId : followee } = req.params
+
     try{
         let status
     const follow = await Follow.findOne({follower, followee})
@@ -46,12 +47,14 @@ router.put('/:userId', authMiddleware, async (req, res, next) => {
     if(follow){
         await follow.delete()
         status = false
+        User.deleteExp(followee, "follow")
     } else{
         await Follow.create({
             follower,
             followee
         })
         status = true
+        await User.getExpAndLevelUp(followee, "follow")
     }
     
     const followingCount = (await Follow.find({follower})).length
