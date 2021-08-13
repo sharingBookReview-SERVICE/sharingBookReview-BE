@@ -1,7 +1,8 @@
 import mongoose from 'mongoose'
 import { commentSchema } from './comment.js'
+import moment from 'moment'
 
-const date = new Date()
+const date = moment().format("dddd, MMMM Do YYYY, h:mm:ss a"); 
 const collectionSchema = new mongoose.Schema({
 	name: {
 		type: String,
@@ -35,7 +36,7 @@ const collectionSchema = new mongoose.Schema({
 		ref: 'User',
 	},
 	created_at : {
-		type: Object,
+		type: String,
 		default: date,
 		immutable: true
 	},

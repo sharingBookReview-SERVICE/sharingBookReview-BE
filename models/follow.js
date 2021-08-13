@@ -1,6 +1,7 @@
 import mongoose from 'mongoose'
+import moment from 'moment'
 
-const date = new Date()
+const date = moment().format("dddd, MMMM Do YYYY, h:mm:ss a"); 
 const followSchema = new mongoose.Schema({
     sender:{
         type: mongoose.Schema.Types.ObjectId,
@@ -13,7 +14,7 @@ const followSchema = new mongoose.Schema({
 		immutable: true,
     },
     created_at: {
-		type: Object,
+		type: String,
 		default: date,
 	},
 })

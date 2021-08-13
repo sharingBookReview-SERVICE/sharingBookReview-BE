@@ -1,6 +1,7 @@
 import mongoose from 'mongoose'
+import moment from 'moment'
 
-const date = new Date()
+const date = moment().format("dddd, MMMM Do YYYY, h:mm:ss a"); 
 const commentSchema = new mongoose.Schema({
 	user: {
 		type: mongoose.Schema.Types.ObjectId,
@@ -8,7 +9,7 @@ const commentSchema = new mongoose.Schema({
 	},
 	content: String,
 	created_at: {
-		type: Object,
+		type: String,
 		default: date,
 	}
     

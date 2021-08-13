@@ -1,6 +1,7 @@
 import mongoose from 'mongoose'
+import moment from 'moment'
 
-const date = new Date()
+const date = moment().format("dddd, MMMM Do YYYY, h:mm:ss a"); 
 const suggestionSchema = new mongoose.Schema({
 	user: {
 		type: mongoose.Schema.Types.ObjectId,
@@ -12,7 +13,7 @@ const suggestionSchema = new mongoose.Schema({
 		type: String,
 	},
 	created_at: {
-		type: Object,
+		type: String,
 		default: date,
 		immutable: true,
 	},
