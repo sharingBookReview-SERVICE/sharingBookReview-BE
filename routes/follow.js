@@ -34,6 +34,7 @@ router.get('/followerList', authMiddleware, async (req, res, next) => {
     }
 })
 
+// 팔로우 하기, 팔로우 취소
 router.put('/:userId', authMiddleware, async (req, res, next) => {
     const { _id : sender } = res.locals.user
     const { userId : receiver } = req.params
@@ -73,6 +74,7 @@ router.put('/:userId', authMiddleware, async (req, res, next) => {
     
 })
 
+// 나를 팔로우 하는 사람 삭제, 관계 취소
 router.put('/delete/:userId', authMiddleware, async (req, res, next) => {
     const { _id : receiver } = res.locals.user
     const { userId : sender } = req.params
