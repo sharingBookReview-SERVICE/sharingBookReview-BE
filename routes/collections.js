@@ -17,10 +17,9 @@ router.post('/', upload.single('image'), ImageUpload.uploadImage, async (req, re
     const image = res.locals?.url
     const { name, description } = req.body
     const contents = JSON.parse(req.body.contents)
-    let treasure
 
     try{
-        treasure = await User.getExpAndLevelUp(userId, "collection")
+        await User.getExpAndLevelUp(userId, "collection")
     }catch (e) {
         return next(new Error('경험치 등록을 실패했습니다.'))
     }
@@ -28,7 +27,7 @@ router.post('/', upload.single('image'), ImageUpload.uploadImage, async (req, re
 	try {
 		const collection = await Collection.create({ image, name, description, contents, type: 'custom', user: userId })
 
-		return res.status(201).json({collection, treasure})
+		return res.status(201).json({collection})
 	} catch (e) {
 		console.error(e)
 		return next(new Error('컬렉션 작성을 실패했습니다.'))
