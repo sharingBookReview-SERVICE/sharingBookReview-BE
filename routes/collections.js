@@ -1,5 +1,5 @@
 import express from 'express'
-import { Collection, User } from '../models/index.js'
+import { Collection, User, Comment } from '../models/index.js'
 import authMiddleware from '../middleware/auth_middleware.js'
 import nonAuthMiddleware from '../middleware/non_auth_middleware.js'
 import multer from 'multer'
@@ -99,6 +99,34 @@ router.delete('/:collectionId', authMiddleware, async (req, res, next) => {
 	} catch (e) {
 		console.error(e)
 		return next(new Error('컬렉션 삭제를 실패했습니다.'))
+	}
+})
+
+/**
+ * Collection's comment CRUD
+ */
+
+router.post('/:collectionId/comments', async (req, res, next) => {
+	const { _id: userId } = res.locals.user
+	const { collectionId } = req.params
+	const { content } = req.body
+
+	try {
+		const collection = await Collection.findById(collectionId)
+
+		if (!collection) return next(new Error('존재하지 않는 컬렉션입니다.'))
+
+		const comment = new Comment({ content, user: userId })
+
+		collection.comments.push(comment)
+		await collection.save()
+
+		// todo 경험치 계산 추가하고 canGetExp 자체를 static method 로 분리시키기
+
+		return res.status(201).json({ comment })
+	} catch (e) {
+		console.error(e)
+		return next(new Error('댓글 작성을 실패했습니다.'))
 	}
 })
 
