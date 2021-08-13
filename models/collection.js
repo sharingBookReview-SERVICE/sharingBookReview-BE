@@ -37,6 +37,10 @@ const collectionSchema = new mongoose.Schema({
 		type: Date,
 		default: Date.now,
 		immutable: true
+	},
+	commented_users:{
+		type: [mongoose.Schema.Types.ObjectId],
+		ref: 'User',
 	}
 })
 
