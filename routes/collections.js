@@ -50,7 +50,7 @@ router.post('/', upload.single('image'), ImageUpload.uploadImage, async (req, re
 router.get('/', async (req, res, next) => {
 	try {
 		// query = { name, type }
-		const collections = await Collection.find(req.query).populate('contents.book', '-reviews')
+		const collections = await Collection.find(req.query).populate('contents.book', '-reviews').sort('-created_at')
 
 		return res.json({ collections })
 	} catch (e) {
