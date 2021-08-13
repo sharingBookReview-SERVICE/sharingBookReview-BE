@@ -149,4 +149,20 @@ router.patch('/:collectionId/comments/:commentsId', async (req, res, next) => {
 	}
 })
 
+router.delete('/:collectionId/comments/:commentId', async (req, res, next) => {
+	const { _id: userId } = res.locals.user
+	const { collectionId, commentId } = req.params
+
+	try {
+		const collection = await validateId(Collection, collectionId)
+
+		await collection.comments.pull(commentId)
+		await collection.save()
+
+		return res.sendStatus(204)
+	} catch (e) {
+		console.error(e)
+		return next(new Error('댓글 삭제를 실패했습니다.'))
+	}
+})
 export default router
