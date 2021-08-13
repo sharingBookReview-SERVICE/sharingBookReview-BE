@@ -99,7 +99,7 @@ router.put('/delete/:userId', authMiddleware, async (req, res, next) => {
         await User.findByIdAndUpdate(sender, {followingCount})
         await User.findByIdAndUpdate(receiver, {followerCount})
 
-        return res.json({status, followerList})
+        return res.json({followerList})
 
     } catch(e){
         return next(new Error('팔로우 삭제를 실패했습니다.'))
