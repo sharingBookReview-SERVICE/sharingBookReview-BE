@@ -4,6 +4,7 @@ import authMiddleware from '../middleware/auth_middleware.js'
 import nonAuthMiddleware from '../middleware/non_auth_middleware.js'
 import multer from 'multer'
 import ImageUpload from '../controllers/image_upload.js'
+import { validateId } from '../controllers/utilities.js'
 
 const router = new express.Router()
 const upload = multer({
@@ -112,9 +113,7 @@ router.post('/:collectionId/comments', async (req, res, next) => {
 	const { content } = req.body
 
 	try {
-		const collection = await Collection.findById(collectionId)
-
-		if (!collection) return next(new Error('존재하지 않는 컬렉션입니다.'))
+		const collection = await validateId(Collection, collectionId)
 
 		const comment = new Comment({ content, user: userId })
 
@@ -136,9 +135,7 @@ router.patch('/:collectionId/comments/:commentsId', async (req, res, next) => {
 	const { content } = req.body
 
 	try {
-		const collection = await Collection.findById(collectionId)
-
-		if (!collection) return next(new Error('존재하지 않는 컬렉션입니다.'))
+		const collection = await validateId(Collection, collectionId)
 
 		const comment = new Comment({ content, user: usrId })
 
