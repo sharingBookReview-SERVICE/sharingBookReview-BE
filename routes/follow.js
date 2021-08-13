@@ -39,30 +39,36 @@ router.get('/followerList', authMiddleware, async (req, res, next) => {
 router.put('/:userId', authMiddleware, async (req, res, next) => {
     const { _id : follower } = res.locals.user
     const { userId : followee } = req.params
+    let status
+    const followingList = []
 
     try{
-        let status
-    const follow = await Follow.findOne({follower, followee})
+        const follow = await Follow.findOne({follower, followee})
 
-    if(follow){
-        await follow.delete()
-        status = false
-        User.deleteExp(followee, "follow")
-    } else{
-        await Follow.create({
-            follower,
-            followee
-        })
-        status = true
-        await User.getExpAndLevelUp(followee, "follow")
-    }
-    
-    const followingCount = (await Follow.find({follower})).length
-    const followerCount = (await Follow.find({followee})).length
+        if(follow){
+            await follow.delete()
+            status = false
+            User.deleteExp(followee, "follow")
+        } else{
+            await Follow.create({
+                follower,
+                followee
+            })
+            status = true
+            await User.getExpAndLevelUp(followee, "follow")
+        }
 
-    await User.findByIdAndUpdate(follower, {followingCount})
-    await User.findByIdAndUpdate(followee, {followerCount})
-    return res.json({status})
+        const followings = await Follow.find({follower}).populate({path: 'followee', select: 'level profileImage _id nickname'})
+        for (let following of followings){
+            followingList.push(following.followee)
+        }
+        
+        const followingCount = (await Follow.find({follower})).length
+        const followerCount = (await Follow.find({followee})).length
+
+        await User.findByIdAndUpdate(follower, {followingCount})
+        await User.findByIdAndUpdate(followee, {followerCount})
+        return res.json({status, followingList})
     } catch(e){
         return next(new Error('팔로우를 실패했습니다.'))
     }
