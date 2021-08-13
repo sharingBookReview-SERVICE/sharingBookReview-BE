@@ -29,16 +29,6 @@ router.post('/', upload.single('image'), ImageUpload.uploadImage, async (req, re
 	try {
 		const collection = await Collection.create({ image, name, description, contents, type: 'custom', user: userId })
 
-		// Check books are saved in db
-		const isbnArr = contents.map(content => content.book)
-		for (const isbn of isbnArr) {
-			if (await Book.findById(isbn)) continue
-
-			// If not, then get book info and save
-			const [searchResult] = await searchBooks('isbn', isbn)
-			await saveBook(searchResult)
-		}
-
 		return res.status(201).json({collection})
 	} catch (e) {
 		console.error(e)
