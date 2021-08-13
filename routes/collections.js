@@ -35,7 +35,7 @@ router.post('/', upload.single('image'), ImageUpload.uploadImage, async (req, re
 			if (await Book.findById(isbn)) continue
 
 			// If not, then get book info and save
-			const [searchResult] = await searchBooks('isbn', bookId)
+			const [searchResult] = await searchBooks('isbn', isbn)
 			await saveBook(searchResult)
 		}
 
