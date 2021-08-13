@@ -87,7 +87,13 @@ router.put('/nickname/:userId', async (req, res, next) => {
 router.get('/:userId', async (req, res, next) => {
 	const { userId } = req.params
 	try {
-		const user = await User.findById(userId)
+		const user = (await User.findById(userId)).toObject()
+		const reviews = await Review.find({user: userId})
+		const collections = await Collection.find({user: userId})
+
+		// Add total review and collection counts info
+		user.reviewCount = reviews.length
+		user.collectionCount = collections.length
 
 		return res.json( user )
 	} catch (e) {
