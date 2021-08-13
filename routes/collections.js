@@ -1,8 +1,10 @@
 import express from 'express'
-import { Collection, User } from '../models/index.js'
+import { Book, Collection, User } from '../models/index.js'
 import authMiddleware from '../middleware/auth_middleware.js'
 import multer from 'multer'
 import ImageUpload from '../controllers/image_upload.js'
+import searchBooks from '../controllers/searchbooks.js'
+import saveBook from '../controllers/save_book.js'
 
 
 const router = new express.Router()
@@ -26,6 +28,16 @@ router.post('/', upload.single('image'), ImageUpload.uploadImage, async (req, re
 
 	try {
 		const collection = await Collection.create({ image, name, description, contents, type: 'custom', user: userId })
+
+		// Check books are saved in db
+		const isbnArr = contents.map(content => content.book)
+		for (const isbn of isbnArr) {
+			if (await Book.findById(isbn)) continue
+
+			// If not, then get book info and save
+			const [searchResult] = await searchBooks('isbn', bookId)
+			await saveBook(searchResult)
+		}
 
 		return res.status(201).json({collection})
 	} catch (e) {
