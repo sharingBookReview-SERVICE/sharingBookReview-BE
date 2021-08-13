@@ -129,7 +129,7 @@ router.post('/:collectionId/comments', async (req, res, next) => {
 	}
 })
 
-router.patch('/:collectionId/comments/:commentsId', async (req, res, next) => {
+router.patch('/:collectionId/comments/:commentId', async (req, res, next) => {
 	const { _id: userId } = res.locals.user
 	const { collectionId, commentId } = req.params
 	const { content } = req.body
