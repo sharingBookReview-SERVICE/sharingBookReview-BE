@@ -34,8 +34,6 @@ router.get('/followerList', authMiddleware, async (req, res, next) => {
     }
 })
 
-// switch follow
-// todo like랑 비슷하게 refactoring
 router.put('/:userId', authMiddleware, async (req, res, next) => {
     const { _id : sender } = res.locals.user
     const { userId : receiver } = req.params
@@ -75,37 +73,38 @@ router.put('/:userId', authMiddleware, async (req, res, next) => {
     
 })
 
-// router.put('/delete/:userId', authMiddleware, async (req, res, next) => {
-//     const { _id : followee } = res.locals.user
-//     const { userId : follower } = req.params
-//     let status
-//     const followerList = []
+router.put('/delete/:userId', authMiddleware, async (req, res, next) => {
+    const { _id : receiver } = res.locals.user
+    const { userId : sender } = req.params
+    let status
+    const followerList = []
 
-//     try{
-//         const follow = await Follow.findOne({follower, followee})
+    try{
+        const follow = await Follow.findOne({sender, receiver})
 
-//         if(!follow){
-//             next(new Error("팔로우가 되어있지 않습니다."))
-//         }
-//         await follow.delete()
-//         User.deleteExp(followee, "follow")
+        if(!follow){
+            next(new Error("팔로우가 되어있지 않습니다."))
+        }
+        await follow.delete()
+        User.deleteExp(receiver, "follow")
 
-//         const followers = await Follow.find({followee}).populate({path: 'follower', select: 'level profileImage _id nickname'})
-//         for (let follower of followers){
-//             followerList.push(follower.follower)
-//         }
+        const followers = await Follow.find({receiver}).populate({path: 'sender', select: 'level profileImage _id nickname'})
+        for (let follower of followers){
+            followerList.push(follower.sender)
+        }
         
-//         const followingCount = (await Follow.find({follower})).length
-//         const followerCount = (await Follow.find({followee})).length
+        const followingCount = (await Follow.find({sender})).length
+        const followerCount = (await Follow.find({receiver})).length
 
-//         await User.findByIdAndUpdate(followee, {followingCount})
-//         await User.findByIdAndUpdate(follower, {followerCount})
-//         return res.json({status, followingList})
-//     } catch(e){
-//         return next(new Error('팔로우를 실패했습니다.'))
-//     }
+        await User.findByIdAndUpdate(sender, {followingCount})
+        await User.findByIdAndUpdate(receiver, {followerCount})
+
+        return res.json({status, followerList})
+
+    } catch(e){
+        return next(new Error('팔로우 삭제를 실패했습니다.'))
+    }
     
-// })
-
+})
 
 export default router
