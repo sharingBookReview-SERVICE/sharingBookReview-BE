@@ -1,6 +1,7 @@
 import express from 'express'
 import { Book, Collection, User } from '../models/index.js'
 import authMiddleware from '../middleware/auth_middleware.js'
+import nonAuthMiddleware from '../middleware/non_auth_middleware.js'
 import multer from 'multer'
 import ImageUpload from '../controllers/image_upload.js'
 import searchBooks from '../controllers/searchbooks.js'
@@ -12,9 +13,8 @@ const upload = multer({
 	dest: 'uploads/',
 })
 
-router.use(authMiddleware)
 
-router.post('/', upload.single('image'), ImageUpload.uploadImage, async (req, res, next) => {
+router.post('/', authMiddleware, upload.single('image'), ImageUpload.uploadImage, async (req, res, next) => {
 	const { _id: userId } = res.locals.user
     const image = res.locals?.url
     const { name, description } = req.body
@@ -37,7 +37,7 @@ router.post('/', upload.single('image'), ImageUpload.uploadImage, async (req, re
 })
 
 // Get all collections
-router.get('/', async (req, res, next) => {
+router.get('/', nonAuthMiddleware, async (req, res, next) => {
 	try {
 		// query = { name, type }
 		const collections = await Collection.find(req.query).populate('contents.book', '-reviews').sort('-created_at')
@@ -49,7 +49,7 @@ router.get('/', async (req, res, next) => {
 	}
 })
 
-router.get('/:collectionId', async (req, res, next) => {
+router.get('/:collectionId', authMiddleware, async (req, res, next) => {
 	const { collectionId } = req.params
 	try {
 		const collection = await Collection.findById(collectionId).populate('contents.book', '-reviews').populate('user', 'nickname level followingCount followerCount')
@@ -61,7 +61,7 @@ router.get('/:collectionId', async (req, res, next) => {
 	}
 })
 
-router.put('/:collectionId', async (req, res, next) => {
+router.put('/:collectionId', authMiddleware, async (req, res, next) => {
 	const { collectionId } = req.params
 	const { _id: userId } = res.locals.user
 	try {
@@ -82,7 +82,7 @@ router.put('/:collectionId', async (req, res, next) => {
 	}
 })
 
-router.delete('/:collectionId', async (req, res, next) => {
+router.delete('/:collectionId', authMiddleware, async (req, res, next) => {
 	const { collectionId } = req.params
 	const { _id: userId } = res.locals.user
 
