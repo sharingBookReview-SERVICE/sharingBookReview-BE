@@ -7,7 +7,7 @@ import { validateId } from '../controllers/utilities.js'
 const router = new express.Router({ mergeParams: true })
 
 router.post('/', authMiddleware, async (req, res, next) => {
-	const userId = res.locals.user._id
+	const { _id: userId } = res.locals.user
 	const { reviewId } = req.params
 	const { content } = req.body
 
@@ -30,7 +30,7 @@ router.post('/', authMiddleware, async (req, res, next) => {
     }
         
     try{
-        let comment = new Comment({ content, user: userId })
+        const comment = new Comment({ content, user: userId })
 
 		await Review.findByIdAndUpdate(reviewId, {
 			$push: {
