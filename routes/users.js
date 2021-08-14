@@ -3,6 +3,8 @@ import { User, Review, Collection } from '../models/index.js'
 import passport from 'passport'
 import jwt from 'jsonwebtoken'
 import dotenv from 'dotenv'
+import authMiddleware from '../middleware/auth_middleware.js'
+
 
 dotenv.config()
 
@@ -130,7 +132,8 @@ router.delete('/:userId', async (req, res, next) => {
 })
 
 // Returns all reviews and collections made by a user
-router.get('/:userId/feeds', async (req, res, next) => {
+// we will change name of path
+router.get('/:userId/feeds', authMiddleware, async (req, res, next) => {
 	const { userId } = req.params
 
 	try {
@@ -144,8 +147,8 @@ router.get('/:userId/feeds', async (req, res, next) => {
 	}
 })
 // 프로필 이미지 획득
-router.put("/profile/:userId", async (req, res, next) => {
-    const { userId } = req.params
+router.put("/profile/image", authMiddleware, async (req, res, next) => {
+    const { _id : userId } = res.locals.user
     const { imageName } = req.body
     const treasure = false
     try{
@@ -163,6 +166,14 @@ router.put("/profile/:userId", async (req, res, next) => {
         return next(new Error('프로필 이미지 획득을 실패헀습니다.'))
     }
     
+})
+
+router.get('/profile/treasure', authMiddleware, async (req,res,next) => {
+    const { _id : userId } = res.locals.user
+    
+    const user = await User.findById(userId)
+
+    res.json({treasure : user.treasure})
 })
 
 

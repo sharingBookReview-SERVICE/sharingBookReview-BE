@@ -9,9 +9,9 @@ router.get('/followingList', authMiddleware, async (req, res, next) => {
     try{
         const { _id : userId } = res.locals.user
 
-        const followList = await Follow.find({follower : userId}).populate({path : 'followee', select : '_id level nickname profileImage'})
+        const followList = await Follow.find({sender : userId}).populate({path : 'receiver', select : '_id level nickname profileImage'})
         const followingList = followList.map((follow) => {
-            return follow.followee
+            return follow.receiver
         })
         res.json({followingList})
     }catch(e){
@@ -24,9 +24,9 @@ router.get('/followerList', authMiddleware, async (req, res, next) => {
     try{
         const { _id : userId } = res.locals.user
 
-        const followList = await Follow.find({followee : userId}).populate({path : 'follower', select : '_id level nickname profileImage'})
+        const followList = await Follow.find({receiver : userId}).populate({path : 'sender', select : '_id level nickname profileImage'})
         const followerList = followList.map((follow) => {
-            return follow.follower
+            return follow.sender
         })
         res.json({followerList})
     }catch(e){
@@ -34,43 +34,77 @@ router.get('/followerList', authMiddleware, async (req, res, next) => {
     }
 })
 
-// switch follow
-// todo like랑 비슷하게 refactoring
+// 팔로우 하기, 팔로우 취소
 router.put('/:userId', authMiddleware, async (req, res, next) => {
-    const { _id : follower } = res.locals.user
-    const { userId : followee } = req.params
+    const { _id : sender } = res.locals.user
+    const { userId : receiver } = req.params
     let status
     const followingList = []
 
     try{
-        const follow = await Follow.findOne({follower, followee})
+        const follow = await Follow.findOne({sender, receiver})
 
         if(follow){
             await follow.delete()
             status = false
-            User.deleteExp(followee, "follow")
+            User.deleteExp(receiver, "follow")
         } else{
             await Follow.create({
-                follower,
-                followee
+                sender,
+                receiver
             })
             status = true
-            await User.getExpAndLevelUp(followee, "follow")
+            await User.getExpAndLevelUp(receiver, "follow")
         }
 
-        const followings = await Follow.find({follower}).populate({path: 'followee', select: 'level profileImage _id nickname'})
+        const followings = await Follow.find({sender}).populate({path: 'receiver', select: 'level profileImage _id nickname'})
         for (let following of followings){
-            followingList.push(following.followee)
+            followingList.push(following.receiver)
         }
         
-        const followingCount = (await Follow.find({follower})).length
-        const followerCount = (await Follow.find({followee})).length
+        const followingCount = (await Follow.find({sender})).length
+        const followerCount = (await Follow.find({receiver})).length
 
-        await User.findByIdAndUpdate(follower, {followingCount})
-        await User.findByIdAndUpdate(followee, {followerCount})
+        await User.findByIdAndUpdate(sender, {followingCount})
+        await User.findByIdAndUpdate(receiver, {followerCount})
         return res.json({status, followingList})
     } catch(e){
         return next(new Error('팔로우를 실패했습니다.'))
+    }
+    
+})
+
+// 나를 팔로우 하는 사람 삭제, 관계 취소
+router.put('/delete/:userId', authMiddleware, async (req, res, next) => {
+    const { _id : receiver } = res.locals.user
+    const { userId : sender } = req.params
+    let status
+    const followerList = []
+
+    try{
+        const follow = await Follow.findOne({sender, receiver})
+
+        if(!follow){
+            next(new Error("팔로우가 되어있지 않습니다."))
+        }
+        await follow.delete()
+        User.deleteExp(receiver, "follow")
+
+        const followers = await Follow.find({receiver}).populate({path: 'sender', select: 'level profileImage _id nickname'})
+        for (let follower of followers){
+            followerList.push(follower.sender)
+        }
+        
+        const followingCount = (await Follow.find({sender})).length
+        const followerCount = (await Follow.find({receiver})).length
+
+        await User.findByIdAndUpdate(sender, {followingCount})
+        await User.findByIdAndUpdate(receiver, {followerCount})
+
+        return res.json({followerList})
+
+    } catch(e){
+        return next(new Error('팔로우 삭제를 실패했습니다.'))
     }
     
 })
