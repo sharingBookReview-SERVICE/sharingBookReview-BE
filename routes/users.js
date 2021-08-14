@@ -133,8 +133,8 @@ router.delete('/:userId', async (req, res, next) => {
 
 // Returns all reviews and collections made by a user
 // we will change name of path
-router.get('/feeds/abc', authMiddleware, async (req, res, next) => {
-	const { _id : userId } = res.locals.user
+router.get('/:userId/feeds', authMiddleware, async (req, res, next) => {
+	const { userId } = req.params
 
 	try {
 		const reviews = await Review.find({user: userId}).sort('-created_at')
