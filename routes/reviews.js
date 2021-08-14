@@ -71,7 +71,7 @@ router.get('/', authMiddleware, async (req, res, next) => {
 		const { reviews } = await Book.findById(bookId)
 			.select('reviews')
 			.populate({
-				path: 'reviews',
+				path: 'reviews', populate : 'user',
 				options: { sort: { created_at: -1 } },
 			})
 
