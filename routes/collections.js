@@ -1,12 +1,10 @@
 import express from 'express'
-import { Book, Collection, User } from '../models/index.js'
+import { Collection, User, Comment } from '../models/index.js'
 import authMiddleware from '../middleware/auth_middleware.js'
 import nonAuthMiddleware from '../middleware/non_auth_middleware.js'
 import multer from 'multer'
 import ImageUpload from '../controllers/image_upload.js'
-import searchBooks from '../controllers/searchbooks.js'
-import saveBook from '../controllers/save_book.js'
-
+import { validateId } from '../controllers/utilities.js'
 
 const router = new express.Router()
 const upload = multer({
@@ -105,4 +103,66 @@ router.delete('/:collectionId', authMiddleware, async (req, res, next) => {
 	}
 })
 
+/**
+ * Collection's comment CRUD
+ */
+
+router.post('/:collectionId/comments', async (req, res, next) => {
+	const { _id: userId } = res.locals.user
+	const { collectionId } = req.params
+	const { content } = req.body
+
+	try {
+		const collection = await validateId(Collection, collectionId)
+
+		const comment = new Comment({ content, user: userId })
+
+		collection.comments.push(comment)
+		await collection.save()
+
+		// todo 경험치 계산 추가하고 canGetExp 자체를 static method 로 분리시키기
+
+		return res.status(201).json({ comment })
+	} catch (e) {
+		console.error(e)
+		return next(new Error('댓글 작성을 실패했습니다.'))
+	}
+})
+
+router.patch('/:collectionId/comments/:commentId', async (req, res, next) => {
+	const { _id: userId } = res.locals.user
+	const { collectionId, commentId } = req.params
+	const { content } = req.body
+
+	try {
+		const collection = await validateId(Collection, collectionId)
+
+		const comment = new Comment({ content, user: usrId })
+
+		collection.comments.id(commentId).content = content
+		await collection.save()
+
+		return res.json({ comment })
+	} catch (e) {
+		console.error(e)
+		return next(new Error('댓글 수정을 실패했습니다.'))
+	}
+})
+
+router.delete('/:collectionId/comments/:commentId', async (req, res, next) => {
+	const { _id: userId } = res.locals.user
+	const { collectionId, commentId } = req.params
+
+	try {
+		const collection = await validateId(Collection, collectionId)
+
+		await collection.comments.pull(commentId)
+		await collection.save()
+
+		return res.sendStatus(204)
+	} catch (e) {
+		console.error(e)
+		return next(new Error('댓글 삭제를 실패했습니다.'))
+	}
+})
 export default router
