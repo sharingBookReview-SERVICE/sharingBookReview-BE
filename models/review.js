@@ -50,10 +50,6 @@ class Review {
 		delete review.liked_users
 		return review
 	}
-
-	getMyLike(userId) {
-		return this.liked_users.includes(userId)
-	}
 }
 
 reviewSchema.pre('save', function () {
