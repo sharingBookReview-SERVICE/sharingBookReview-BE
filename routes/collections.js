@@ -5,6 +5,7 @@ import nonAuthMiddleware from '../middleware/non_auth_middleware.js'
 import multer from 'multer'
 import ImageUpload from '../controllers/image_upload.js'
 import { validateId } from '../controllers/utilities.js'
+import { likeUnlike } from '../models/utilities'
 
 const router = new express.Router()
 const upload = multer({
@@ -165,4 +166,7 @@ router.delete('/:collectionId/comments/:commentId', async (req, res, next) => {
 		return next(new Error('댓글 삭제를 실패했습니다.'))
 	}
 })
+
+router.put('/:collectionId/likes', authMiddleware, await likeUnlike(Collection, 'collection'))
+
 export default router
