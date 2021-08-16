@@ -56,6 +56,10 @@ class Review {
 	}
 }
 
+reviewSchema.pre('save', function () {
+	this.likeCount = this.liked_users.length
+})
+
 reviewSchema.loadClass(Review)
 
 export default mongoose.model('Review', reviewSchema)
