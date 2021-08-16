@@ -1,30 +1,35 @@
 import { User } from './index.js'
 
 /**
- * Apply (un)like.
- * @param Model {mongoose.Model}
- * @param documentId {any}
- * @param userId {any}
- * @returns {Promise<Document<*|*|Error>>}
+ *
+ * @param Model
+ * @param parameterName
+ * @returns {Promise<(function(*, *, *): (*|undefined))|*>}
  */
-const likeUnlike = async (Model, documentId, userId) => {
-	try {
-		let document =
-			(await Model.findById(documentId)) ??
-			new Error('존재하지 않는 리뷰입니다.')
+const likeUnlike = (Model, parameterName) => {
+	return async (req, res, next) => {
+		const { _id: userId } = res.locals.user
+		const documentId = req.params[parameterName + 'Id']
 
-		await User.getExpAndLevelUp(document.user, 'like')
+		try {
+			let document =
+				(await Model.findById(documentId)) ??
+				new Error('존재하지 않는 리뷰입니다.')
 
-		document.getMyLike(userId)
-			? document.liked_users.pull(userId)
-			: document.liked_users.push(userId)
+			await User.getExpAndLevelUp(document.user, 'like')
 
-		await document.save()
+			document.getMyLike(userId)
+				? document.liked_users.pull(userId)
+				: document.liked_users.push(userId)
 
-		document = Model.processLikesInfo(document, userId)
-		return document
-	} catch (e) {
-		return e
+			await document.save()
+
+			document = Model.processLikesInfo(document, userId)
+			res.json(({ [parameterName]: document }))
+		} catch (e) {
+			console.error(e)
+			return next(new Error('좋아요/좋아요 취소를 실패했습니다.'))
+		}
 	}
 }
 
