@@ -50,10 +50,6 @@ class Review {
 	getMyLike(userId) {
 		return this.liked_users.includes(userId)
 	}
-
-	get likes() {
-		return this.liked_users.length
-	}
 }
 
 reviewSchema.loadClass(Review)
