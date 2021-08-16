@@ -1,5 +1,6 @@
 import express from 'express'
 import { Book, Review, User } from '../models/index.js'
+import { likeUnlike } from '../models/utilities.js'
 import saveBook from '../controllers/save_book.js'
 import searchBooks from '../controllers/searchbooks.js'
 import authMiddleware from '../middleware/auth_middleware.js'
@@ -149,27 +150,6 @@ router.delete('/:reviewId', authMiddleware, async (req, res) => {
 		return next(new Error('리뷰 삭제를 실패했습니다.'))
 	}
 })
-
-const likeUnlike = async (Model, documentId, userId) => {
-	try {
-		let document =
-			(await Model.findById(documentId)) ??
-			new Error('존재하지 않는 리뷰입니다.')
-
-		await User.getExpAndLevelUp(document.user, 'like')
-
-		document.getMyLike(userId)
-			? document.liked_users.pull(userId)
-			: document.liked_users.push(userId)
-
-		await document.save()
-
-		document = Model.processLikesInfo(document, userId)
-		return document
-	} catch (e) {
-		return e
-	}
-}
 
 router.put('/:reviewId/likes', authMiddleware, async (req, res, next) => {
 	const { _id: userId } = res.locals.user
