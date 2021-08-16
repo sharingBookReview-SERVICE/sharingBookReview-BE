@@ -28,10 +28,14 @@ const reviewSchema = new mongoose.Schema({
 		type: [mongoose.Schema.Types.ObjectId],
 		ref: 'User',
 	},
-    commented_users:{
-        type: [mongoose.Schema.Types.ObjectId],
+	likeCount: {
+		type: Number,
+		default: 0,
+	},
+	commented_users: {
+		type: [mongoose.Schema.Types.ObjectId],
 		ref: 'User',
-    }
+	},
 })
 
 class Review {
