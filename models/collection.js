@@ -33,7 +33,11 @@ const collectionSchema = new mongoose.Schema({
 		type: [mongoose.Schema.Types.ObjectId],
 		ref: 'User',
 	},
-	created_at : {
+	likeCount: {
+		type: Number,
+		default: 0,
+	},
+	created_at: {
 		type: Date,
 		default: Date.now,
 		immutable: true
@@ -41,7 +45,11 @@ const collectionSchema = new mongoose.Schema({
 	commented_users:{
 		type: [mongoose.Schema.Types.ObjectId],
 		ref: 'User',
-	}
+	},
+})
+
+collectionSchema.pre('save', function () {
+	this.likeCount = this.liked_users.length
 })
 
 export default mongoose.model('Collection', collectionSchema)

@@ -28,10 +28,14 @@ const reviewSchema = new mongoose.Schema({
 		type: [mongoose.Schema.Types.ObjectId],
 		ref: 'User',
 	},
-    commented_users:{
-        type: [mongoose.Schema.Types.ObjectId],
+	likeCount: {
+		type: Number,
+		default: 0,
+	},
+	commented_users: {
+		type: [mongoose.Schema.Types.ObjectId],
 		ref: 'User',
-    }
+	},
 })
 
 class Review {
@@ -50,11 +54,11 @@ class Review {
 	getMyLike(userId) {
 		return this.liked_users.includes(userId)
 	}
-
-	get likes() {
-		return this.liked_users.length
-	}
 }
+
+reviewSchema.pre('save', function () {
+	this.likeCount = this.liked_users.length
+})
 
 reviewSchema.loadClass(Review)
 

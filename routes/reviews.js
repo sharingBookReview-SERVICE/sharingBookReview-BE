@@ -1,5 +1,6 @@
 import express from 'express'
 import { Book, Review, User } from '../models/index.js'
+import { likeUnlike } from '../models/utilities.js'
 import saveBook from '../controllers/save_book.js'
 import searchBooks from '../controllers/searchbooks.js'
 import authMiddleware from '../middleware/auth_middleware.js'
@@ -150,25 +151,6 @@ router.delete('/:reviewId', authMiddleware, async (req, res) => {
 	}
 })
 
-router.put('/:reviewId/likes', authMiddleware, async (req, res, next) => {
-	const { _id: userId } = res.locals.user
-	const { reviewId } = req.params
-    
-    try{
-        let review = await Review.findById(reviewId) ?? next(new Error('존재하지 않는 리뷰입니다.'))
-
-        await User.getExpAndLevelUp(review.user, "like")
-
-		review.getMyLike(userId) ? review.liked_users.pull(userId) : review.liked_users.push(userId)
-		await review.save()
-
-		review = Review.processLikesInfo(review, userId)
-
-		return res.json({ review })
-	} catch (e) {
-		console.error(e)
-		return next(new Error('좋아요/좋아요취소 를 실패했습니다.'))
-	}
-})
+router.put('/:reviewId/likes', authMiddleware, await likeUnlike(Review, 'review'))
 
 export default router
