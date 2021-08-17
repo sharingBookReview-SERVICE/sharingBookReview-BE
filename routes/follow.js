@@ -4,7 +4,7 @@ import { Follow, User } from '../models/index.js'
 
 const router = new express.Router()
 
-// 팔로잉 목록 조회
+// 팔로잉 목록 조회(나의)
 router.get('/followingList', authMiddleware, async (req, res, next) => {
     try{
         const { _id : userId } = res.locals.user
@@ -19,10 +19,40 @@ router.get('/followingList', authMiddleware, async (req, res, next) => {
     }
 })
 
-// 팔로워 목록 조회
+// 팔로워 목록 조회(나의)
 router.get('/followerList', authMiddleware, async (req, res, next) => {
     try{
         const { _id : userId } = res.locals.user
+
+        const followList = await Follow.find({receiver : userId}).populate({path : 'sender', select : '_id level nickname profileImage'})
+        const followerList = followList.map((follow) => {
+            return follow.sender
+        })
+        res.json({followerList})
+    }catch(e){
+        return next(new Error('팔로잉 리스트 불러오기를 실패했습니다.'))
+    }
+})
+
+// 팔로잉 목록 조회(타 유저)
+router.get('/followingList/:userId', authMiddleware, async (req, res, next) => {
+    try{
+        const { userId } = req.params
+
+        const followList = await Follow.find({sender : userId}).populate({path : 'receiver', select : '_id level nickname profileImage'})
+        const followingList = followList.map((follow) => {
+            return follow.receiver
+        })
+        res.json({followingList})
+    }catch(e){
+        return next(new Error('팔로잉 리스트 불러오기를 실패했습니다.'))
+    }
+})
+
+// 팔로워 목록 조회(타 유저)
+router.get('/followerList/:userId', authMiddleware, async (req, res, next) => {
+    try{
+        const { userId } = req.params
 
         const followList = await Follow.find({receiver : userId}).populate({path : 'sender', select : '_id level nickname profileImage'})
         const followerList = followList.map((follow) => {
