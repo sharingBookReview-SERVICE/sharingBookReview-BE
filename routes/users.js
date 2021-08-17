@@ -62,20 +62,35 @@ router.get('/logout', (req, res, next) => {
 	}
 })
 
-router.get('/', async (req, res, next) => {
-	const { userId } = req.params
+// Returns all reviews and collections made by a user
+// we will change name of path
+router.get('/feeds', authMiddleware, async (req, res, next) => {
+	const { _id: userId } = res.locals.user
+
 	try {
-		const user = (await User.findById(userId)).toObject()
-		const reviews = await Review.find({user: userId})
-		const collections = await Collection.find({user: userId})
+        const user = await User.findById(userId)
+		const reviews = await Review.find({user: userId}).sort('-created_at')
+		const collections = await Collection.find({user: userId}).sort('-created_at')
 
-		// Add total review and collection counts info
-		user.reviewCount = reviews.length
-		user.collectionCount = collections.length
-
-		return res.json( user )
+		return res.json({user, reviews, collections})
 	} catch (e) {
-		return next(new Error('user를 찾는데 실패했습니다.'))
+		console.error(e)
+		return next(new Error('개인 피드 불러오기를 실패했습니다.'))
+	}
+})
+
+router.get('/feeds/:userId', async (req, res, next) => {
+	const { userId } = req.params
+
+	try {
+        const user = await User.findById(userId)
+		const reviews = await Review.find({user: userId}).sort('-created_at')
+		const collections = await Collection.find({user: userId}).sort('-created_at')
+
+		return res.json({user, reviews, collections})
+	} catch (e) {
+		console.error(e)
+		return next(new Error('유저 피드 불러오기를 실패했습니다.'))
 	}
 })
 
@@ -149,21 +164,6 @@ router.delete('/', authMiddleware, async (req, res, next) => {
 	}
 })
 
-// Returns all reviews and collections made by a user
-// we will change name of path
-router.get('/:userId/feeds', authMiddleware, async (req, res, next) => {
-	const { userId } = req.params
-
-	try {
-		const reviews = await Review.find({user: userId}).sort('-created_at')
-		const collections = await Collection.find({user: userId}).sort('-created_at')
-
-		return res.json({reviews, collections})
-	} catch (e) {
-		console.error(e)
-		return next(new Error('개인 피드 불러오기를 실패했습니다.'))
-	}
-})
 // 프로필 이미지 획득
 router.put("/profile/image", authMiddleware, async (req, res, next) => {
     const { _id : userId } = res.locals.user
