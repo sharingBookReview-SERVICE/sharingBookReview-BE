@@ -83,7 +83,7 @@ router.get('/feeds/:userId', authMiddleware, async (req, res, next) => {
 	const { userId } = req.params
     const { _id : myUserId} = res.locals.user
 
-    const isFollowing = Boolean(await Follow.findOne({sender:myUserId, receiver: userId}))
+    const isFollowing = await Follow.checkFollowing(myUserId, userId)
 
 	try {
         const user = await User.findById(userId).select("nickname level exp followingCount followerCount profileImage _id")

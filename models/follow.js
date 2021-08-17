@@ -16,5 +16,17 @@ const followSchema = new mongoose.Schema({
 		default: Date.now,
 	},
 })
+// todo 왜 안되는지 규명하기
+// class Follow {
+// 	static checkFollowing = async (myUserId, othersUserId) => {
+//         return Boolean(await this.findOne({sender:myUserId, receiver: othersUserId}))
+// 	}
+// }
+
+// followSchema.loadClass(Follow)
+
+followSchema.statics.checkFollowing = async function(myUserId, othersUserId) {
+    return Boolean(await this.findOne({sender: myUserId, receiver: othersUserId}))
+}
 
 export default mongoose.model('Follow', followSchema)
