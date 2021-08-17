@@ -83,14 +83,13 @@ router.get('/feeds/:userId', authMiddleware, async (req, res, next) => {
 	const { userId } = req.params
     const { _id : myUserId} = res.locals.user
 
-    const isFollowing = await Follow.checkFollowing(myUserId, userId)
-
 	try {
-        const user = await User.findById(userId).select("nickname level exp followingCount followerCount profileImage _id")
+        let user = await User.findById(userId).select("nickname level exp followingCount followerCount profileImage _id")
+        user = await Follow.checkFollowing(user, myUserId, userId)
 		const reviews = await Review.find({user: userId}).sort('-created_at')
 		const collections = await Collection.find({user: userId}).sort('-created_at')
 
-		return res.json({user, reviews, collections, isFollowing})
+		return res.json({user, reviews, collections})
 	} catch (e) {
 		console.error(e)
 		return next(new Error('유저 피드 불러오기를 실패했습니다.'))
