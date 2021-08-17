@@ -1,11 +1,12 @@
 import express from 'express'
 import { Review } from '../models/index.js'
-import nonAuthMiddleware from '../middleware/non_auth_middleware.js'
+import authMiddleware from '../middleware/auth_middleware.js'
 
 const router = new express.Router()
 
-router.get('/', nonAuthMiddleware, async (req, res, next) => {
+router.get('/', authMiddleware, async (req, res, next) => {
     const {_id : userId} = res.locals.user
+    const authorization = res.locals.auth
 	const SCROLL_SIZE = 10
 	const { lastItemId } = req.query
 
@@ -27,7 +28,7 @@ router.get('/', nonAuthMiddleware, async (req, res, next) => {
 			.populate('book user')
 		}
 
-        if( userId !== 'nonLogin' ){
+        if(authorization){
             result = reviews.map(review => Review.processLikesInfo(review, userId))
         }else{
             result = reviews
