@@ -6,6 +6,7 @@ import './controllers/index_tags.js'
 import router from './routes/index.js'
 import kakaoPassportConfig from "./routes/kakao_passport.js";
 import googlePassportConfig from './routes/google_passport.js'
+import webSocket from './controllers/websocket_test.js'
 
 config()
 
@@ -32,6 +33,8 @@ app.use((err, req, res, next) => {
 	return res.status(400).json({ error: err.message })
 })
 
-app.listen(app.get('port') || 3000, () => {
+const server = app.listen(app.get('port') || 3000, () => {
 	console.log(`Server listening on port ${app.get('port')}`)
 })
+
+webSocket(server)
