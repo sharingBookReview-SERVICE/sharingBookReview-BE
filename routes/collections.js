@@ -5,7 +5,7 @@ import nonAuthMiddleware from '../middleware/non_auth_middleware.js'
 import multer from 'multer'
 import ImageUpload from '../controllers/image_upload.js'
 import { validateId } from '../controllers/utilities.js'
-import { likeUnlike } from '../models/utilities'
+import { likeUnlike } from '../models/utilities.js'
 
 const router = new express.Router()
 const upload = multer({
