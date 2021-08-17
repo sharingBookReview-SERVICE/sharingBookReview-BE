@@ -62,31 +62,7 @@ router.get('/logout', (req, res, next) => {
 	}
 })
 
-router.put('/nickname/:userId', async (req, res, next) => {
-	// if user do not have nickname use this router
-	const { userId } = req.params
-	const { nickname } = req.body
-
-	try {
-		if (await User.findOne({ nickname }))
-			return next(new Error('해당 닉네임이 존재합니다.'))
-
-		const user = await User.findByIdAndUpdate(userId, { nickname })
-
-        if (user == null) return next(new Error('DB에 등록되지 않은 userId입니다'))
-
-		const token = jwt.sign(
-			{ userId: user._id, nickname: user.nickname },
-			process.env.TOKEN_KEY
-		)
-
-		return res.json(token)
-	} catch (e) {
-		return next(new Error('nickname 등록을 실패했습니다.'))
-	}
-})
-
-router.get('/:userId', async (req, res, next) => {
+router.get('/', async (req, res, next) => {
 	const { userId } = req.params
 	try {
 		const user = (await User.findById(userId)).toObject()
@@ -103,19 +79,47 @@ router.get('/:userId', async (req, res, next) => {
 	}
 })
 
-router.put('/:userId', async (req, res, next) => {
-	const { userId } = req.params
-	try {
-		const user = await User.findByIdAndUpdate(userId, { ...req.body },{new: true})
-		if (user == null) return next(new Error('등록되지 않은 유저입니다'))
+router.put('/', authMiddleware, async (req, res, next) => {
+	const { _id : userId } = res.locals.user
+    const { nickname, profileImage } = req.body
+    try{
+        const user = await User.findById(userId)
 
-		return res.json(user)
-	} catch (e) {
-		return next(new Error('수정에 실패했습니다.'))
-	}
+        if (user === null) return next(new Error('DB에 등록되지 않은 userId입니다'))
+    }catch(e){
+        return next(new Error('유저 검색에 실패했습니다.'))
+    }
+
+    try{
+        if(!nickname){
+            const user = await User.findByIdAndUpdate(userId, { ...req.body },{new: true})
+    
+            return res.json({user})
+        }
+    }catch(e){
+        return next(new Error('회원정보 수정을 실패했습니다.'))
+    }
+
+    try{
+        if (await User.findOne({ nickname }))
+        
+        return next(new Error('해당 닉네임이 존재합니다.'))
+
+        const user = await User.findByIdAndUpdate(userId, { nickname },{new: true})
+
+        const token = jwt.sign(
+            { userId: user._id, nickname: user.nickname },
+            process.env.TOKEN_KEY
+            )
+
+            return res.json({token, user})
+
+    }catch(e){
+        return next(new Error('nickname 등록을 실패했습니다.'))
+    }
 })
 
-router.delete('/:userId', async (req, res, next) => {
+router.delete('/', authMiddleware, async (req, res, next) => {
 	const { userId } = req.params
 	try {
 		const user = await User.findByIdAndDelete(userId)
