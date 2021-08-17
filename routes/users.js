@@ -62,68 +62,101 @@ router.get('/logout', (req, res, next) => {
 	}
 })
 
-router.put('/nickname/:userId', async (req, res, next) => {
-	// if user do not have nickname use this router
-	const { userId } = req.params
-	const { nickname } = req.body
+// Returns all reviews and collections made by a user
+// we will change name of path
+router.get('/feeds', authMiddleware, async (req, res, next) => {
+	const { _id: userId } = res.locals.user
 
 	try {
-		if (await User.findOne({ nickname }))
-			return next(new Error('해당 닉네임이 존재합니다.'))
+        const user = await User.findById(userId)
+		const reviews = await Review.find({user: userId}).sort('-created_at')
+		const collections = await Collection.find({user: userId}).sort('-created_at')
 
-		const user = await User.findByIdAndUpdate(userId, { nickname })
-
-        if (user == null) return next(new Error('DB에 등록되지 않은 userId입니다'))
-
-		const token = jwt.sign(
-			{ userId: user._id, nickname: user.nickname },
-			process.env.TOKEN_KEY
-		)
-
-		return res.json(token)
+		return res.json({user, reviews, collections})
 	} catch (e) {
-		return next(new Error('nickname 등록을 실패했습니다.'))
+		console.error(e)
+		return next(new Error('개인 피드 불러오기를 실패했습니다.'))
 	}
 })
 
-router.get('/:userId', async (req, res, next) => {
+router.get('/feeds/:userId', async (req, res, next) => {
 	const { userId } = req.params
+
 	try {
-		const user = (await User.findById(userId)).toObject()
-		const reviews = await Review.find({user: userId})
-		const collections = await Collection.find({user: userId})
+        const user = await User.findById(userId).select("nickname level exp followingCount followerCount profileImage _id")
+		const reviews = await Review.find({user: userId}).sort('-created_at')
+		const collections = await Collection.find({user: userId}).sort('-created_at')
 
-		// Add total review and collection counts info
-		user.reviewCount = reviews.length
-		user.collectionCount = collections.length
-
-		return res.json( user )
+		return res.json({user, reviews, collections})
 	} catch (e) {
-		return next(new Error('user를 찾는데 실패했습니다.'))
+		console.error(e)
+		return next(new Error('유저 피드 불러오기를 실패했습니다.'))
 	}
 })
 
-router.put('/:userId', async (req, res, next) => {
-	const { userId } = req.params
-	try {
-		const user = await User.findByIdAndUpdate(userId, { ...req.body },{new: true})
-		if (user == null) return next(new Error('등록되지 않은 유저입니다'))
+router.put('/', authMiddleware, async (req, res, next) => {
+	const { _id : userId } = res.locals.user
+    const { nickname, profileImage } = req.body
+    try{
+        const user = await User.findById(userId)
 
-		return res.json(user)
-	} catch (e) {
-		return next(new Error('수정에 실패했습니다.'))
-	}
+        if (user === null) return next(new Error('DB에 등록되지 않은 userId입니다'))
+    }catch(e){
+        return next(new Error('유저 검색에 실패했습니다.'))
+    }
+
+    try{
+        if(!nickname){
+            const user = await User.findByIdAndUpdate(userId, { ...req.body },{new: true})
+    
+            return res.json({user})
+        }
+    }catch(e){
+        return next(new Error('회원정보 수정을 실패했습니다.'))
+    }
+
+    try{
+        if (await User.findOne({ nickname }))
+        
+        return next(new Error('해당 닉네임이 존재합니다.'))
+
+        const user = await User.findByIdAndUpdate(userId, { nickname },{new: true})
+
+        const token = jwt.sign(
+            { userId: user._id, nickname: user.nickname },
+            process.env.TOKEN_KEY
+            )
+
+            return res.json({token, user})
+
+    }catch(e){
+        return next(new Error('nickname 등록을 실패했습니다.'))
+    }
 })
 
-router.delete('/:userId', async (req, res, next) => {
-	const { userId } = req.params
+router.delete('/', authMiddleware, async (req, res, next) => {
+	const { _id : userId } = res.locals.user
 	try {
 		const user = await User.findByIdAndDelete(userId)
 
-		// todo: 추후에 미들웨어로 바꿀 예정
-		await Review.findOneAndRemove({ user: userId })
+        if (user == null) return next(new Error('등록되지 않은 유저입니다'))
 
-		if (user == null) return next(new Error('등록되지 않은 유저입니다'))
+		// todo: 추후에 미들웨어로 바꿀 예정
+		const reviews = await Review.find({ user: userId })
+
+        if(reviews.length !== 0){
+            reviews.map( async (review) => {
+                await review.delete()
+            })
+        }
+        
+		const collections = await Collection.find({ user: userId })
+
+        if(collections.length !== 0){
+            collections.map( async (collection) => {
+                await collection.delete()
+            })
+        }
 
 		return res.sendStatus(200)
 	} catch (e) {
@@ -131,21 +164,6 @@ router.delete('/:userId', async (req, res, next) => {
 	}
 })
 
-// Returns all reviews and collections made by a user
-// we will change name of path
-router.get('/:userId/feeds', authMiddleware, async (req, res, next) => {
-	const { userId } = req.params
-
-	try {
-		const reviews = await Review.find({user: userId}).sort('-created_at')
-		const collections = await Collection.find({user: userId}).sort('-created_at')
-
-		return res.json({reviews, collections})
-	} catch (e) {
-		console.error(e)
-		return next(new Error('개인 피드 불러오기를 실패했습니다.'))
-	}
-})
 // 프로필 이미지 획득
 router.put("/profile/image", authMiddleware, async (req, res, next) => {
     const { _id : userId } = res.locals.user
