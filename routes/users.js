@@ -6,6 +6,7 @@ import dotenv from 'dotenv'
 import authMiddleware from '../middleware/auth_middleware.js'
 
 
+
 dotenv.config()
 
 const router = new express.Router()
@@ -81,7 +82,7 @@ router.get('/feeds', authMiddleware, async (req, res, next) => {
 
 // my user feed
 // Return all reviews and collections made by another user
-router.get('/feeds/:userId', async (req, res, next) => {
+router.get('/feeds/:userId',authMiddleware, async (req, res, next) => {
 	const { userId } = req.params
 
 	try {

@@ -1,7 +1,6 @@
 import express from 'express'
 import { Collection, User, Comment } from '../models/index.js'
 import authMiddleware from '../middleware/auth_middleware.js'
-import nonAuthMiddleware from '../middleware/non_auth_middleware.js'
 import multer from 'multer'
 import ImageUpload from '../controllers/image_upload.js'
 import { validateId } from '../controllers/utilities.js'
@@ -36,7 +35,7 @@ router.post('/', authMiddleware, upload.single('image'), ImageUpload.uploadImage
 })
 
 // Get all collections
-router.get('/', nonAuthMiddleware, async (req, res, next) => {
+router.get('/', authMiddleware, async (req, res, next) => {
 	try {
 		// query = { name, type }
 		const collections = await Collection.find(req.query).populate('contents.book', '-reviews').sort('-created_at')
