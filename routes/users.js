@@ -83,7 +83,7 @@ router.get('/feeds/:userId', async (req, res, next) => {
 	const { userId } = req.params
 
 	try {
-        const user = await User.findById(userId)
+        const user = await User.findById(userId).select("nickname level exp followingCount followerCount profileImage _id")
 		const reviews = await Review.find({user: userId}).sort('-created_at')
 		const collections = await Collection.find({user: userId}).sort('-created_at')
 
