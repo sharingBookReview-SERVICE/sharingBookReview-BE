@@ -120,14 +120,28 @@ router.put('/', authMiddleware, async (req, res, next) => {
 })
 
 router.delete('/', authMiddleware, async (req, res, next) => {
-	const { userId } = req.params
+	const { _id : userId } = res.locals.user
 	try {
 		const user = await User.findByIdAndDelete(userId)
 
-		// todo: 추후에 미들웨어로 바꿀 예정
-		await Review.findOneAndRemove({ user: userId })
+        if (user == null) return next(new Error('등록되지 않은 유저입니다'))
 
-		if (user == null) return next(new Error('등록되지 않은 유저입니다'))
+		// todo: 추후에 미들웨어로 바꿀 예정
+		const reviews = await Review.find({ user: userId })
+
+        if(reviews.length !== 0){
+            reviews.map( async (review) => {
+                await review.delete()
+            })
+        }
+        
+		const collections = await Collection.find({ user: userId })
+
+        if(collections.length !== 0){
+            collections.map( async (collection) => {
+                await collection.delete()
+            })
+        }
 
 		return res.sendStatus(200)
 	} catch (e) {
