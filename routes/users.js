@@ -1,5 +1,5 @@
 import express from 'express'
-import { User, Review, Collection } from '../models/index.js'
+import { User, Review, Collection, Follow } from '../models/index.js'
 import passport from 'passport'
 import jwt from 'jsonwebtoken'
 import dotenv from 'dotenv'
@@ -79,15 +79,18 @@ router.get('/feeds', authMiddleware, async (req, res, next) => {
 	}
 })
 
-router.get('/feeds/:userId', async (req, res, next) => {
+router.get('/feeds/:userId', authMiddleware, async (req, res, next) => {
 	const { userId } = req.params
+    const { _id : myUserId} = res.locals.user
+
+    const isFollowing = Boolean(await Follow.findOne({sender:myUserId, receiver: userId}))
 
 	try {
         const user = await User.findById(userId).select("nickname level exp followingCount followerCount profileImage _id")
 		const reviews = await Review.find({user: userId}).sort('-created_at')
 		const collections = await Collection.find({user: userId}).sort('-created_at')
 
-		return res.json({user, reviews, collections})
+		return res.json({user, reviews, collections, isFollowing})
 	} catch (e) {
 		console.error(e)
 		return next(new Error('유저 피드 불러오기를 실패했습니다.'))
