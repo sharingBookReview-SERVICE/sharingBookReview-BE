@@ -62,8 +62,8 @@ router.get('/logout', (req, res, next) => {
 	}
 })
 
+// my user feed
 // Returns all reviews and collections made by a user
-// we will change name of path
 router.get('/feeds', authMiddleware, async (req, res, next) => {
 	const { _id: userId } = res.locals.user
 
@@ -79,6 +79,8 @@ router.get('/feeds', authMiddleware, async (req, res, next) => {
 	}
 })
 
+// my user feed
+// Return all reviews and collections made by another user
 router.get('/feeds/:userId', async (req, res, next) => {
 	const { userId } = req.params
 
@@ -94,6 +96,21 @@ router.get('/feeds/:userId', async (req, res, next) => {
 	}
 })
 
+// user info
+router.get('/', authMiddleware, async (req, res, next) => {
+	const { _id: userId } = res.locals.user
+
+	try {
+        const user = await User.findById(userId)
+
+		return res.json({user})
+	} catch (e) {
+		console.error(e)
+		return next(new Error('유저 정보 불러오기를 실패했습니다.'))
+	}
+})
+
+//user info modify
 router.put('/', authMiddleware, async (req, res, next) => {
 	const { _id : userId } = res.locals.user
     const { nickname, profileImage } = req.body
@@ -134,6 +151,7 @@ router.put('/', authMiddleware, async (req, res, next) => {
     }
 })
 
+// delete user
 router.delete('/', authMiddleware, async (req, res, next) => {
 	const { _id : userId } = res.locals.user
 	try {
@@ -164,7 +182,7 @@ router.delete('/', authMiddleware, async (req, res, next) => {
 	}
 })
 
-// 프로필 이미지 획득
+// get user image from treasure
 router.put("/profile/image", authMiddleware, async (req, res, next) => {
     const { _id : userId } = res.locals.user
     const { imageName } = req.body
@@ -186,6 +204,7 @@ router.put("/profile/image", authMiddleware, async (req, res, next) => {
     
 })
 
+// check profile treasure
 router.get('/profile/treasure', authMiddleware, async (req,res,next) => {
     const { _id : userId } = res.locals.user
     
