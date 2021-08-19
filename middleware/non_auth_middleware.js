@@ -15,10 +15,9 @@ const authMiddleware = (req, res, next) => {
         return next(new Error("비로그인 인증에 실패했습니다."))
     }
 
-    const tokenScheme = authorization.split(" ")[0]
-    const tokenValue = authorization.split(" ")[1]
+    const [tokenScheme, tokenValue] = authorization.split(' ')
     
-    try{    
+    try{
         if (tokenScheme !== 'Bearer') {
 			return next(new Error('토큰 인증 방식이 잘못되었습니다.'))
 		}
