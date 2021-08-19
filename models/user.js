@@ -2,6 +2,7 @@ import mongoose from 'mongoose'
 
 const { Schema, Types, model } = mongoose
 import expList from '../exp_list.js'
+import {alertSchema} from './alert.js'
 
 const userSchema = new Schema({
 	nickname: String,
@@ -28,6 +29,9 @@ const userSchema = new Schema({
 			created_at: Date,
 		},
 	],
+    alert: {
+        type: [alertSchema]
+    }
 })
 
 // todo 발생되는 event의 target instance id과 event를 수행하는 user id를 저장해서 level과 exp를 virtual로 표현
