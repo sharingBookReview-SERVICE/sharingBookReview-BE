@@ -8,6 +8,7 @@ import kakaoPassportConfig from "./routes/kakao_passport.js";
 import googlePassportConfig from './routes/google_passport.js'
 import { createServer } from 'http'
 import { Server } from 'socket.io'
+import { Review } from './models/index.js'
 config()
 
 const app = new express()
@@ -30,12 +31,20 @@ const io = new Server(server, {
 })
 
 io.on("connection", (socket) => {
-    console.log('what is socket: ', socket);
-    console.log("Socket is active to ve connected");
+    console.log("클라이언트 연결 성공");
 
-    socket.on("chat", (payload) => {
-        console.log("what is payload", payload)
-        io.emit("chat", payload)
+    socket.on("comment", async (data) => {
+        console.log(data)
+
+        const { writer } = data
+        const { target } = data
+
+        console.log(writer, target)
+    
+        io.emit("comment", writer)
+    socket.on('disconnect', () => {
+        console.log("클라이언트가 연결 해제")
+    })
     })
 })
 
