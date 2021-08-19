@@ -5,6 +5,11 @@ const alertSchema = new mongoose.Schema({
 		type: String,
         enum: ['like', 'comment'],
 	},
+    writer: {
+        type: mongoose.Schema.Types.ObjectId,
+		ref: 'User',
+		immutable: true,
+    },
 	reviewId:{
         type: mongoose.Schema.Types.ObjectId,
 		ref: 'Review',
@@ -14,6 +19,10 @@ const alertSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
 		ref: 'Collection',
 		immutable: true,
+    },
+    is_read:{
+        type: Boolean,
+        default: true
     },
 	created_at: {
 		type: Date,

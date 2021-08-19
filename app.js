@@ -8,7 +8,7 @@ import kakaoPassportConfig from "./routes/kakao_passport.js";
 import googlePassportConfig from './routes/google_passport.js'
 import { createServer } from 'http'
 import { Server } from 'socket.io'
-import { connect ,User } from './models/index.js'
+import { connect ,User, Review } from './models/index.js'
 
 config()
 
@@ -31,7 +31,7 @@ const io = new Server(server, {
     },
 })
 
-io.on("connection", (socket) => {
+io.on("connection", async (socket) => {
     console.log(socket.id)
     console.log("클라이언트 연결 성공");
 
@@ -44,13 +44,14 @@ io.on("connection", (socket) => {
     })
 
     socket.on("comment", (data) => {
-        const { writer } = data
-        const { target } = data
+        const { writer, target, review } = data
 
         console.log(writer, target)
     
         io.emit("comment", writer)
     })
+    const review = await Review.findById(review)
+    let alert = await User.findByIdAndUpdate(target)
 
 })
 
