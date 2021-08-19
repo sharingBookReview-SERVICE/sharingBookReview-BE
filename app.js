@@ -8,7 +8,8 @@ import kakaoPassportConfig from "./routes/kakao_passport.js";
 import googlePassportConfig from './routes/google_passport.js'
 import { createServer } from 'http'
 import { Server } from 'socket.io'
-import { Review } from './models/index.js'
+import { connect ,User } from './models/index.js'
+
 config()
 
 const app = new express()
@@ -31,21 +32,26 @@ const io = new Server(server, {
 })
 
 io.on("connection", (socket) => {
+    console.log(socket.id)
     console.log("클라이언트 연결 성공");
 
-    socket.on("comment", async (data) => {
-        console.log(data)
+    connect.then( (db) => {
+        console.log("몽고디비 연결 성공")
+    })
 
+    socket.on('disconnect', () => {
+        console.log("클라이언트가 연결 해제")
+    })
+
+    socket.on("comment", (data) => {
         const { writer } = data
         const { target } = data
 
         console.log(writer, target)
     
         io.emit("comment", writer)
-    socket.on('disconnect', () => {
-        console.log("클라이언트가 연결 해제")
     })
-    })
+
 })
 
 app.use((req, res, next) => {
