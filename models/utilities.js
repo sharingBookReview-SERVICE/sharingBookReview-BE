@@ -1,4 +1,6 @@
 import { User } from './index.js'
+import moment from 'moment-timezone'
+import 'moment/locale/ko.js'
 
 /**
  *
@@ -33,4 +35,11 @@ const likeUnlike = (Model, parameterName) => {
 	}
 }
 
-export { likeUnlike }
+const KoreaTime = (schema) => {
+    schema.virtual('koreaTime').get(function() {
+        return moment.tz(this.created_at, "Asia/Seoul").fromNow()
+    })
+}
+
+
+export { likeUnlike, KoreaTime }
