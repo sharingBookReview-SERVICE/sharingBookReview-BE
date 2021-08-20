@@ -58,4 +58,28 @@ userSchema.statics.deleteExp = async function(userId, event) {
 
 }
 
+class User {
+	refreshReadReviewsAndCollections() {
+		/**
+		 * 유저 안의 readReview s와 readCollections 를 조회해서 일주일이 지난 항목이 있으면 삭제한다.
+		 *
+		 * 본 메소드는 모두 상상속에 작성되었으며 반드시 실행테스트가 필요하다.
+		 *
+		 * 현재는 읽음 확인 기능이 없어서 테스트가 불용이하다.
+		 */
+
+		const deleteOldOnes = (arr) => {
+			return arr.filter(item => {
+				return new Date(item.created_at) < new Date(new Date() - 1000 * 60 * 60 * 24 * 7)
+			})
+		}
+
+		this.readReviews = deleteOldOnes(this.readReviews)
+		this.readCollections = deleteOldOnes(this.readCollections)
+
+	}
+}
+
+userSchema.loadClass(User)
+
 export default model('User', userSchema)
