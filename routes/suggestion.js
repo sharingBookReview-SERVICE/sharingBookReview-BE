@@ -6,9 +6,9 @@ const router = new express.Router()
 
 router.post('/', authMiddleware, async (req, res, next) => {
 	try {
-		const { _id: userId } = res.locals.user
+		const { _id: user } = res.locals.user
 
-		const suggestion = await Suggestion.create({ userId, ...req.body })
+		const suggestion = await Suggestion.create({ user, ...req.body })
 
 		return res.status(201).json({ suggestion })
 	} catch (e) {
