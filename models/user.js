@@ -5,15 +5,27 @@ import expList from '../exp_list.js'
 const userSchema = new Schema({
 	nickname: String,
 	providerKey: String,
-	provider: { type: String, enum: ['naver', 'kakao', 'google'], },
-	level: { type: Number, default: 1, },
-	exp: { type: Number, default: 0, },
-	followingCount: { type: Number, default: 0, },
-	followerCount: { type: Number, default: 0, },
-	profileImage: { type: String, default: 'image_1', },
-	own_image: { type: [String], default:['image_1'] },
+	provider: { type: String, enum: ['naver', 'kakao', 'google'] },
+	level: { type: Number, default: 1 },
+	exp: { type: Number, default: 0 },
+	followingCount: { type: Number, default: 0 },
+	followerCount: { type: Number, default: 0 },
+	profileImage: { type: String, default: 'image_1' },
+	own_image: { type: [String], default: ['image_1'] },
 	// True if user received treasure. False if user can receive treasure
-	treasure: { type: Boolean, default: false, },
+	treasure: { type: Boolean, default: false },
+	readReviews: [
+		{
+			reviewId: mongoose.Schema.Types.ObjectId,
+			created_at: Date,
+		},
+	],
+	readCollections: [
+		{
+			collectionId: mongoose.Schema.Types.ObjectId,
+			created_at: Date,
+		},
+	],
 })
 
 // todo 발생되는 event의 target instance id과 event를 수행하는 user id를 저장해서 level과 exp를 virtual로 표현
