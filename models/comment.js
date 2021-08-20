@@ -1,4 +1,5 @@
 import mongoose from 'mongoose'
+import { KoreaTime } from './utilities.js'
 
 const commentSchema = new mongoose.Schema({
 	user: {
@@ -12,6 +13,8 @@ const commentSchema = new mongoose.Schema({
 	}
     
 })
+
+KoreaTime(commentSchema)
 
 export default mongoose.model('Comment', commentSchema)
 export { commentSchema }

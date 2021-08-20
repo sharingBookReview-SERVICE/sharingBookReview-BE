@@ -1,5 +1,6 @@
 import mongoose from 'mongoose'
 import { commentSchema } from './comment.js'
+import { KoreaTime } from './utilities.js'
 
 const reviewSchema = new mongoose.Schema({
 	user: {
@@ -22,7 +23,6 @@ const reviewSchema = new mongoose.Schema({
 	created_at: {
 		type: Date,
 		default: Date.now,
-		immutable: true,
 	},
 	liked_users: {
 		type: [mongoose.Schema.Types.ObjectId],
@@ -37,6 +37,8 @@ const reviewSchema = new mongoose.Schema({
 		ref: 'User',
 	},
 })
+
+KoreaTime(reviewSchema)
 
 class Review {
 	static processLikesInfo = (review, userId) => {
