@@ -101,7 +101,7 @@ router.get('/:reviewId', authMiddleware ,async (req, res, next) => {
 		review.comments = (await Promise.allSettled(comments.map(async (comment) => {
 			const user = await User.findById(comment.user).select('_id level nickname')
 			comment = comment.toJSON()
-			comment.user = user
+			comment.user ??= user
 			return comment
 		}))).map((p) => p.value)
 
