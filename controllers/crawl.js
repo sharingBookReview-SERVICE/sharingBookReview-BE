@@ -28,7 +28,7 @@ const launchBrowserAndGotoURL = async (URL) => {
  */
 const getBestsellers = async () => {
 	const BESTSELLER_URL = 'https://www.kyobobook.co.kr/bestSellerNew/bestseller.laf'
-	
+
 	const page = await launchBrowserAndGotoURL(BESTSELLER_URL)
 
 	const isbnList = await page.$$eval(
@@ -48,11 +48,24 @@ const getBestsellers = async () => {
 		.map((p)=>p.value)
 }
 
+/**
+ * Get detailed book description from link
+ * @param {string} link - Naver Books URL
+ * @returns {Promise<string>} Text - Detailed description of book
+ */
 const getBookDescription = async (link) => {
-    const data = await axios.get(link)
-    const $ = cheerio.load(data.data)
-    const text = $('#bookIntroContent').text()
-    return text
-};
+	try {
+		// HTTP response's data
+		const { data } = await axios.get(link)
+		// Parsed HTML by cheerio
+		const $ = cheerio.load(data)
+		// Detailed description of book in string
+		const text = $('#bookIntroContent').text()
+		return text
+	} catch (e) {
+		console.error(e)
+		return e
+	}
+}
 
 export { getBestsellers, getBookDescription }
