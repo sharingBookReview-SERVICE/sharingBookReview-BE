@@ -3,12 +3,9 @@ import { User } from "../models/index.js";
 
 const authMiddleware = (req, res, next) => {
     const { authorization } = req.headers;
-
     try{
         if (authorization === undefined || authorization === null){
-            let result = new Object
-            result._id = 'nonLogin'
-            res.locals.user = result
+            res.locals.user = { _id:'nonLogin' }
             return next()
         }
     }catch(e){
@@ -21,8 +18,9 @@ const authMiddleware = (req, res, next) => {
         if (tokenScheme !== 'Bearer') {
 			return next(new Error('토큰 인증 방식이 잘못되었습니다.'))
 		}
-        if (tokenValue !== 'Null') {
-			return next(new Error('토큰 벨류가 존재하지않습니다.'))
+        if (tokenValue === 'null') {
+			res.locals.user = { _id:'nonLogin' }
+            return next()
 		}
     
         const user = jwt.verify(tokenValue, process.env.TOKEN_KEY)
