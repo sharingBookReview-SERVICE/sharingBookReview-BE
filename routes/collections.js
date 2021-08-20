@@ -29,9 +29,8 @@ router.post('/', authMiddleware, upload.single('image'), ImageUpload.uploadImage
 
     try{
         contents.map(async (content) => {
-            console.log(content)
-            if(!await Book.findById(content.isbn)){
-                const [searchResult] = await searchBooks('isbn', content.isbn)
+            if(!await Book.findById(content.book)){
+                const [searchResult] = await searchBooks('isbn', content.book)
                 await saveBook(searchResult)
             }
         })
