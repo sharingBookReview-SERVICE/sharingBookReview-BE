@@ -1,11 +1,13 @@
 import express from 'express'
-import { Collection, User, Comment } from '../models/index.js'
+import { Collection, User, Comment, Book } from '../models/index.js'
 import authMiddleware from '../middleware/auth_middleware.js'
 import nonAuthMiddleware from '../middleware/non_auth_middleware.js'
 import multer from 'multer'
 import ImageUpload from '../controllers/image_upload.js'
 import { validateId } from '../controllers/utilities.js'
 import { likeUnlike } from '../models/utilities.js'
+import saveBook from '../controllers/save_book.js'
+import searchBooks from '../controllers/searchbooks.js'
 
 const router = new express.Router()
 const upload = multer({
@@ -23,6 +25,17 @@ router.post('/', authMiddleware, upload.single('image'), ImageUpload.uploadImage
         await User.getExpAndLevelUp(userId, "collection")
     }catch (e) {
         return next(new Error('경험치 등록을 실패했습니다.'))
+    }
+
+    try{
+        contents.map(async (content) => {
+            if(!await Book.findById(content.book)){
+                const [searchResult] = await searchBooks('isbn', content.book)
+                await saveBook(searchResult)
+            }
+        })
+    }catch(e){
+        return next(new Error('책 정보 저장을 실패했습니다.'))
     }
 
 	try {

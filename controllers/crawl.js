@@ -1,5 +1,8 @@
 import puppeteer from 'puppeteer'
 import searchBooks from './searchbooks.js'
+import axios from 'axios'
+import cheerio from 'cheerio'
+
 
 /**
  * Launch browser and goto given url
@@ -25,7 +28,7 @@ const launchBrowserAndGotoURL = async (URL) => {
  */
 const getBestsellers = async () => {
 	const BESTSELLER_URL = 'https://www.kyobobook.co.kr/bestSellerNew/bestseller.laf'
-	
+
 	const page = await launchBrowserAndGotoURL(BESTSELLER_URL)
 
 	const isbnList = await page.$$eval(
@@ -46,20 +49,23 @@ const getBestsellers = async () => {
 }
 
 /**
- * Crawl detailed book description from link
- * @param link Link for detailed book description from naver book api
- * @returns {Promise<String>} Detailed description of book
+ * Get detailed book description from link
+ * @param {string} link - Naver Books URL
+ * @returns {Promise<string>} Text - Detailed description of book
  */
 const getBookDescription = async (link) => {
-	const page = await launchBrowserAndGotoURL(link)
-
-	const bookDescription = await page.$eval(
-		'#bookIntroContent',
-		(element) => element.textContent
-	)
-
-	await (await page.browser()).close()
-
-	return bookDescription
+	try {
+		// HTTP response's data
+		const { data } = await axios.get(link)
+		// Parsed HTML by cheerio
+		const $ = cheerio.load(data)
+		// Detailed description of book in string
+		const text = $('#bookIntroContent').text()
+		return text
+	} catch (e) {
+		console.error(e)
+		return e
+	}
 }
+
 export { getBestsellers, getBookDescription }
