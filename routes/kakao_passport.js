@@ -7,7 +7,7 @@ import { Strategy } from 'passport-kakao'
 config()
 
 let callbackURL = 'http://localhost:3000/api/users/kakao/callback'
-if (process.env.NODE_ENV === 'production') {
+if (process.env.NODE_ENV === 'production' || 'development') {
 	callbackURL = process.env.KAKAO_CALLBACK_URL
 }
 

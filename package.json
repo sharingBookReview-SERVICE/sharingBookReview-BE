@@ -4,9 +4,10 @@
   "main": "index.js",
   "scripts": {
     "server": "cross-env NODE_ENV=production pm2 start app.js",
-    "start": "cross-env NODE_ENV=production nodemon app.js",
+    "dev-server": "cross-env NODE_ENV=development pm2 start app.js",
     "dev": "cross-env NODE_ENV=development nodemon app.js",
-    "test": "NODE_ENV=test nodemon app.js"
+    "test": "NODE_ENV=test nodemon app.js",
+    "start": "cross-env NODE_ENV=production nodemon app.js"
   },
   "repository": {
     "type": "git",
