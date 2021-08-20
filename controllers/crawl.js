@@ -1,5 +1,8 @@
 import puppeteer from 'puppeteer'
 import searchBooks from './searchbooks.js'
+import axios from 'axios'
+import cheerio from 'cheerio'
+
 
 /**
  * Launch browser and goto given url
@@ -45,21 +48,11 @@ const getBestsellers = async () => {
 		.map((p)=>p.value)
 }
 
-/**
- * Crawl detailed book description from link
- * @param link Link for detailed book description from naver book api
- * @returns {Promise<String>} Detailed description of book
- */
 const getBookDescription = async (link) => {
-	const page = await launchBrowserAndGotoURL(link)
+    const data = await axios.get(link)
+    const $ = cheerio.load(data.data)
+    const text = $('#bookIntroContent').text()
+    return text
+};
 
-	const bookDescription = await page.$eval(
-		'#bookIntroContent',
-		(element) => element.textContent
-	)
-
-	await (await page.browser()).close()
-
-	return bookDescription
-}
 export { getBestsellers, getBookDescription }
