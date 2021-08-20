@@ -93,7 +93,7 @@ router.get('/:reviewId', authMiddleware ,async (req, res, next) => {
 	const { _id: userId } = res.locals.user
 
 	try {
-		let review = await Review.findById(reviewId).populate('book').populate({path:'user', select:'_id level nickname'})
+		let review = await Review.findById(reviewId).populate('book').populate({path:'user', select:'_id level nickname profileImage'})
 		const { comments } = review
 		
 		review = Review.processLikesInfo(review, userId)

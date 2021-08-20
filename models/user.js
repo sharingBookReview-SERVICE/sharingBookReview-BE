@@ -34,6 +34,7 @@ const userSchema = new mongoose.Schema({
 	},
 	own_image: {
 		type: [String],
+        default:[image_1]
 	},
 	// 보물을 받은 상태이면 true, 보물을 획득해야하만 하는 상태는 false
 	treasure: {
