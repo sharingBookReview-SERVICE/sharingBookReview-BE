@@ -33,7 +33,7 @@ router.get('/kakao/callback', (req, res, next) => {
 		},
 		(err, profile, token) => {
 			if (err) return next(new Error('소셜로그인 에러'))
-			return res.redirect(loginRedirectUrl)
+			return res.redirect(loginRedirectUrl(token))
 		}
 	)(req, res, next)
 })
@@ -52,7 +52,7 @@ router.get('/google/callback', (req, res, next) => {
 		{ failureRedirect: '/google' },
 		(err, user, token) => {
 			if (err) return next(new Error('소셜로그인 에러'))
-			return res.redirect(loginRedirectUrl)
+			return res.redirect(loginRedirectUrl(token))
 		}
 	)(req, res, next)
 })
