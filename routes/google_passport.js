@@ -7,7 +7,7 @@ import jwt from 'jsonwebtoken'
 config()
 
 let callbackURL = 'http://localhost:3000/api/users/google/callback'
-if (process.env.NODE_ENV === 'production') {
+if (process.env.NODE_ENV === 'production' || 'development') {
 	callbackURL = process.env.GOOGLE_CALLBACK_URL
 }
 
