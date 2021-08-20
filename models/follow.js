@@ -27,9 +27,10 @@ const followSchema = new mongoose.Schema({
 
 followSchema.statics.checkFollowing = async function(instance, myUserId, othersUserId) {
     const isFollowing = Boolean(await this.findOne({sender: myUserId, receiver: othersUserId}))
-    instance = instance.toJSON()
+    if(!instance.hasOwnProperty('id')){
+        instance = instance.toJSON()
+    }
     instance.isFollowing = isFollowing
-
     return instance
 }
 

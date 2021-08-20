@@ -1,5 +1,5 @@
 import express from 'express'
-import { Review } from '../models/index.js'
+import { Follow, Review } from '../models/index.js'
 import nonAuthMiddleware from '../middleware/non_auth_middleware.js'
 
 const router = new express.Router()
@@ -29,6 +29,7 @@ router.get('/', nonAuthMiddleware, async (req, res, next) => {
 
         if( userId !== 'nonLogin' ){
             result = reviews.map(review => Review.processLikesInfo(review, userId))
+            result = await Promise.all(result.map(review => Follow.checkFollowing(review, userId, review.user)))
         }else{
             result = reviews
         }
