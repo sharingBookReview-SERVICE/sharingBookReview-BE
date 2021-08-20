@@ -4,6 +4,7 @@ import { Follow, User } from '../models/index.js'
 
 const router = new express.Router()
 
+// todo 함수나 static으로 밑의 4개 합쳐보기
 // 팔로잉 목록 조회(나의)
 router.get('/followingList', authMiddleware, async (req, res, next) => {
     try{

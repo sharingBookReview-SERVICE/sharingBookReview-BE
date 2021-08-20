@@ -16,7 +16,7 @@ const followSchema = new mongoose.Schema({
 		default: Date.now,
 	},
 })
-// todo 왜 안되는지 규명하기
+// todo 왜 안되는지 규명하기(pull request 125참조)
 // class Follow {
 // 	static checkFollowing = async (myUserId, othersUserId) => {
 //         return Boolean(await this.findOne({sender:myUserId, receiver: othersUserId}))
