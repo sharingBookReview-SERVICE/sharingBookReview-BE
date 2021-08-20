@@ -1,4 +1,5 @@
 import mongoose from 'mongoose'
+import { KoreaTime } from './utilities.js'
 
 const followSchema = new mongoose.Schema({
     sender:{
@@ -16,6 +17,9 @@ const followSchema = new mongoose.Schema({
 		default: Date.now,
 	},
 })
+
+KoreaTime(followSchema)
+
 // todo 왜 안되는지 규명하기(pull request 125참조)
 // class Follow {
 // 	static checkFollowing = async (myUserId, othersUserId) => {

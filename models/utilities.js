@@ -1,4 +1,6 @@
 import { User } from './index.js'
+import moment from 'moment-timezone'
+import 'moment/locale/ko.js'
 
 /**
  *
@@ -33,4 +35,13 @@ const likeUnlike = (Model, parameterName) => {
 	}
 }
 
-export { likeUnlike }
+// virtual로 한국시간을 만들고, 현재부터 얼마나 지났는지를 fromNow로 보여줌
+// import 'moment/locale/ko.js' 를 이용해 한국어를 지원
+const KoreaTime = (schema) => {
+    schema.virtual('koreaTime').get(function() {
+        return moment.tz(this.created_at, "Asia/Seoul").fromNow()
+    })
+}
+
+
+export { likeUnlike, KoreaTime }

@@ -1,4 +1,5 @@
 import mongoose from 'mongoose'
+import { KoreaTime } from './utilities.js'
 
 const changesIndexSchema = new mongoose.Schema({
 	isbn: Number,
@@ -7,5 +8,7 @@ const changesIndexSchema = new mongoose.Schema({
 		default: Date.now,
 	},
 })
+
+KoreaTime(changesIndexSchema)
 
 export default mongoose.model('ChangesIndex', changesIndexSchema)

@@ -1,5 +1,6 @@
 import mongoose from 'mongoose'
 import { commentSchema } from './comment.js'
+import { KoreaTime } from './utilities.js'
 
 const collectionSchema = new mongoose.Schema({
 	name: {
@@ -47,6 +48,8 @@ const collectionSchema = new mongoose.Schema({
 		ref: 'User',
 	},
 })
+
+KoreaTime(collectionSchema)
 
 collectionSchema.pre('save', function () {
 	this.likeCount = this.liked_users.length

@@ -1,4 +1,5 @@
 import mongoose from 'mongoose'
+import { KoreaTime } from './utilities.js'
 
 const suggestionSchema = new mongoose.Schema({
 	user: {
@@ -16,5 +17,7 @@ const suggestionSchema = new mongoose.Schema({
 		immutable: true,
 	},
 })
+
+KoreaTime(suggestionSchema)
 
 export default mongoose.model('Suggestion', suggestionSchema)
