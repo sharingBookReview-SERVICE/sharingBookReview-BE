@@ -25,11 +25,15 @@ const followSchema = new mongoose.Schema({
 
 // followSchema.loadClass(Follow)
 
-followSchema.statics.checkFollowing = async function(instance, myUserId, othersUserId) {
-    const isFollowing = Boolean(await this.findOne({sender: myUserId, receiver: othersUserId}))
-    instance = instance.toJSON()
-    instance.isFollowing = isFollowing
-
+followSchema.statics.checkFollowing = async function(instance, sender, receiver) {
+    const is_follow = Boolean(await this.findOne({sender, receiver}))
+    // todo: instanceof 사용하기
+    console.log(instance instanceof mongoose.Query)
+    // query false로 나옴
+    if(!instance.hasOwnProperty('id')){
+        instance = instance.toJSON()
+    }
+    instance.is_follow = is_follow
     return instance
 }
 
