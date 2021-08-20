@@ -78,10 +78,10 @@ router.get('/feeds', authMiddleware, async (req, res, next) => {
 	}
 })
 // Returns all reviews and collections made by a user(others)
-router.get('/feeds/:userId', async (req, res, next) => {
+router.get('/feeds/:userId', authMiddleware, async (req, res, next) => {
 	const { userId } = req.params
     const { _id : myUserId} = res.locals.user
-
+    
 	try {
         let user = await User.findById(userId).select("nickname level exp followingCount followerCount profileImage _id")
         user = await Follow.checkFollowing(user, myUserId, userId)
