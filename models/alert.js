@@ -22,7 +22,7 @@ const alertSchema = new mongoose.Schema({
     },
     is_read:{
         type: Boolean,
-        default: true
+        default: false
     },
 	created_at: {
 		type: Date,
