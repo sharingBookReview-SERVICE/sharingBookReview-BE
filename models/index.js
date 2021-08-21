@@ -45,5 +45,4 @@ mongoose.connection.on('error', (err) => {
 
 connect()
 
-export { Book, Review, Comment, User, ChangesIndex, Collection, Follow, Suggestion, Trend }
-export { Book, Review, Comment, User, ChangesIndex, Collection, Follow, Suggestion, Alert }
+export { Book, Review, Comment, User, ChangesIndex, Collection, Follow, Suggestion, Trend, Alert }
