@@ -14,13 +14,13 @@ const userSchema = new Schema({
 	own_image: { type: [String], default: ['image_1'] },
 	// True if user received treasure. False if user can receive treasure
 	treasure: { type: Boolean, default: false },
-	readReviews: [
+	read_reviews: [
 		{
 			reviewId: mongoose.Schema.Types.ObjectId,
 			created_at: Date,
 		},
 	],
-	readCollections: [
+	read_collections: [
 		{
 			collectionId: mongoose.Schema.Types.ObjectId,
 			created_at: Date,
@@ -74,8 +74,8 @@ class User {
 			})
 		}
 
-		this.readReviews = deleteOldOnes(this.readReviews)
-		this.readCollections = deleteOldOnes(this.readCollections)
+		this.readReviews = deleteOldOnes(this.read_reviews)
+		this.readCollections = deleteOldOnes(this.read_collections)
 
 	}
 }
