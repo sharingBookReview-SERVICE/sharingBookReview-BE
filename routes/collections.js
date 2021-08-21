@@ -91,6 +91,8 @@ router.get('/:collectionId', async (req, res, next) => {
 router.put('/:collectionId', async (req, res, next) => {
 	const { collectionId } = req.params
 	const { _id: userId } = res.locals.user
+    const { contents } = req.body
+
 	try {
 		let collection = await Collection.findById(collectionId)
 
@@ -99,8 +101,15 @@ router.put('/:collectionId', async (req, res, next) => {
         
 		if (String(collection.user) !== String(userId))
 			return next(new Error('로그인된 사용자가 컬렉션 작성자가 아닙니다.'))
-
-		await collection.update(req.body)
+        
+        contents.map(async (content) => {
+            if(!await Book.findById(content.book)){
+                const [searchResult] = await searchBooks('isbn', content.book)
+                await saveBook(searchResult)
+            }
+        })
+        
+		await Collection.findByIdAndUpdate(collectionId, {...req.body})
 
         collection = await Collection.findById(collectionId)
 
