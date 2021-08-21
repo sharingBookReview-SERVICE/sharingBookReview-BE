@@ -1,10 +1,10 @@
 import express from 'express'
 import { Follow, Review } from '../models/index.js'
-import nonAuthMiddleware from '../middleware/non_auth_middleware.js'
+import authMiddleware from '../middleware/auth_middleware.js'
 
 const router = new express.Router()
 
-router.get('/', nonAuthMiddleware, async (req, res, next) => {
+router.get('/', authMiddleware(false), async (req, res, next) => {
     const {_id : userId} = res.locals.user
 	const SCROLL_SIZE = 10
 	const { lastItemId } = req.query

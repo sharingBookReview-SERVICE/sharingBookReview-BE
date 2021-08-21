@@ -6,7 +6,10 @@ const router = new express.Router()
 
 // todo 함수나 static으로 밑의 4개 합쳐보기
 // 팔로잉 목록 조회(나의)
-router.get('/followingList', authMiddleware, async (req, res, next) => {
+
+router.use(authMiddleware(true))
+
+router.get('/followingList', async (req, res, next) => {
     try{
         const { _id : userId } = res.locals.user
 
@@ -21,7 +24,7 @@ router.get('/followingList', authMiddleware, async (req, res, next) => {
 })
 
 // 팔로워 목록 조회(나의)
-router.get('/followerList', authMiddleware, async (req, res, next) => {
+router.get('/followerList', async (req, res, next) => {
     try{
         const { _id : userId } = res.locals.user
 
@@ -36,7 +39,7 @@ router.get('/followerList', authMiddleware, async (req, res, next) => {
 })
 
 // 팔로잉 목록 조회(타 유저)
-router.get('/followingList/:userId', authMiddleware, async (req, res, next) => {
+router.get('/followingList/:userId', async (req, res, next) => {
     try{
         const { userId } = req.params
 
@@ -51,7 +54,7 @@ router.get('/followingList/:userId', authMiddleware, async (req, res, next) => {
 })
 
 // 팔로워 목록 조회(타 유저)
-router.get('/followerList/:userId', authMiddleware, async (req, res, next) => {
+router.get('/followerList/:userId', authMiddleware(true), async (req, res, next) => {
     try{
         const { userId } = req.params
 
@@ -66,7 +69,7 @@ router.get('/followerList/:userId', authMiddleware, async (req, res, next) => {
 })
 
 // 팔로우 하기, 팔로우 취소
-router.put('/:userId', authMiddleware, async (req, res, next) => {
+router.put('/:userId', async (req, res, next) => {
     const { _id : sender } = res.locals.user
     const { userId : receiver } = req.params
     let status
@@ -106,7 +109,7 @@ router.put('/:userId', authMiddleware, async (req, res, next) => {
 })
 
 // 나를 팔로우 하는 사람 삭제, 관계 취소
-router.put('/delete/:userId', authMiddleware, async (req, res, next) => {
+router.put('/delete/:userId', async (req, res, next) => {
     const { _id : receiver } = res.locals.user
     const { userId : sender } = req.params
     let status

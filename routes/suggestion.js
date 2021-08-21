@@ -4,7 +4,7 @@ import { Suggestion, User } from '../models/index.js'
 
 const router = new express.Router()
 
-router.post('/', authMiddleware, async (req, res, next) => {
+router.post('/', authMiddleware(true), async (req, res, next) => {
 	try {
 		const { _id: user } = res.locals.user
 

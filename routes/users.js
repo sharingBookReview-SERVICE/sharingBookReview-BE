@@ -68,8 +68,10 @@ router.get('/logout', (req, res, next) => {
 	}
 })
 
+router.use(authMiddleware(true))
+
 // Returns all reviews and collections made by a user(mine)
-router.get('/feeds', authMiddleware, async (req, res, next) => {
+router.get('/feeds', async (req, res, next) => {
 	const { _id: userId } = res.locals.user
 
 	try {
@@ -84,7 +86,7 @@ router.get('/feeds', authMiddleware, async (req, res, next) => {
 	}
 })
 // Returns all reviews and collections made by a user(others)
-router.get('/feeds/:userId', authMiddleware, async (req, res, next) => {
+router.get('/feeds/:userId', async (req, res, next) => {
 	const { userId } = req.params
     const { _id : myUserId} = res.locals.user
     
@@ -101,7 +103,7 @@ router.get('/feeds/:userId', authMiddleware, async (req, res, next) => {
 	}
 })
 // 나의 유저정보 불러오기
-router.get('/', authMiddleware, async (req, res, next) => {
+router.get('/', async (req, res, next) => {
 	const { _id: userId } = res.locals.user
 
 	try {
@@ -114,7 +116,7 @@ router.get('/', authMiddleware, async (req, res, next) => {
 	}
 })
 // 나의 유저정보 수정
-router.put('/', authMiddleware, async (req, res, next) => {
+router.put('/', async (req, res, next) => {
 	const { _id : userId } = res.locals.user
     const { nickname, profileImage } = req.body
     try{
@@ -154,7 +156,7 @@ router.put('/', authMiddleware, async (req, res, next) => {
     }
 })
 // 나의 유저정보 삭제
-router.delete('/', authMiddleware, async (req, res, next) => {
+router.delete('/', async (req, res, next) => {
 	const { _id : userId } = res.locals.user
 	try {
 		const user = await User.findByIdAndDelete(userId)
@@ -185,7 +187,7 @@ router.delete('/', authMiddleware, async (req, res, next) => {
 })
 
 // 프로필 이미지 획득
-router.put("/profile/image", authMiddleware, async (req, res, next) => {
+router.put("/profile/image", async (req, res, next) => {
     const { _id : userId } = res.locals.user
     const { imageName } = req.body
     const treasure = false
@@ -206,7 +208,7 @@ router.put("/profile/image", authMiddleware, async (req, res, next) => {
     
 })
 // 보물 확인
-router.get('/profile/treasure', authMiddleware, async (req,res,next) => {
+router.get('/profile/treasure', async (req,res,next) => {
     const { _id : userId } = res.locals.user
     
     const user = await User.findById(userId)

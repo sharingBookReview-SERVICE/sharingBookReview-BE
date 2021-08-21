@@ -12,7 +12,9 @@ const upload = multer({
 	dest: 'uploads/',
 })
 
-router.post('/', authMiddleware, upload.single('image'), ImageUpload.uploadImage, async (req, res, next) => {
+router.use(authMiddleware(true))
+
+router.post('/', upload.single('image'), ImageUpload.uploadImage, async (req, res, next) => {
 	const { _id: userId } = res.locals.user
 	const { bookId } = req.params
 	// res.locals가 존재하지 않으면 undefined 반환
@@ -21,6 +23,7 @@ router.post('/', authMiddleware, upload.single('image'), ImageUpload.uploadImage
 	const hashtags = JSON.parse(req.body.hashtags)
 
 	// Check if the book is saved on DB
+
 	const book = await Book.findById(bookId)
 
 	if (!book) {
@@ -64,7 +67,7 @@ router.post('/', authMiddleware, upload.single('image'), ImageUpload.uploadImage
     
 })
 
-router.get('/', authMiddleware, async (req, res, next) => {
+router.get('/', async (req, res, next) => {
 	const { bookId } = req.params
 	const { _id: userId } = res.locals.user
 
@@ -88,7 +91,7 @@ router.get('/', authMiddleware, async (req, res, next) => {
 	}
 })
 
-router.get('/:reviewId', authMiddleware ,async (req, res, next) => {
+router.get('/:reviewId', async (req, res, next) => {
 	const { reviewId } = req.params
 	const { _id: userId } = res.locals.user
 
@@ -111,7 +114,7 @@ router.get('/:reviewId', authMiddleware ,async (req, res, next) => {
 	}
 })
 
-router.put('/:reviewId', authMiddleware, async (req, res, next) => {
+router.put('/:reviewId', async (req, res, next) => {
     const userId = res.locals.user._id
 	const { reviewId } = req.params
 	const { quote, content, hashtags } = req.body
@@ -132,7 +135,7 @@ router.put('/:reviewId', authMiddleware, async (req, res, next) => {
 	}
 })
 
-router.delete('/:reviewId', authMiddleware, async (req, res) => {
+router.delete('/:reviewId', async (req, res) => {
     const userId = res.locals.user._id
 	const { reviewId } = req.params
 
@@ -151,6 +154,6 @@ router.delete('/:reviewId', authMiddleware, async (req, res) => {
 	}
 })
 
-router.put('/:reviewId/likes', authMiddleware, await likeUnlike(Review, 'review'))
+router.put('/:reviewId/likes', await likeUnlike(Review, 'review'))
 
 export default router
