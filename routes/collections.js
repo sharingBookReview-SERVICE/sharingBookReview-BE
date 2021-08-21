@@ -1,7 +1,6 @@
 import express from 'express'
 import { Collection, User, Comment, Book } from '../models/index.js'
 import authMiddleware from '../middleware/auth_middleware.js'
-import nonAuthMiddleware from '../middleware/non_auth_middleware.js'
 import multer from 'multer'
 import ImageUpload from '../controllers/image_upload.js'
 import { validateId } from '../controllers/utilities.js'
@@ -14,8 +13,31 @@ const upload = multer({
 	dest: 'uploads/',
 })
 
+// Login optional
 
-router.post('/', authMiddleware, upload.single('image'), ImageUpload.uploadImage, async (req, res, next) => {
+/**
+ * Get all collections
+ */
+router.get('/', authMiddleware(false), async (req, res, next) => {
+	try {
+		// query = { name, type }
+		const collections = await Collection.find(req.query).populate('contents.book', '-reviews').sort('-created_at')
+
+		return res.json({ collections })
+	} catch (e) {
+		console.error(e)
+		return next(new Error('콜렉션 불러오기를 실패했습니다.'))
+	}
+})
+
+// Login compulsory
+
+router.use(authMiddleware(true))
+
+/**
+ * Create a collection
+ */
+router.post('/', upload.single('image'), ImageUpload.uploadImage, async (req, res, next) => {
 	const { _id: userId } = res.locals.user
     const image = res.locals?.url
     const { name, description } = req.body
@@ -48,20 +70,10 @@ router.post('/', authMiddleware, upload.single('image'), ImageUpload.uploadImage
 	}
 })
 
-// Get all collections
-router.get('/', nonAuthMiddleware, async (req, res, next) => {
-	try {
-		// query = { name, type }
-		const collections = await Collection.find(req.query).populate('contents.book', '-reviews').sort('-created_at')
-
-		return res.json({ collections })
-	} catch (e) {
-		console.error(e)
-		return next(new Error('콜렉션 불러오기를 실패했습니다.'))
-	}
-})
-
-router.get('/:collectionId', authMiddleware, async (req, res, next) => {
+/**
+ * Get a collection by collection ID
+ */
+router.get('/:collectionId', async (req, res, next) => {
 	const { collectionId } = req.params
 	try {
 		const collection = await Collection.findById(collectionId).populate('contents.book', '-reviews').populate('user', 'nickname level followingCount followerCount')
@@ -73,7 +85,10 @@ router.get('/:collectionId', authMiddleware, async (req, res, next) => {
 	}
 })
 
-router.put('/:collectionId', authMiddleware, async (req, res, next) => {
+/**
+ * Update a collection with req.body by ID
+ */
+router.put('/:collectionId', async (req, res, next) => {
 	const { collectionId } = req.params
 	const { _id: userId } = res.locals.user
 	try {
@@ -94,7 +109,10 @@ router.put('/:collectionId', authMiddleware, async (req, res, next) => {
 	}
 })
 
-router.delete('/:collectionId', authMiddleware, async (req, res, next) => {
+/**
+ * Delete a collection by ID
+ */
+router.delete('/:collectionId', async (req, res, next) => {
 	const { collectionId } = req.params
 	const { _id: userId } = res.locals.user
 
@@ -118,9 +136,9 @@ router.delete('/:collectionId', authMiddleware, async (req, res, next) => {
 })
 
 /**
- * Collection's comment CRUD
+ * todo 컬렉션 댓글 기능
+ * 미완성
  */
-
 router.post('/:collectionId/comments', async (req, res, next) => {
 	const { _id: userId } = res.locals.user
 	const { collectionId } = req.params
@@ -180,6 +198,6 @@ router.delete('/:collectionId/comments/:commentId', async (req, res, next) => {
 	}
 })
 
-router.put('/:collectionId/likes', authMiddleware, await likeUnlike(Collection, 'collection'))
+router.put('/:collectionId/likes', await likeUnlike(Collection, 'collection'))
 
 export default router

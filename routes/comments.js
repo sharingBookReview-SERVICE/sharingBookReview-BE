@@ -6,7 +6,18 @@ import { validateId } from '../controllers/utilities.js'
 
 const router = new express.Router({ mergeParams: true })
 
-router.post('/', authMiddleware, async (req, res, next) => {
+/**
+ * todo 현재 리뷰 커멘트를 컬렉션 커멘트 라우터로도 활용할 수 있게 변경하기
+ * 라우터의 호출 주소만 바꾸고 (collections/collectionId/comments 해도 여기로 와지게
+ * 여기서 리뷰인지 컬렉션인지 분간하기 (mergeParams 로 받은게 reviewId 인지 collectionId 인지 확인하면 됨)
+ *
+ */
+router.use(authMiddleware(true))
+
+/**
+ * Create a comment on review
+ */
+router.post('/', async (req, res, next) => {
 	const { _id: userId } = res.locals.user
 	const { reviewId } = req.params
 	const { content } = req.body
@@ -45,7 +56,10 @@ router.post('/', authMiddleware, async (req, res, next) => {
 	}
 })
 
-router.patch('/:commentId', authMiddleware, async (req, res, next) => {
+/**
+ * Update comment's content by comment ID
+ */
+router.patch('/:commentId', async (req, res, next) => {
 	const userId = res.locals.user._id
 	const { reviewId, commentId } = req.params
 	const { content } = req.body
@@ -69,7 +83,10 @@ router.patch('/:commentId', authMiddleware, async (req, res, next) => {
 	}
 })
 
-router.delete('/:commentId', authMiddleware, async (req, res, next) => {
+/**
+ * Delete a comment by comment ID
+ */
+router.delete('/:commentId', async (req, res, next) => {
 	const { _id: userId } = res.locals.user
 	const { reviewId, commentId } = req.params
 	try {
