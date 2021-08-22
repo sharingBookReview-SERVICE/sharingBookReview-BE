@@ -1,41 +1,19 @@
-import mongoose from 'mongoose'
+import { Schema, Types, model } from 'mongoose'
 import { commentSchema } from './comment.js'
 import { KoreaTime } from './utilities.js'
 
-const reviewSchema = new mongoose.Schema({
-	user: {
-		type: mongoose.Schema.Types.ObjectId,
-		ref: 'User',
-		immutable: true,
-	},
-	book: {
-		type: Number,
-		ref: 'Book',
-		immutable: true,
-	},
-	comments: {
-		type: [commentSchema],
-	},
+const reviewSchema = new Schema({
+	user: { type: Types.ObjectId, ref: 'User', immutable: true },
+	book: { type: Number, ref: 'Book', immutable: true },
+	comments: [commentSchema],
 	quote: String,
 	content: String,
 	image: String,
 	hashtags: [String],
-	created_at: {
-		type: Date,
-		default: Date.now,
-	},
-	liked_users: {
-		type: [mongoose.Schema.Types.ObjectId],
-		ref: 'User',
-	},
-	likeCount: {
-		type: Number,
-		default: 0,
-	},
-	commented_users: {
-		type: [mongoose.Schema.Types.ObjectId],
-		ref: 'User',
-	},
+	created_at: { type: Date, default: Date.now },
+	liked_users: { type: [Types.ObjectId], ref: 'User' },
+	likeCount: { type: Number, default: 0 },
+	commented_users: { type: [Types.ObjectId], ref: 'User' },
 })
 
 KoreaTime(reviewSchema)
@@ -64,4 +42,4 @@ reviewSchema.pre('save', function () {
 
 reviewSchema.loadClass(Review)
 
-export default mongoose.model('Review', reviewSchema)
+export default model('Review', reviewSchema)
