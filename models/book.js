@@ -22,14 +22,6 @@ const bookSchema = new Schema(
 	},
 )
 
-// class Book {
-// }
-//
-// bookSchema.loadClass(Book)
-
-/**
- * Saves updated book's isbn in ChangeIndex for tag indexing.
- */
 bookSchema.post('save', async function () {
 	const updatedBookISBN = this.isbn
 	await ChangesIndex.create({ isbn: updatedBookISBN })
