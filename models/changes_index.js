@@ -1,3 +1,6 @@
+/**
+ * Save all books needed to be indexed for tagging system.
+ */
 import { Schema, model } from 'mongoose'
 import { KoreaTime } from './utilities.js'
 
