@@ -1,12 +1,9 @@
-import mongoose from 'mongoose'
+import { Schema, Types, model } from 'mongoose'
 import { ChangesIndex } from './index.js'
 
-const bookSchema = new mongoose.Schema(
+const bookSchema = new Schema(
 	{
-		_id: {
-			type: Number,
-			alias: 'isbn',
-		},
+		_id: { type: Number, alias: 'isbn', required: true },
 		title: String,
 		link: String,
 		image: String,
@@ -16,11 +13,7 @@ const bookSchema = new mongoose.Schema(
 		publisher: String,
 		description: String,
 		pubdate: Date,
-		reviews: {
-			type: [mongoose.Schema.Types.ObjectId],
-			default: [],
-			ref: 'Review',
-		},
+		reviews: { type: [Types.ObjectId], default: [], ref: 'Review', },
 		topTags: [String],
 	},
 	{
@@ -42,4 +35,4 @@ bookSchema.post('save', async function () {
 	await ChangesIndex.create({ isbn: updatedBookISBN })
 })
 
-export default mongoose.model('Book', bookSchema)
+export default model('Book', bookSchema)
