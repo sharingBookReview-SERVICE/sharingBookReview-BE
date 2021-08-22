@@ -1,48 +1,20 @@
-import mongoose from 'mongoose'
+import { Schema, model } from 'mongoose'
 import expList from '../exp_list.js'
 
-const userSchema = new mongoose.Schema({
-	nickname: {
-		type: String,
-	},
-	providerKey: {
-		type: String,
-	},
-	provider: {
-		type: String,
-		enum: ['naver', 'kakao', 'google'],
-	},
-	level: {
-		type: Number,
-		default: 1,
-	},
-	exp: {
-		type: Number,
-		default: 0,
-	},
-	followingCount: {
-		type: Number,
-		default: 0,
-	},
-	followerCount: {
-		type: Number,
-		default: 0,
-	},
-	profileImage: {
-		type: String,
-		default: 'image_1',
-	},
-	own_image: {
-		type: [String],
-        default:['image_1']
-	},
-	// 보물을 받은 상태이면 true, 보물을 획득해야하만 하는 상태는 false
-	treasure: {
-		type: Boolean,
-		default: false,
-	},
+const userSchema = new Schema({
+	nickname: String,
+	providerKey: String,
+	provider: { type: String, enum: ['naver', 'kakao', 'google'], },
+	level: { type: Number, default: 1, },
+	exp: { type: Number, default: 0, },
+	followingCount: { type: Number, default: 0, },
+	followerCount: { type: Number, default: 0, },
+	profileImage: { type: String, default: 'image_1', },
+	own_image: { type: [String], default:['image_1'] },
+	// True if user received treasure. False if user can receive treasure
+	treasure: { type: Boolean, default: false, },
 })
-// todo following, followerCount virtual로 변환
+
 // todo 발생되는 event의 target instance id과 event를 수행하는 user id를 저장해서 level과 exp를 virtual로 표현
 // why 누가 어디에 event를 실행했는지를 저장하는것이 확장성이 높다.
 userSchema.statics.getExpAndLevelUp = async function(userId, event) {
@@ -73,4 +45,4 @@ userSchema.statics.deleteExp = async function(userId, event) {
 
 }
 
-export default mongoose.model('User', userSchema)
+export default model('User', userSchema)
