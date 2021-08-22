@@ -12,14 +12,14 @@ const router = new express.Router()
 
 const loginRedirectUrl = (token) => {
     if(process.env.NODE_ENV === 'production'){
-        return `http://diver.shop.s3-website.ap-northeast-2.amazonaws.com/logincheck/token=${token}`
+        return `http://bookdiver.net/logincheck/token=${token}`
     }
     return `http://localhost:3000/logincheck/token=${token}`
 }
 
 let logoutRedirectUrl = 'http://localhost:3000'
 if(process.env.NODE_ENV === 'production'){
-    logoutRedirectUrl = 'http://diver.shop.s3-website.ap-northeast-2.amazonaws.com'
+    logoutRedirectUrl = 'http://bookdiver.net'
 }
 
 // kakao-login
