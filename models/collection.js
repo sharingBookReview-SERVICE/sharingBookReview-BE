@@ -14,7 +14,7 @@ const collectionSchema = new Schema({
 	user: { type: Types.ObjectId, ref: 'User', immutable: true },
 	contents: [
 		{
-			book: { type: String, ref: 'Book', required: true, alias: 'isbn' },
+			book: { type: String, ref: 'Book', required: true },
 			book_description: String,
 		},
 	],

@@ -94,7 +94,7 @@ router.put('/:collectionId', async (req, res, next) => {
     const { contents } = req.body
 
 	try {
-		let collection = await Collection.findById(collectionId)
+		const collection = await Collection.findByIdAndUpdate(collectionId, req.body, {runValidator: true, new: true})
 
 		if (!collection)
 			return next(new Error('존재하지 않는 컬렉션 아이디입니다.'))
@@ -103,15 +103,11 @@ router.put('/:collectionId', async (req, res, next) => {
 			return next(new Error('로그인된 사용자가 컬렉션 작성자가 아닙니다.'))
         
         contents.map(async (content) => {
-            if(!await Book.findById(content.book)){
-                const [searchResult] = await searchBooks('isbn', content.book)
-                await saveBook(searchResult)
-            }
-        })
-        
-		await Collection.findByIdAndUpdate(collectionId, {...req.body})
-
-        collection = await Collection.findById(collectionId)
+			if (!(await Book.findById(content.book))) {
+				const [searchResult] = await searchBooks('isbn', content.book)
+				await saveBook(searchResult)
+			}
+		})
 
 		return res.status(201).json({ collection })
 	} catch (e) {
