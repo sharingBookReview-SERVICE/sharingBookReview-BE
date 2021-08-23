@@ -1,4 +1,5 @@
-import { Schema, Types, model } from 'mongoose'
+import mongoose from 'mongoose'
+const { Schema, Types, model } = mongoose
 import { KoreaTime } from './utilities.js'
 
 const followSchema = new Schema({

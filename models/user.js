@@ -1,4 +1,5 @@
-import { Schema, model } from 'mongoose'
+import mongoose from 'mongoose'
+const { Schema, model } = mongoose
 import expList from '../exp_list.js'
 
 const userSchema = new Schema({

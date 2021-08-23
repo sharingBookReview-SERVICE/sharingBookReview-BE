@@ -1,7 +1,8 @@
 /**
  * Save all books needed to be indexed for tagging system.
  */
-import { Schema, model } from 'mongoose'
+import mongoose from 'mongoose'
+const { Schema, model } = mongoose
 import { KoreaTime } from './utilities.js'
 
 const changesIndexSchema = new Schema(
