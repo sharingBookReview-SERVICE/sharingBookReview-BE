@@ -32,11 +32,11 @@ router.get('/', authMiddleware(false), async (req, res, next) => {
 
 		/** @type {ObjectId[]}
 		 * @description Array of user IDs that the the user in parameter is following. */
-		const followees = await Follow.find({ sender: userId })
+		const followees = (await Follow.find({ sender: userId })).map((follow) => follow.receiver)
 
 		/** @type {Document[]}
 		 * @description Array of reviews of following users */
-		const followingReviews = await Reviews.find({
+		const followingReviews = await Review.find({
 			...query,
 			user: { $in: followees },
 		})
@@ -45,18 +45,26 @@ router.get('/', authMiddleware(false), async (req, res, next) => {
 
 		// If following reviews are used up (already read or no new ones) continue to next if statement
 		if (followingReviews.length) {
-			res.json({ feeds: followingReviews })
+			return res.json({ feeds: followingReviews })
 		}
 
 		// 2. Return recent unread reviews of any users.
 
 		/** @type {Document[]}
 		 *  @description Unread reviews of user within one week */
-		const feeds = await Review.find(query)
+		const unreadReviews = await Review.find(query)
 			.sort({ created_at: -1 })
 			.limit(SCROLL_SIZE)
 
-		return res.json({ feeds })
+		// If unread reviews are used up (already read or no new ones) continue to last res.json()
+		if (unreadReviews.length) {
+			return res.json({ feeds: unreadReviews })
+		}
+
+		// 3. Return random best reviews.
+		// todo: 필요한지 회의하기
+
+		res.json({ message: '보여줄거 다보여줬슴당' })
 	} catch (e) {
 		console.error(e)
 		return next(new Error('피드 불러오기를 실패했습니다.'))
