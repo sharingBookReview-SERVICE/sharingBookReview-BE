@@ -61,10 +61,9 @@ router.get('/', authMiddleware(false), async (req, res, next) => {
 			return res.json({ feeds: unreadReviews })
 		}
 
-		// 3. Return random best reviews.
-		// todo: 필요한지 회의하기
+		// todo: 나중에 부족하다 싶으면 뭔가 더 넣기
 
-		res.json({ message: '보여줄거 다보여줬슴당' })
+		return res.send('finished')
 	} catch (e) {
 		console.error(e)
 		return next(new Error('피드 불러오기를 실패했습니다.'))
