@@ -1,5 +1,5 @@
 import mongoose from 'mongoose'
-const { Schema, model } = mongoose
+const { Schema, Types, model } = mongoose
 import expList from '../exp_list.js'
 
 const userSchema = new Schema({
@@ -16,13 +16,13 @@ const userSchema = new Schema({
 	treasure: { type: Boolean, default: false },
 	read_reviews: [
 		{
-			reviewId: mongoose.Schema.Types.ObjectId,
+			reviewId: Types.ObjectId,
 			created_at: Date,
 		},
 	],
 	read_collections: [
 		{
-			collectionId: mongoose.Schema.Types.ObjectId,
+			collectionId: Types.ObjectId,
 			created_at: Date,
 		},
 	],
