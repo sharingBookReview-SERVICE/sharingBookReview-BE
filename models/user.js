@@ -1,67 +1,40 @@
 import mongoose from 'mongoose'
+const { Schema, model } = mongoose
 import expList from '../exp_list.js'
 
-const userSchema = new mongoose.Schema({
-	nickname: {
-		type: String,
-	},
-	providerKey: {
-		type: String,
-	},
-	provider: {
-		type: String,
-		enum: ['naver', 'kakao', 'google'],
-	},
-	level: {
-		type: Number,
-		default: 1,
-	},
-	exp: {
-		type: Number,
-		default: 0,
-	},
-	followingCount: {
-		type: Number,
-		default: 0,
-	},
-	followerCount: {
-		type: Number,
-		default: 0,
-	},
-	profileImage: {
-		type: String,
-		default: 'image_1',
-	},
-	own_image: {
-		type: [String],
-        default:['image_1']
-	},
-	// 보물을 받은 상태이면 true, 보물을 획득해야하만 하는 상태는 false
-	treasure: {
-		type: Boolean,
-		default: false,
-	},
+const userSchema = new Schema({
+	nickname: String,
+	providerKey: String,
+	provider: { type: String, enum: ['naver', 'kakao', 'google'], },
+	level: { type: Number, default: 1, },
+	exp: { type: Number, default: 0, },
+	followingCount: { type: Number, default: 0, },
+	followerCount: { type: Number, default: 0, },
+	profileImage: { type: String, default: 'image_1', },
+	own_image: { type: [String], default:['image_1'] },
+	// True if user received treasure. False if user can receive treasure
+	treasure: { type: Boolean, default: false, },
 })
-// todo following, followerCount virtual로 변환
+
 // todo 발생되는 event의 target instance id과 event를 수행하는 user id를 저장해서 level과 exp를 virtual로 표현
 // why 누가 어디에 event를 실행했는지를 저장하는것이 확장성이 높다.
 userSchema.statics.getExpAndLevelUp = async function(userId, event) {
     const user = await this.findById(userId)
     // event에 따른 경험치를 획득
     user.exp += expList[event]
-    // 필요 경험치 계산
-    let requiredExp = 3 * (1.05**(user.level - 1))
-    // 현재 경험치가 필요 경험치보다 크거나 같을때, 레벨업, 경험치 수정
-    if(user.exp >= requiredExp){
-        user.level += 1
-        user.exp -= requiredExp
-        if(user.level % 10 === 0){
-            user.treasure = true
-        }
-    }
-        await user.save()
+    // Required experience to next level.
+	const requiredExp = 3 * 1.05 ** (user.level - 1)
 
-        return user.treasure
+	// Level up
+	if (user.exp >= requiredExp) {
+		user.level++
+		user.exp -= requiredExp
+		user.treasure = !(user.level % 10)
+	}
+
+	await user.save()
+
+	return user.treasure
 }
 
 userSchema.statics.deleteExp = async function(userId, event) {
@@ -73,4 +46,4 @@ userSchema.statics.deleteExp = async function(userId, event) {
 
 }
 
-export default mongoose.model('User', userSchema)
+export default model('User', userSchema)

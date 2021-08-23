@@ -1,21 +1,11 @@
 import mongoose from 'mongoose'
+const { Schema, Types, model } = mongoose
 import { KoreaTime } from './utilities.js'
 
-const followSchema = new mongoose.Schema({
-    sender:{
-        type: mongoose.Schema.Types.ObjectId,
-		ref: 'User',
-		immutable: true,
-    },
-    receiver: {
-        type: mongoose.Schema.Types.ObjectId,
-		ref: 'User',
-		immutable: true,
-    },
-    created_at: {
-		type: Date,
-		default: Date.now,
-	},
+const followSchema = new Schema({
+	sender: { type: Types.ObjectId, ref: 'User', immutable: true },
+	receiver: { type: Types.ObjectId, ref: 'User', immutable: true },
+	created_at: { type: Date, default: Date.now },
 })
 
 KoreaTime(followSchema)
@@ -38,4 +28,4 @@ followSchema.statics.checkFollowing = async function(instance, sender, receiver)
     return instance
 }
 
-export default mongoose.model('Follow', followSchema)
+export default model('Follow', followSchema)
