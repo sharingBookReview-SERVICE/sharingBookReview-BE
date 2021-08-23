@@ -1,5 +1,5 @@
 import express from 'express'
-import { Follow, Review } from '../models/index.js'
+import { Follow, Review, User } from '../models/index.js'
 import authMiddleware from '../middleware/auth_middleware.js'
 
 const router = new express.Router()
@@ -55,6 +55,41 @@ router.get('/', authMiddleware(false), async (req, res, next) => {
 	// } catch (err) {
 	// 	return next(new Error('피드를 불러오는데 실패했습니다.'))
 	// }
+})
+
+/**
+ * Route patching read reviews
+ * @name patch/:reviewId
+ * @function
+ * @inner
+ * @param {string} path - Express path
+ * @param {callback} middleware - Express middleware.
+ */
+router.patch('/:reviewId', authMiddleware(true), async (req, res, next) => {
+	const { _id: userId } = res.locals.user
+	/** @type {ObjectId}
+	 * @description Review ID that user has read.
+	 */
+	const { reviewId } = req.params
+
+	/** @type {Date}
+	 * @description Created date of review.     */
+	const createdAt = (await Review.findById(reviewId)).created_at
+
+	// Find user by ID and push to read_reviews array.
+	try {
+		const user = await User.findById(userId)
+		user.read_reviews.push({
+			review: reviewId,
+			created_at: createdAt,
+		})
+		await user.save()
+
+	} catch (e) {
+		console.error(e)
+		return next(new Error('읽음 확인을 실패했습니다.'))
+	}
+
 })
 
 export default router
