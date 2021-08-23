@@ -19,7 +19,7 @@ router.get('/', authMiddleware(false), async (req, res, next) => {
 
 		/** @type {ObjectId[]}
 		 * @description Array of ObjectId of read reviews of user. If user is null (ie.e. not logged in) assigned as undefined. */
-		const readReviews = user?.read_reviews.map((element) => elemet.review)
+		const readReviews = user?.read_reviews.map((element) => element.review)
 
 		/** @type {Object}
 		 *  @description Query statement for reviews: unread and created within one week */
