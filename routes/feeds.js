@@ -32,16 +32,15 @@ router.get('/', authMiddleware(false), async (req, res, next) => {
 
 		/** @type {ObjectId[]}
 		 * @description Array of user IDs that the the user in parameter is following. */
-		const followees = (await Follow.find({ sender: userId })).map((follow) => follow.receiver)
+		const followees = (await Follow.find({ sender: userId })).map(
+			(follow) => follow.receiver)
 
 		/** @type {Document[]}
 		 * @description Array of reviews of following users */
 		const followingReviews = await Review.find({
 			...query,
 			user: { $in: followees },
-		})
-			.sort({ created_at: -1 })
-			.limit(SCROLL_SIZE)
+		}).sort({ created_at: -1 }).limit(SCROLL_SIZE)
 
 		// If following reviews are used up (already read or no new ones) continue to next if statement
 		if (followingReviews.length) {
@@ -52,9 +51,9 @@ router.get('/', authMiddleware(false), async (req, res, next) => {
 
 		/** @type {Document[]}
 		 *  @description Unread reviews of user within one week */
-		const unreadReviews = await Review.find(query)
-			.sort({ created_at: -1 })
-			.limit(SCROLL_SIZE)
+		const unreadReviews = await Review.find(query).
+			sort({ created_at: -1 }).
+			limit(SCROLL_SIZE)
 
 		// If unread reviews are used up (already read or no new ones) continue to last res.json()
 		if (unreadReviews.length) {
@@ -70,6 +69,39 @@ router.get('/', authMiddleware(false), async (req, res, next) => {
 	}
 })
 
-const getFollowingReviews = async (userId) => {}
+/**
+ * Route patching read reviews
+ * @name patch/:reviewId
+ * @function
+ * @inner
+ * @param {string} path - Express path
+ * @param {callback} middleware - Express middleware.
+ */
+router.patch('/:reviewId', authMiddleware(true), async (req, res, next) => {
+	const { _id: userId } = res.locals.user
+	/** @type {ObjectId}
+	 * @description Review ID that user has read.
+	 */
+	const { reviewId } = req.params
+
+	/** @type {Date}
+	 * @description Created date of review.     */
+	const createdAt = (await Review.findById(reviewId)).created_at
+
+	// Find user by ID and push to read_reviews array.
+	try {
+		const user = await User.findById(userId)
+		user.read_reviews.push({
+			review: reviewId,
+			created_at: createdAt,
+		})
+		await user.save()
+
+	} catch (e) {
+		console.error(e)
+		return next(new Error('읽음 확인을 실패했습니다.'))
+	}
+
+})
 
 export default router
