@@ -21,19 +21,19 @@ userSchema.statics.getExpAndLevelUp = async function(userId, event) {
     const user = await this.findById(userId)
     // event에 따른 경험치를 획득
     user.exp += expList[event]
-    // 필요 경험치 계산
-    let requiredExp = 3 * (1.05**(user.level - 1))
-    // 현재 경험치가 필요 경험치보다 크거나 같을때, 레벨업, 경험치 수정
-    if(user.exp >= requiredExp){
-        user.level += 1
-        user.exp -= requiredExp
-        if(user.level % 10 === 0){
-            user.treasure = true
-        }
-    }
-        await user.save()
+    // Required experience to next level.
+	const requiredExp = 3 * 1.05 ** (user.level - 1)
 
-        return user.treasure
+	// Level up
+	if (user.exp >= requiredExp) {
+		user.level++
+		user.exp -= requiredExp
+		user.treasure = !(user.level % 10)
+	}
+
+	await user.save()
+
+	return user.treasure
 }
 
 userSchema.statics.deleteExp = async function(userId, event) {
