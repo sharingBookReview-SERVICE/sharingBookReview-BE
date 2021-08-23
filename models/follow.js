@@ -3,7 +3,9 @@ const { Schema, Types, model } = mongoose
 import { KoreaTime } from './utilities.js'
 
 const followSchema = new Schema({
+    // follow를 send하는 user. follow한 상대의 게시물을 피드에서 볼 수 있다. receiver를 상대로 follow 하기, follow 취소 가능
 	sender: { type: Types.ObjectId, ref: 'User', immutable: true },
+    // follow를 receive하는 user. sender를 상대로 follow 삭제 가능
 	receiver: { type: Types.ObjectId, ref: 'User', immutable: true },
 	created_at: { type: Date, default: Date.now },
 })
