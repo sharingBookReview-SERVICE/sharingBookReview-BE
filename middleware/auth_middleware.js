@@ -14,10 +14,8 @@ const authMiddleware = (loginRequired) => {
 	 */
 	const validateToken = (req) => {
 		// Check header
-
 		const authorization = req.headers?.authorization
-		if (!authorization) throw new Error('헤더에 authorization 이 없습니다. loginRequired 가 false 일 경우 비 회원으로 진행합니다.')
-
+		if (!authorization.length) throw new Error('헤더에 authorization 이 없습니다. loginRequired 가 false 일 경우 비 회원으로 진행합니다.')
 		// Check token
 
 		let tokenScheme, tokenValue
@@ -27,6 +25,7 @@ const authMiddleware = (loginRequired) => {
 			console.error(e)
 			return new Error('토큰 구조 분해를 실패했습니다.')
 		}
+		if (tokenValue === 'null') throw new Error('토큰 값이 null 입니다. loginRequired 가 false 일 경우 비 회원으로 진행합니다.')
 		if (!tokenScheme || !tokenValue)
 			return new Error('토큰 형식이나 토큰 값이 없습니다.')
 
