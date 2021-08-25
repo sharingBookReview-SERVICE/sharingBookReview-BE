@@ -8,6 +8,7 @@ import collectionsRouter from './collections.js'
 import followRouter from './follow.js'
 import suggestionRouter from './suggestion.js'
 import searchRouter from './search.js'
+import noticeRouter from './notice.js'
 
 const router = express.Router()
 router.use(express.urlencoded({ extended: false }));
@@ -22,5 +23,6 @@ router.use('/api/follow', followRouter)
 router.use('/api/collections', collectionsRouter)
 router.use('/api/suggestion', suggestionRouter)
 router.use('/api/search', searchRouter)
+router.use('/api/notice', noticeRouter)
 
 export default router
