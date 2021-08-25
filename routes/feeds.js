@@ -80,7 +80,7 @@ router.patch('/:reviewId', authMiddleware(true), async (req, res, next) => {
 	try {
 		const user = await User.findById(userId)
 		user.read_reviews.push({
-			review: reviewId,
+			_id: reviewId,
 			created_at: createdAt,
 		})
 		await user.save()

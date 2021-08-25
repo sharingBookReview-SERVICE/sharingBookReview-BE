@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
 
-const { Schema, model } = mongoose
+const { Schema, Types, model } = mongoose
 import expList from '../exp_list.js'
 
 const userSchema = new Schema({
