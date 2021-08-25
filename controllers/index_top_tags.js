@@ -1,3 +1,5 @@
+import { ChangesIndex, Book, Review, Collection } from '../models/index.js'
+
 /**
  * Returns set of isbns which changed since last run
  * @returns {Promise<Set<number>>}
@@ -21,9 +23,11 @@ const getChangedTags = async (isbnArr) => {
 	 */
 	const books = await Book.find({
 		_id: {
-			$in: [...isbnArr],
+			$in: isbnArr,
 		},
-	}).populate('reviews')
+	})
+	.select('reviews')
+	.populate({path:'reviews', select:'hashtags'})
 
 	for (const book of books) {
 		/**
@@ -78,10 +82,12 @@ const updateCollection = async (tag) => {
 	collection.contents = books.map((book) => {
 		return { book: book.isbn }
 	})
+	console.log(`${collection.name} 컬렉션이 업데이트 되었습니다.`)
 	await collection.save()
 }
-export default indexTopTags = async () => {
+const indexTopTags = async () => {
 	try {
+		console.log('indexTopTags 함수가 실행됩니다.')
 		const changedISBNs = await getChangedISBNs()
 		const changedTags = await getChangedTags([...changedISBNs])
 		changedTags.forEach(await updateCollection)
@@ -90,3 +96,5 @@ export default indexTopTags = async () => {
 		console.error(e)
 	}
 }
+
+export default indexTopTags
