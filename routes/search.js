@@ -9,16 +9,18 @@ router.get('/', authMiddleware(false), async (req, res, next) => {
         let result = await Collection.aggregate([
             {
             '$search': {
-                'index': 'tag', 
-                'text': {
-                    'query': `${req.query.tag}`, 
-                    'path': 'name'
-                }, 
-                'highlight': {
-                    'path': 'name'
+                'index': 'auto_tag', 
+                'autocomplete': {
+                    'path': 'name',
+                    'query': `${req.query.tag}`,
+                    "fuzzy": {
+                        "maxEdits": 2,
+                        "prefixLength": 3
+                    }
                 }
             }
             }
+            
         ]
         )
 
