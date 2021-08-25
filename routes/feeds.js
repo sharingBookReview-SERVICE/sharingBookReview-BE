@@ -12,6 +12,23 @@ router.get('/', authMiddleware(false), async (req, res, next) => {
 	const { lastItemId } = req.query
 
 	try {
+		// 0. Declare constants to query.
+
+		const user = await User.findById(userId)
+		/**
+		 * Array of ObjectId of read reviews of user. If user is null (i.e. not logged in) assigned as undefined.
+		 *  @type {ObjectId[]}
+		 */
+		const readReviews = user?.read_reviews.map((element) => element._id)
+		/**
+		 * Query statement for reviews: unread and created within one week
+		 *  @type {Object}
+		 */
+		const query = {
+			_id: { $nin: readReviews },
+			created_at: { $gte: new Date() - 1000 * 60 * 60 * 24 * 7 },
+		}
+
 		let reviews
 		let result
 
