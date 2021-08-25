@@ -1,5 +1,5 @@
 import express from 'express'
-import { Follow, Review } from '../models/index.js'
+import { Follow, Review, User } from '../models/index.js'
 import authMiddleware from '../middleware/auth_middleware.js'
 
 const router = new express.Router()
@@ -17,14 +17,16 @@ router.get('/', authMiddleware(false), async (req, res, next) => {
 			reviews = await Review.find()
 				.sort('-created_at')
 				.limit(SCROLL_SIZE)
-				.populate('book user')
+				.populate({ path: 'user', select: '_id profileImage nickname' })
+				.populate({ path: 'book', select: '_id title author' })
 		} else {
 			reviews = await Review.find()
 				.sort('-created_at')
 				.where('_id')
 				.lt(lastItemId)
 				.limit(SCROLL_SIZE)
-				.populate('book user')
+				.populate({ path: 'user', select: '_id profileImage nickname' })
+				.populate({ path: 'book', select: '_id title author' })
 		}
 
 		if (userId) {
@@ -55,6 +57,41 @@ router.get('/', authMiddleware(false), async (req, res, next) => {
 	// } catch (err) {
 	// 	return next(new Error('피드를 불러오는데 실패했습니다.'))
 	// }
+})
+
+/**
+ * Route patching read reviews
+ * @name patch/:reviewId
+ * @function
+ * @inner
+ * @param {string} path - Express path
+ * @param {callback} middleware - Express middleware.
+ */
+router.patch('/:reviewId', authMiddleware(true), async (req, res, next) => {
+	const { _id: userId } = res.locals.user
+	/** @type {ObjectId}
+	 * @description Review ID that user has read.
+	 */
+	const { reviewId } = req.params
+
+	/** @type {Date}
+	 * @description Created date of review.     */
+	const createdAt = (await Review.findById(reviewId)).created_at
+
+	// Find user by ID and push to read_reviews array.
+	try {
+		const user = await User.findById(userId)
+		user.read_reviews.addToSet({
+			_id: reviewId,
+			created_at: createdAt,
+		})
+		await user.save()
+
+		return res.sendStatus(204)
+	} catch (e) {
+		console.error(e)
+		return next(new Error('읽음 확인을 실패했습니다.'))
+	}
 })
 
 export default router
