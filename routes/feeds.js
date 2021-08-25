@@ -81,7 +81,7 @@ router.patch('/:reviewId', authMiddleware(true), async (req, res, next) => {
 	// Find user by ID and push to read_reviews array.
 	try {
 		const user = await User.findById(userId)
-		user.read_reviews.push({
+		user.read_reviews.addToSet({
 			_id: reviewId,
 			created_at: createdAt,
 		})
