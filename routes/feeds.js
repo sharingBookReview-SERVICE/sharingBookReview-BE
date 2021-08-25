@@ -17,14 +17,16 @@ router.get('/', authMiddleware(false), async (req, res, next) => {
 			reviews = await Review.find()
 				.sort('-created_at')
 				.limit(SCROLL_SIZE)
-				.populate('book user')
+				.populate({ path: 'user', select: '_id profileImage nickname' })
+				.populate({ path: 'book', select: '_id title author' })
 		} else {
 			reviews = await Review.find()
 				.sort('-created_at')
 				.where('_id')
 				.lt(lastItemId)
 				.limit(SCROLL_SIZE)
-				.populate('book user')
+				.populate({ path: 'user', select: '_id profileImage nickname' })
+				.populate({ path: 'book', select: '_id title author' })
 		}
 
 		if (userId) {
@@ -84,12 +86,10 @@ router.patch('/:reviewId', authMiddleware(true), async (req, res, next) => {
 			created_at: createdAt,
 		})
 		await user.save()
-
 	} catch (e) {
 		console.error(e)
 		return next(new Error('읽음 확인을 실패했습니다.'))
 	}
-
 })
 
 export default router
