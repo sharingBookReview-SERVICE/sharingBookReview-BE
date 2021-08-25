@@ -5,6 +5,8 @@ import authMiddleware from '../middleware/auth_middleware.js'
 const router = new express.Router()
 
 router.get('/', authMiddleware(false), async (req, res, next) => {
+	/** @type {number}
+	 *  @description Number of reviews to send per request */
 	const SCROLL_SIZE = 10
 	const userId = res.locals.user?._id
 	const { lastItemId } = req.query
