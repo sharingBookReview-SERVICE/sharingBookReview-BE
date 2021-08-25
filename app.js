@@ -2,7 +2,7 @@ import express from 'express'
 import config from './config.js'
 import cors from 'cors'
 import './models/index.js'
-import './controllers/index_tags.js'
+import './controllers/schedule_job.js'
 import router from './routes/index.js'
 import kakaoPassportConfig from "./routes/kakao_passport.js";
 import googlePassportConfig from './routes/google_passport.js'
