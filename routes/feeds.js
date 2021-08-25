@@ -86,6 +86,8 @@ router.patch('/:reviewId', authMiddleware(true), async (req, res, next) => {
 			created_at: createdAt,
 		})
 		await user.save()
+
+		return res.sendStatus(204)
 	} catch (e) {
 		console.error(e)
 		return next(new Error('읽음 확인을 실패했습니다.'))
