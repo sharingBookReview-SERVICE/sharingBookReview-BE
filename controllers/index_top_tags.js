@@ -7,6 +7,11 @@ const getChangedISBNs = async () => {
 
 	return new Set(changes.map((change) => change.isbn))
 }
+/**
+ * Returns set of tags from given array of books (=isbns).
+ * @param isbnArr {number[]}
+ * @returns {Promise<Set<string>>}
+ */
 const getChangedTags = async (isbnArr) => {
 	const result = new Set()
 
@@ -52,7 +57,11 @@ const getChangedTags = async (isbnArr) => {
 
 	return result
 }
-
+/**
+ * Update or Create tag collection.
+ * @param tag {string}
+ * @returns {Promise<void>}
+ */
 const updateCollection = async (tag) => {
 	if (!tag) return
 
@@ -74,7 +83,7 @@ const updateCollection = async (tag) => {
 export default indexTopTags = async () => {
 	try {
 		const changedISBNs = await getChangedISBNs()
-		const changedTags = await getChangedTags(changedISBNs)
+		const changedTags = await getChangedTags([...changedISBNs])
 		changedTags.forEach(await updateCollection)
 		await ChangesIndex.deleteMany()
 	} catch (e) {
