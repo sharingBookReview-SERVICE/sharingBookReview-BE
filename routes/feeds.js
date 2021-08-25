@@ -40,7 +40,7 @@ router.get('/', authMiddleware(false), async (req, res, next) => {
 		const followingReviews = await Review.find({
 			...query,
 			user: { $in: followees },
-		}).sort({ created_at: -1 }).limit(SCROLL_SIZE)
+		}).populate('book user').sort({ created_at: -1 }).limit(SCROLL_SIZE)
 
 		// If following reviews are used up (already read or no new ones) continue to next if statement
 		if (followingReviews.length) {
@@ -51,7 +51,7 @@ router.get('/', authMiddleware(false), async (req, res, next) => {
 
 		/** @type {Document[]}
 		 *  @description Unread reviews of user within one week */
-		const unreadReviews = await Review.find(query).
+		const unreadReviews = await Review.find(query).populate('book user').
 			sort({ created_at: -1 }).
 			limit(SCROLL_SIZE)
 
