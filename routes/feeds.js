@@ -51,7 +51,7 @@ router.get('/', authMiddleware(false), async (req, res, next) => {
 
 		// If no documents found with query, continue until next if statement. This keep goes on.
 		if (followingReviews.length) return res.json(followingReviews)
-
+		return res.sendStatus(204)
 		// 2. Return trending reviews (reviews with high trending point, in other words, recent review with lots of likes)
 
 		const trendingReviews = {}
