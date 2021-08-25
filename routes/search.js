@@ -24,7 +24,7 @@ router.get('/', authMiddleware(false), async (req, res, next) => {
         ]
         )
 
-        return res.status(201).json({result})
+        return res.status(200).json({result})
 
     }catch(e){
         console.error(e)
@@ -33,4 +33,19 @@ router.get('/', authMiddleware(false), async (req, res, next) => {
     
 })
 
+router.get('/allTags', authMiddleware(false), async (req, res, next) => {
+    try{
+        
+        const collections = await Collection.find({type: 'tag'})
+
+        const allTags = collections.map((collection) => { collection.name })
+
+        return res.status(200).json({allTags})
+
+    }catch(e){
+        console.error(e)
+		return next(new Error('태그 배열을 불러오는데 실패했습니다.'))
+    }
+    
+})
 export default router
