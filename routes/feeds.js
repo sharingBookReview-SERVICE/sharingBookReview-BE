@@ -46,6 +46,8 @@ router.get('/', authMiddleware(false), async (req, res, next) => {
 		})
 			.sort({ created_at: -1 })
 			.limit(SCROLL_SIZE)
+			.populate({ path: 'user', select: '_id profileImage nickname' })
+			.populate({ path: 'book', select: '_id title author' })
 
 		// If no documents found with query, continue until next if statement. This keep goes on.
 		if (followingReviews.length) return res.json(followingReviews)
