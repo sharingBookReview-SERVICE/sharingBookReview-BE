@@ -29,6 +29,27 @@ router.get('/', authMiddleware(false), async (req, res, next) => {
 			created_at: { $gte: new Date() - 1000 * 60 * 60 * 24 * 7 },
 		}
 
+		// 1. Return recent unread reviews of following users.
+
+		/**
+		 * Array of user IDs that the the user in parameter is following.
+		 * @type {ObjectId[]}
+		 */
+		const followees = (await Follow.find({ sender: userId })).map(
+			(follow) => follow.receiver
+		)
+		/** @type {Document[]}
+		 * @description Array of reviews of following users */
+		const followingReviews = await Review.find({
+			...query,
+			user: { $in: followees },
+		})
+			.sort({ created_at: -1 })
+			.limit(SCROLL_SIZE)
+
+		// If no documents found with query, continue until next if statement
+		if (followingReviews.length) return res.json(followingReviews)
+
 		let reviews
 		let result
 
