@@ -39,7 +39,7 @@ router.get('/', authMiddleware(false), async (req, res, next) => {
 		 * @description Array of reviews of following users */
 		const followingReviews = await Review.find({
 			...query,
-			user: { $in: followees },
+			user: { $in: [...followees, userId] },
 		}).populate('book user').sort({ created_at: -1 }).limit(SCROLL_SIZE)
 
 		// If following reviews are used up (already read or no new ones) continue to next if statement
