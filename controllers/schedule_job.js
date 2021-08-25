@@ -4,6 +4,7 @@
  */
 import { Book, ChangesIndex, Collection } from '../models/index.js'
 import schedule from 'node-schedule'
+import index_top_tags from './index_top_tags.js'
 /**
  * Returns set of isbn which have changed after the last run.
  * Marks returned documents' indexed property as true, so it can be deleted later.
@@ -21,63 +22,6 @@ const getChanges = async () => {
  * @type {Job}
  */
 const job = schedule.scheduleJob('30 * * * * *', async () => {
-	// 2. Get set of isbn which have changed after last execution.
-	const changedISBNs = await getChanges()
-
-	// Indexing-needed-tag-based-collection
-	const changedTags = new Set()
-	// 3. Clear ChangeIndexes table
-	// 3.1. In case of addition to the table while executing the function above, use indexed property to only delete appropriate ones.
-
-	// 4. Find corresponding book documents by set of isbn and populate reviews.
-	const books = await Book.find({
-		_id: {
-			$in: [...changedISBNs],
-		},
-	}).populate('reviews')
-
-	// 5. Traverse the books
-	// noinspection ES6MissingAwait
-	for (const book of books) {
-		// 6. Get array of all the tags of all the reviews of a book
-		const allTags = book.reviews.reduce((acc, review) => {
-			return [...acc, ...review.hashtags]
-		}, [])
-
-		// Unique values of tag array
-		const uniqueTags = [...new Set(allTags)]
-
-		// Get top 10 tags
-		book.topTags = uniqueTags
-			.map((tag) => {
-				// Traverse the set of tags of the book and map it to pairs of tag's name and its number of occurrence in array of all tags of the book.
-				return {
-					name: tag,
-					occurrence: allTags.filter((_tag) => _tag === tag).length,
-				}
-			})
-			.sort((a, b) => b.occurrence - a.occurrence)
-			.slice(0, 9)
-			.map((tag) => tag.name)
-
-		changedTags.add(...book.topTags)
-		await book.save()
-	}
-
-	// Update Collection
-	for (const tag of changedTags) {
-		if (!tag) continue
-
-		const collection =
-			(await Collection.findOne({ name: tag, type: 'tag' })) ??
-			(await Collection.create({ name: tag, type: 'tag' }))
-		const books = await Book.find({ topTags: tag })
-		collection.contents = books.map((book) => {
-			return { book: book.isbn }
-		})
-		await collection.save()
-	}
-	
-	await ChangesIndex.deleteMany()
+	await index_top_tags()
 })
 
