@@ -44,7 +44,7 @@ router.get('/', authMiddleware(false), async (req, res, next) => {
 
 		// If following reviews are used up (already read or no new ones) continue to next if statement
 		if (followingReviews.length) {
-			return res.json({ feeds: followingReviews })
+			return res.json(followingReviews)
 		}
 
 		// 2. Return recent unread reviews of any users.
@@ -57,7 +57,7 @@ router.get('/', authMiddleware(false), async (req, res, next) => {
 
 		// If unread reviews are used up (already read or no new ones) continue to last res.json()
 		if (unreadReviews.length) {
-			return res.json({ feeds: unreadReviews })
+			return res.json(unreadReviews)
 		}
 
 		// todo: 나중에 부족하다 싶으면 뭔가 더 넣기
