@@ -164,13 +164,8 @@ router.delete('/', async (req, res, next) => {
         if (user == null) return next(new Error('등록되지 않은 유저입니다'))
 
 		// todo: 추후에 미들웨어로 바꿀 예정
-		const reviews = await Review.find({ user: userId })
-
-        if(reviews.length !== 0){
-            reviews.map( async (review) => {
-                await review.delete()
-            })
-        }
+		await Review.deleteMany({ user: userId })
+        await Follow.deleteMany({ $or: [ {sender: userId}, {receiver: userId} ]})
         
 		const collections = await Collection.find({ user: userId })
 
