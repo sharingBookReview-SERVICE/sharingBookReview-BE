@@ -1,7 +1,7 @@
 import express from 'express'
 import { Book, Review, User } from '../models/index.js'
 import { likeUnlike } from '../models/utilities.js'
-import saveBook from '../controllers/save_book.js'
+import { saveBook } from '../controllers/utilities.js'
 import searchBooks from '../controllers/searchbooks.js'
 import authMiddleware from '../middleware/auth_middleware.js'
 import multer from 'multer'
