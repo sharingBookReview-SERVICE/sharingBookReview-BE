@@ -18,7 +18,7 @@ const getTrendingReviews = async () => {
 	 * @type {Document[]}
 	 */
 	const recentReviews = await Review.find({
-		created_at: { $gte: new Date() - 1000 * 60 * 60 * 24 * MAX_DATES },
+		created_at: { $gte: new Date() - DAY * MAX_DATES },
 		likeCount: { $gte: 1 },
 	})
 
