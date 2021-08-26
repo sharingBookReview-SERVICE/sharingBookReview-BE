@@ -69,7 +69,7 @@ router.use('/api/books/:bookId/reviews', reviewsRouter)
 
   Moreover, the former already has a similar route called _'/feeds'_: a route serving recent and unread reviews with few more tweaks.
   
-  Feeds will be further discussed later
+  Details of feeds router will be further discussed later
 
 ```javascript
 // /routes/index.js
@@ -80,6 +80,17 @@ router.use('/api/books/:bookId/reviews/:reviewId/comments')
 // ...
 ```
 
+- Reduced duplicate codes by abstraction.
+
+  Both '/api/books/:bookId/reviews/:reviewId/comments' and '/api/collections/:collectionId/comments' routes serve for comments.
+
+  In order to remove redundancy, callbacks for both routes become abstract.
+
+```javascript
+// Previously
+// reviews.js 의 post 첨부하기
+
+```
 ### 2. Error Handling
 
 ## Requirements
