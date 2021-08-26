@@ -8,25 +8,21 @@ import multer from 'multer'
 import ImageUpload from '../controllers/image_upload.js'
 
 const router = new express.Router({ mergeParams: true })
-const upload = multer({
-	dest: 'uploads/',
-})
+const upload = multer({ dest: 'uploads/' })
 
 router.use(authMiddleware(true))
 
 router.post('/', upload.single('image'), ImageUpload.uploadImage, async (req, res, next) => {
 	const { _id: userId } = res.locals.user
 	const { bookId } = req.params
-	// res.locals가 존재하지 않으면 undefined 반환
 	const image = res.locals?.url
 	const { quote, content } = req.body
 	const hashtags = JSON.parse(req.body.hashtags)
 
-	// Check if the book is saved on DB
-
 	const book = await Book.findById(bookId)
 
 	if (!book) {
+		// Save new book into db
 		try {
 			const [searchResult] = await searchBooks('isbn', bookId)
 			await saveBook(searchResult)
@@ -36,11 +32,12 @@ router.post('/', upload.single('image'), ImageUpload.uploadImage, async (req, re
 		}
 	}
 
-    try{
-        await User.getExpAndLevelUp(userId, "review")
-    }catch (e) {
-        return next(new Error('경험치 등록을 실패했습니다.'))
-    }
+	try {
+		await User.getExpAndLevelUp(userId, 'review')
+	} catch (e) {
+		console.error(e)
+		return next(new Error('경험치 등록을 실패했습니다.'))
+	}
 
 	try {
 		const review = await Review.create({
@@ -55,16 +52,16 @@ router.post('/', upload.single('image'), ImageUpload.uploadImage, async (req, re
 
 		book.reviews.push(review._id)
 		await book.save()
-        
+
         const result = await Review.findById(review._id).populate('book').populate({path:'user', select:'_id level nickname'})
-        
+
 
 		return res.json({ review: result,})
 	} catch (e) {
 		console.error(e)
 		return next(new Error('리뷰작성을 실패했습니다.'))
 	}
-    
+
 })
 
 router.get('/', async (req, res, next) => {
@@ -98,9 +95,9 @@ router.get('/:reviewId', async (req, res, next) => {
 	try {
 		let review = await Review.findById(reviewId).populate('book').populate({path:'user', select:'_id level nickname profileImage'})
 		const { comments } = review
-		
+
 		review = Review.processLikesInfo(review, userId)
-		
+
 		review.comments = (await Promise.allSettled(comments.map(async (comment) => {
 			const user = await User.findById(comment.user).select('_id level nickname')
 			comment = comment.toJSON()
