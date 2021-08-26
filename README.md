@@ -10,8 +10,66 @@ based frontend project.
 
 ## Table of Contents
 
-1. Dependencies
-2. Sample Codes
+1. Goal
+2. Dependencies
+3. Sample Codes
+
+## Goal
+
+At the beginning of the project, deciding which part to focus and which part to discard &ndash; in terms of the tech
+stack &ndash; was the most difficult task.
+
+During previous projects and tutorials, we could glimpse several basic techs including Application, Database, DevOps
+and/or Business tools.
+
+Yet, with not enough time to master everything that we learned, here are the things that we wanted to put an emphasis
+on.
+
+---
+프로젝트를 시작할 때 어떤 기술 스택에 집중하고 어떤 것을 제쳐둘지 정하는 것이 가장 어려웠습니다.
+
+이전의 프로젝트들과 튜토리얼에서 몇가지 어플리케이션, 데이터베이스, 데브옵스 그리고 비즈니스 툴들을 접할 수 있었습니다만,
+
+배운 것들을 모두 숙달하기에는 짧은 시간이었기 때문에 아래의 목록에 주안점을 두기로 하였습니다.
+
+* * *
+
+### Javascript/ES6+
+
+Not only using basics of ES6 superficially, we tried to implement syntactic sugars of recent versions of ECMAScript.
+
+---
+
+ES6+ 의 기본뿐만 아니라 최신 버전 ECMAScript 의 문법적 설탕을 적용하기 위해서 노력했습니다.
+
+---
+
+#### Promise.allSettled
+To reduce time consumption on crawling, we implemented [Promise.allSettled()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/allSettled).
+
+Because we can query on anytime later, being rejected on some requests was not a big deal &ndash; and this DOES happen due to advertisement in source URL.
+
+---
+
+크롤링 시 시간 소요를 줄이기 위해 [Promise.allSettled()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/allSettled) 를 사용하였습니다.
+
+나중에라도 다시 받아오면 되기 때문에 몇개 실패한다고 하더라도 큰 문제가 아니었기 때문입니다. 크롤링 대상의 예기치 못한 광고 때문이었습니다.
+
+```javascript
+// ./controllers/crawl.js
+
+const getBestsellers = async () => {
+	const BESTSELLER_URL = 'https://www.kyobobook.co.kr/bestSellerNew/bestseller.laf'
+	const query = 'ul > input[name=barcode]'
+	const page = await launchBrowserAndGotoURL(BESTSELLER_URL)
+    
+	const isbnArr = await page.$$eval(query, (inputList) => inputList.map((input) => input.value))
+	await (await page.browser()).close()
+	const top10 = isbnList.slice(0, 9)
+	const promises = top10.map((isbn) => searchBooks('isbn', isbn))
+	return [...await Promise.allSettled(promises)].filter((p) => p.status === 'fulfilled').map((p) => p.value)
+}
+```
 
 ## Dependencies
 
@@ -64,11 +122,13 @@ router.use('/api/books/:bookId/reviews', reviewsRouter)
 
 - API has highly hierarchical structure to make it REST-ful.
 
-  Of course, there was an idea of shortening URL, however, as no such a route that serves for _'all reviews of all books'_
+  Of course, there was an idea of shortening URL, however, as no such a route that serves for _'all reviews of all
+  books'_
   or _'all comments of all reviews'_ exists, we decided to keep the structure.
 
-  Moreover, the former already has a similar route called _'/feeds'_: a route serving recent and unread reviews with few more tweaks.
-  
+  Moreover, the former already has a similar route called _'/feeds'_: a route serving recent and unread reviews with few
+  more tweaks.
+
   Details of feeds router will be further discussed later
 
 ```javascript
@@ -82,7 +142,8 @@ router.use('/api/books/:bookId/reviews/:reviewId/comments')
 
 - Reduced duplicate codes by abstraction.
 
-  Both '/api/books/:bookId/reviews/:reviewId/comments' and '/api/collections/:collectionId/comments' routes serve for comments.
+  Both '/api/books/:bookId/reviews/:reviewId/comments' and '/api/collections/:collectionId/comments' routes serve for
+  comments.
 
   In order to remove redundancy, callbacks for both routes become abstract.
 
@@ -91,6 +152,7 @@ router.use('/api/books/:bookId/reviews/:reviewId/comments')
 // reviews.js 의 post 첨부하기
 
 ```
+
 ### 2. Error Handling
 
 ## Requirements
