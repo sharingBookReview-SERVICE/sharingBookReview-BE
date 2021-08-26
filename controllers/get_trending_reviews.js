@@ -1,4 +1,4 @@
-import { Review } from '../models/index.js'
+import { Review, Trend } from '../models/index.js'
 
 const DAY = 1000 * 60 * 60 * 24
 
@@ -6,7 +6,8 @@ const DAY = 1000 * 60 * 60 * 24
  * Index recent reviews and create Trend document.
  * @async
  */
-export default getTrendingReviews = async () => {
+const getTrendingReviews = async () => {
+
 	/**
 	 * Max past dates to calculate trending reviews
 	 * @type {number}
@@ -43,4 +44,9 @@ export default getTrendingReviews = async () => {
 			return { _id, trendPoint }
 		})
 		.sort((a, b) => b.trendPoint - a.trendPoint)
+
+	const result = await Trend.create({trendingReviews})
+	console.log('result', result)
 }
+
+export default getTrendingReviews
