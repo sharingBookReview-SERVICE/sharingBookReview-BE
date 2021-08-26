@@ -7,6 +7,7 @@ import feedsRouter from './feeds.js'
 import collectionsRouter from './collections.js'
 import followRouter from './follow.js'
 import suggestionRouter from './suggestion.js'
+import searchRouter from './search.js'
 
 const router = express.Router()
 router.use(express.urlencoded({ extended: false }));
@@ -20,5 +21,6 @@ router.use('/api/feeds', feedsRouter)
 router.use('/api/follow', followRouter)
 router.use('/api/collections', collectionsRouter)
 router.use('/api/suggestion', suggestionRouter)
+router.use('/api/search', searchRouter)
 
 export default router
