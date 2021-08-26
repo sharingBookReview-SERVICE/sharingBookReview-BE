@@ -55,11 +55,24 @@ router.get('/', authMiddleware(false), async (req, res, next) => {
 
 		// If no documents found with query, continue until next if statement. This keep goes on.
 		if (followingReviews.length) return res.json(followingReviews)
-		return res.sendStatus(204)
+
 		// 2. Return trending reviews (reviews with high trending point, in other words, recent review with lots of likes)
 
 		const trendingReviews = {}
 		if (trendingReviews.length) return json(trendingReviews)
+
+		// 3. Return all recent unread reviews regardless of following.
+
+		const recentReviews = await Review.find(query)
+			.sort({ created_at: -1 })
+			.limit(SCROLL_SIZE)
+			.populate({ path: 'user', select: '_id profileImage nickname' })
+			.populate({ path: 'book', select: '_id title author' })``
+
+		if (recentReviews.length) return res.json(recentReviews)
+
+		// If no reviews are found by all three queries.
+		return res.sendStatus(204)
 
 		let reviews
 		let result
@@ -102,17 +115,6 @@ router.get('/', authMiddleware(false), async (req, res, next) => {
 		console.error(e)
 		return next(new Error('피드 불러오기를 실패했습니다.'))
 	}
-
-	// const userId = 'temp' //todo 로그인 안 된 상태에서 어떻게 처리할지 정해야함
-	// try {
-	// 	const reviews = await Review.find({}).populate('book user').sort('-created_at')
-	//
-	// 	const result = reviews.map(review => Review.processLikesInfo(review, userId))
-	// 	return res.json(result)
-	//
-	// } catch (err) {
-	// 	return next(new Error('피드를 불러오는데 실패했습니다.'))
-	// }
 })
 
 /**
