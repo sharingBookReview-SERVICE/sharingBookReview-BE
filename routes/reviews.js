@@ -53,7 +53,7 @@ router.post('/', upload.single('image'), ImageUpload.uploadImage, async (req, re
 		})
 		const book = await Book.findById(bookId)
 
-		await book.reviews.push(review._id)
+		book.reviews.push(review._id)
 		await book.save()
         
         const result = await Review.findById(review._id).populate('book').populate({path:'user', select:'_id level nickname'})
