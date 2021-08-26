@@ -2,7 +2,8 @@
 
 A Node.js + Express based backend project.
 
-Click [Frontend side](https://github.com/sharingBookReview-SERVICE/sharingBookReview-FE) to go to corresponding React.js based frontend project. 
+Click [Frontend side](https://github.com/sharingBookReview-SERVICE/sharingBookReview-FE) to go to corresponding React.js
+based frontend project.
 
 
 ---
@@ -35,19 +36,62 @@ Click [Frontend side](https://github.com/sharingBookReview-SERVICE/sharingBookRe
 
 ## Sample Codes
 
-### 1. Routing
-### 2. Error Handling
+### 1. Routing / API Structuring
 
+- All routes are served in a single module to achieve low maintenance effort.
+
+```javascript
+// app.js
+// ...
+import router from './routes/index.js'
+
+app.use(router)
+// ...
+```
+
+```javascript
+// /routes/index.js
+import express from 'express'
+import usersRouter from './users.js'
+import reviewsRouter from './reviews.js'
+// ...
+
+const router = express.Router()
+router.use('/api/users', usersRouter)
+router.use('/api/books/:bookId/reviews', reviewsRouter)
+// ...
+```
+
+- API has highly hierarchical structure to make it REST-ful.
+
+  Of course, there was an idea of shortening URL, however, as no such a route that serves for _'all reviews of all books'_
+  or _'all comments of all reviews'_ exists, we decided to keep the structure.
+
+  Moreover, the former already has a similar route called _'/feeds'_: a route serving recent and unread reviews with few more tweaks.
+  
+  Feeds will be further discussed later
+
+```javascript
+// /routes/index.js
+
+// router for comments on reviews
+// ...
+router.use('/api/books/:bookId/reviews/:reviewId/comments')
+// ...
+```
+
+### 2. Error Handling
 
 ## Requirements
 
 For development, you will only need Node.js and a node global package, Yarn, installed in your environement.
 
 ### Node
+
 - #### Node installation on Windows
 
-  Just go on [official Node.js website](https://nodejs.org/) and download the installer.
-  Also, be sure to have `git` available in your PATH, `npm` might need it (You can find git [here](https://git-scm.com/)).
+  Just go on [official Node.js website](https://nodejs.org/) and download the installer. Also, be sure to have `git`
+  available in your PATH, `npm` might need it (You can find git [here](https://git-scm.com/)).
 
 - #### Node installation on Ubuntu
 
@@ -57,7 +101,8 @@ For development, you will only need Node.js and a node global package, Yarn, ins
       $ sudo apt install npm
 
 - #### Other Operating Systems
-  You can find more information about the installation on the [official Node.js website](https://nodejs.org/) and the [official NPM website](https://npmjs.org/).
+  You can find more information about the installation on the [official Node.js website](https://nodejs.org/) and
+  the [official NPM website](https://npmjs.org/).
 
 If the installation was successful, you should be able to run the following command.
 
@@ -67,12 +112,15 @@ If the installation was successful, you should be able to run the following comm
     $ npm --version
     6.1.0
 
-If you need to update `npm`, you can make it using `npm`! Cool right? After running the following command, just open again the command line and be happy.
+If you need to update `npm`, you can make it using `npm`! Cool right? After running the following command, just open
+again the command line and be happy.
 
     $ npm install npm -g
 
 ###
+
 ### Yarn installation
+
 After installing node, this project will need yarn too, so just run the following command.
 
       $ npm install -g yarn
