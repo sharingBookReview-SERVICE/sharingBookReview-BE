@@ -8,6 +8,7 @@ import ChangesIndex from './changes_index.js'
 import Collection from './collection.js'
 import Follow from './follow.js'
 import Suggestion from './suggestion.js'
+import Trend from './trend.js'
 
 config()
 
@@ -43,4 +44,4 @@ mongoose.connection.on('error', (err) => {
 
 connect()
 
-export { Book, Review, Comment, User, ChangesIndex, Collection, Follow, Suggestion }
+export { Book, Review, Comment, User, ChangesIndex, Collection, Follow, Suggestion, Trend }
