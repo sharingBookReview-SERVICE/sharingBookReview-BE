@@ -70,6 +70,10 @@ const getBestsellers = async () => {
 	return [...await Promise.allSettled(promises)].filter((p) => p.status === 'fulfilled').map((p) => p.value)
 }
 ```
+#### Optional Chaining
+
+#### Nullish Coalescing
+
 
 ## Dependencies
 
