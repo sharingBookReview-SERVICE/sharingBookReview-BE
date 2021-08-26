@@ -40,8 +40,8 @@ router.post('/', upload.single('image'), ImageUpload.uploadImage, async (req, re
 		return next(new Error('경험치 등록을 실패했습니다.'))
 	}
 
-	// Add document to Review collection
 	try {
+		// Add document to Review collection
 		const review = await Review.create({
 			quote,
 			content,
@@ -50,20 +50,17 @@ router.post('/', upload.single('image'), ImageUpload.uploadImage, async (req, re
 			book: bookId,
 			user: userId,
 		})
-		const book = await Book.findById(bookId)
 
+		// Update reviews property of corresponding book document.
+		const book = await Book.findById(bookId)
 		book.reviews.push(review._id)
 		await book.save()
 
-        const result = await Review.findById(review._id).populate('book').populate({path:'user', select:'_id level nickname'})
-
-
-		return res.json({ review: result,})
+		return res.json({ review })
 	} catch (e) {
 		console.error(e)
 		return next(new Error('리뷰작성을 실패했습니다.'))
 	}
-
 })
 
 router.get('/', async (req, res, next) => {
