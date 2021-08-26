@@ -32,6 +32,7 @@ router.post('/', upload.single('image'), ImageUpload.uploadImage, async (req, re
 		}
 	}
 
+	// Process user level and experience.
 	try {
 		await User.getExpAndLevelUp(userId, 'review')
 	} catch (e) {
@@ -39,6 +40,7 @@ router.post('/', upload.single('image'), ImageUpload.uploadImage, async (req, re
 		return next(new Error('경험치 등록을 실패했습니다.'))
 	}
 
+	// Add document to Review collection
 	try {
 		const review = await Review.create({
 			quote,
