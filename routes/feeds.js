@@ -5,8 +5,10 @@ import authMiddleware from '../middleware/auth_middleware.js'
 const router = new express.Router()
 
 router.get('/', authMiddleware(false), async (req, res, next) => {
-	/** @type {number}
-	 *  @description Number of reviews to send per request */
+	/**
+	 * Number of reviews to send per request.
+	 * @type {number}
+	 */
 	const SCROLL_SIZE = 10
 	const userId = res.locals.user?._id
 	const { lastItemId } = req.query
@@ -38,8 +40,10 @@ router.get('/', authMiddleware(false), async (req, res, next) => {
 		const followees = (await Follow.find({ sender: userId })).map(
 			(follow) => follow.receiver
 		)
-		/** @type {Document[]}
-		 * @description Array of reviews of following users */
+		/**
+		 * Array of reviews of following users
+		 *  @type {Document[]}
+		 */
 		const followingReviews = await Review.find({
 			...query,
 			user: { $in: [...followees, userId] },
