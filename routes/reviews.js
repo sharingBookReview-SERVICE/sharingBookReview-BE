@@ -126,14 +126,14 @@ router.put('/:reviewId', async (req, res, next) => {
 			content,
 			hashtags,
 		})
-        const result = await Review.findById(reviewId).populate('book')
+        const result = await Review.findById(reviewId).populate('book').populate({path:'user', select:'_id level nickname profileImage'})
 		return res.status(202).json({review: result})
 	} catch (e) {
 		return next(new Error('리뷰 수정을 실패했습니다.'))
 	}
 })
 
-router.delete('/:reviewId', async (req, res) => {
+router.delete('/:reviewId', async (req, res, next) => {
     const userId = res.locals.user._id
 	const { reviewId } = req.params
 
