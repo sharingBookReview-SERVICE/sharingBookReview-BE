@@ -20,6 +20,9 @@ app.use(router)
 kakaoPassportConfig()
 googlePassportConfig()
 
+app.get('/', (req,res) =>{
+    res.status(204)
+})
 
 app.use((req, res, next) => {
 	const error = new Error(`${req.method} ${req.url} router doesn't exist`)
