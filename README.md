@@ -10,9 +10,13 @@ based frontend project.
 
 ## Table of Contents / 목차
 
-1. Goal · 목표
-2. Dependencies · 의존성
-3. Sample Codes · 코드 예시 
+1. Architecture · 구조
+2. Contributors · 인원
+3. Core features · 핵심 기능
+4. Goal · 목표
+5. Sample Codes · 코드 예시 
+6. Dependencies · 의존성
+7. Project structure · 프로젝트 구조 
 
 ##1. 🥅 Goal / 목표
 
@@ -82,7 +86,7 @@ const getBestsellers = async () => {
 
 ### 1.2 Version Control 	![Git](https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white)
 
-
+##2. 🧑‍🤝‍🧑 Contributors 
 ## 2️⃣ Dependencies
 
 - Node.js@16.6.2
