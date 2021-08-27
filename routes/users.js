@@ -76,7 +76,7 @@ router.get('/feeds', async (req, res, next) => {
 
 	try {
         const user = await User.findById(userId)
-		const reviews = await Review.find({user: userId}).sort('-created_at')
+		const reviews = await Review.find({user: userId}).populate('book').sort('-created_at')
 		const collections = await Collection.find({user: userId}).sort('-created_at')
 
 		return res.json({user, reviews, collections})
@@ -93,7 +93,7 @@ router.get('/feeds/:userId', async (req, res, next) => {
 	try {
         let user = await User.findById(userId).select("nickname level exp followingCount followerCount profileImage _id")
         user = await Follow.checkFollowing(user, myUserId, userId)
-		const reviews = await Review.find({user: userId}).sort('-created_at')
+		const reviews = await Review.find({user: userId}).populate("book").sort('-created_at')
 		const collections = await Collection.find({user: userId}).sort('-created_at')
 
 		return res.json({user, reviews, collections})
@@ -206,10 +206,16 @@ router.put("/profile/image", async (req, res, next) => {
 router.get('/profile/treasure', async (req,res,next) => {
     const { _id : userId } = res.locals.user
     
-    const user = await User.findById(userId)
+    const {treasure} = await User.findById(userId)
 
-    res.json({treasure : user.treasure})
+    res.json({treasure})
 })
 
+router.get('/profile/bookmark', async (req, res, next) => {
+    const { _id: userId} = res.locals.user
+    
+    const {bookmark_reviews} = await User.findById(userId).populate({path:'bookmark_reviews', populate: 'book'})
 
+    res.json({bookmark_reviews})
+})
 export default router
