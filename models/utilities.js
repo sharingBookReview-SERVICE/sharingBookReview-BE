@@ -1,4 +1,4 @@
-import { User } from './index.js'
+import { User, Alert } from './index.js'
 import moment from 'moment-timezone'
 import 'moment/locale/ko.js'
 
@@ -17,6 +17,19 @@ const likeUnlike = (Model, parameterName) => {
 			let document =
 				(await Model.findById(documentId)) ??
 				new Error('존재하지 않는 리뷰입니다.')
+
+            if(userId !== document.user){
+                const alert = new Alert({
+                    type: 'like',
+                    writer: userId,
+                    reviewId
+                })
+                await User.findByIdAndUpdate(document.user, {
+                    $push: {
+                        alerts: alert,
+                    },
+                })
+            }
 
 			await User.getExpAndLevelUp(document.user, 'like')
 
