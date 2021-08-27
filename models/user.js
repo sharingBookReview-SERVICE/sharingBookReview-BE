@@ -43,7 +43,9 @@ userSchema.statics.getExpAndLevelUp = async function (userId, event) {
 	if (user.exp >= requiredExp) {
 		user.level++
 		user.exp -= requiredExp
-		user.treasure = !(user.level % 10)
+        if(user.level % 10 === 0){
+            user.treasure = true
+        }
 	}
 
 	await user.save()
