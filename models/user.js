@@ -2,6 +2,7 @@ import mongoose from 'mongoose'
 
 const { Schema, Types, model } = mongoose
 import expList from '../exp_list.js'
+import { Follow } from './index.js'
 
 const userSchema = new Schema({
 	nickname: String,
@@ -9,8 +10,6 @@ const userSchema = new Schema({
 	provider: { type: String, enum: ['naver', 'kakao', 'google'] },
 	level: { type: Number, default: 1 },
 	exp: { type: Number, default: 0 },
-	followingCount: { type: Number, default: 0 },
-	followerCount: { type: Number, default: 0 },
 	profileImage: { type: String, default: 'image_1' },
 	own_image: { type: [String], default: ['image_1'] },
 	// True if user received treasure. False if user can receive treasure
@@ -60,5 +59,13 @@ userSchema.statics.deleteExp = async function (userId, event) {
 
 	await user.save()
 }
+
+userSchema.virtual('followingCount').get(async function() {
+    return (await Follow.find({sender: this._id})).length
+})
+
+userSchema.virtual('followerCount').get(async function() {
+    return (await Follow.find({receiver: this._id})).length
+})
 
 export default model('User', userSchema)
