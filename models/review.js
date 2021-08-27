@@ -1,6 +1,7 @@
 import mongoose from 'mongoose'
 const { Schema, Types, model } = mongoose
 import { commentSchema } from './comment.js'
+import { User } from './index.js'
 import { KoreaTime } from './utilities.js'
 
 const reviewSchema = new Schema({
@@ -19,6 +20,7 @@ const reviewSchema = new Schema({
 
 KoreaTime(reviewSchema)
 
+
 class Review {
 	static processLikesInfo = (review, userId) => {
 		review = review.toJSON()
@@ -35,6 +37,19 @@ class Review {
 	getMyLike(userId) {
 		return this.liked_users.includes(userId)
 	}
+
+    static bookmarkInfo = async function (review, userId) {
+        if(review instanceof mongoose.Model){
+            review = review.toJSON()
+        }
+        const { bookmark_reviews } = await User.findById(userId)
+        if(bookmark_reviews.includes(review._id)){
+            review.bookmark = true
+        }else{
+            review.bookmark = false
+        }
+        return review
+    }
 }
 
 reviewSchema.pre('save', function () {
