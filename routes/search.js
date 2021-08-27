@@ -38,7 +38,7 @@ router.get('/allTags', authMiddleware(false), async (req, res, next) => {
         
         const collections = await Collection.find({type: 'tag'})
 
-        const allTags = collections.map((collection) => { collection.name })
+        const allTags = collections.map((collection) => collection.name )
 
         return res.status(200).json({allTags})
 
