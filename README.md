@@ -2,19 +2,19 @@
 
 A Node.js + Express based backend project.
 
+
 Click [Frontend side](https://github.com/sharingBookReview-SERVICE/sharingBookReview-FE) to go to corresponding React.js
 based frontend project.
 
-
 ---
 
-## Table of Contents
+## Table of Contents / 목차
 
-1. Goal
-2. Dependencies
-3. Sample Codes
+1. Goal · 목표
+2. Dependencies · 의존성
+3. Sample Codes · 코드 예시 
 
-## Goal
+## Goal / 목표
 
 At the beginning of the project, deciding which part to focus and which part to discard &ndash; in terms of the tech
 stack &ndash; was the most difficult task.
