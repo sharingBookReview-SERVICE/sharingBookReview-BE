@@ -42,7 +42,7 @@ router.post('/', upload.single('image'), ImageUpload.uploadImage, async (req, re
 
 	try {
 		// Add document to Review collection
-		const review = await Review.create({
+		let review = await Review.create({
 			quote,
 			content,
 			hashtags,
@@ -50,6 +50,7 @@ router.post('/', upload.single('image'), ImageUpload.uploadImage, async (req, re
 			book: bookId,
 			user: userId,
 		})
+        review = await review.populate('book').populate({path: 'user', select:'_id level nickname profileImage' }).execPopulate()
 
 		// Update reviews property of corresponding book document.
 		const book = await Book.findById(bookId)
