@@ -3,9 +3,8 @@ import { Collection, User, Comment, Book } from '../models/index.js'
 import authMiddleware from '../middleware/auth_middleware.js'
 import multer from 'multer'
 import ImageUpload from '../controllers/image_upload.js'
-import { validateId } from '../controllers/utilities.js'
+import { validateId, saveBook } from '../controllers/utilities.js'
 import { likeUnlike } from '../models/utilities.js'
-import saveBook from '../controllers/save_book.js'
 import searchBooks from '../controllers/searchbooks.js'
 
 const router = new express.Router()
