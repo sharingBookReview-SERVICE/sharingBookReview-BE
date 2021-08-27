@@ -44,7 +44,7 @@ router.post('/', async (req, res, next) => {
         if(userId !== review.user){
             const alert = new Alert({
                 type: 'comment',
-                writer: userId,
+                sender: userId,
                 reviewId
             })
             await User.findByIdAndUpdate(review.user, {

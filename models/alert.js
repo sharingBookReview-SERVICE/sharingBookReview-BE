@@ -5,7 +5,7 @@ const alertSchema = new mongoose.Schema({
 		type: String,
         enum: ['like', 'comment', 'follow'],
 	},
-    writer: {
+    sender: {
         type: mongoose.Schema.Types.ObjectId,
 		ref: 'User',
 		immutable: true,

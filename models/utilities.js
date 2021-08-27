@@ -21,8 +21,8 @@ const likeUnlike = (Model, parameterName) => {
             if(userId !== document.user){
                 const alert = new Alert({
                     type: 'like',
-                    writer: userId,
-                    reviewId
+                    sender: userId,
+                    reviewId: documentId
                 })
                 await User.findByIdAndUpdate(document.user, {
                     $push: {
