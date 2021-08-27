@@ -1,4 +1,4 @@
-# DIVER BACKEND
+# 🌊 DIVER BACKEND 🌊
 
 A Node.js + Express based backend project.
 
@@ -14,7 +14,7 @@ based frontend project.
 2. Dependencies · 의존성
 3. Sample Codes · 코드 예시 
 
-## Goal / 목표
+##1. 🥅 Goal / 목표
 
 At the beginning of the project, deciding which part to focus and which part to discard &ndash; in terms of the tech
 stack &ndash; was the most difficult task.
@@ -34,7 +34,7 @@ on.
 
 * * *
 
-### Javascript/ES6+
+### 1.1 Javascript/ES6+ ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
 
 Not only using basics of ES6 superficially, we tried to implement syntactic sugars of recent versions of ECMAScript.
 
@@ -44,7 +44,7 @@ ES6+ 의 기본뿐만 아니라 최신 버전 ECMAScript 의 문법적 설탕을
 
 ---
 
-#### Promise.allSettled
+#### 1.1.1 Promise.allSettled
 To reduce time consumption on crawling, we implemented [Promise.allSettled()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/allSettled).
 
 Because we can query on anytime later, being rejected on some requests was not a big deal &ndash; and this DOES happen due to advertisement in source URL.
@@ -70,12 +70,20 @@ const getBestsellers = async () => {
 	return [...await Promise.allSettled(promises)].filter((p) => p.status === 'fulfilled').map((p) => p.value)
 }
 ```
-#### Optional Chaining
+#### 1.1.2 Optional Chaining
 
-#### Nullish Coalescing
+#### 1.1.3 Nullish Coalescing
+
+#### 1.1.4 Async / Await
+
+#### 1.1.5 Import (ESModule)
+
+---
+
+### 1.2 Version Control 	![Git](https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white)
 
 
-## Dependencies
+## 2️⃣ Dependencies
 
 - Node.js@16.6.2
 - aws-sdk@2.975.0
@@ -96,7 +104,7 @@ const getBestsellers = async () => {
 - puppeteer@10.2.0
 - xml2js@0.4.23
 
-## Sample Codes
+## 3. 💡 Sample Codes
 
 ### 1. Routing / API Structuring
 
