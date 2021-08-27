@@ -33,6 +33,11 @@ router.get('/', authMiddleware(false), async (req, res, next) => {
 			result = reviews.map((review) =>
 				Review.processLikesInfo(review, userId)
 			)
+            result = await Promise.all(
+				result.map((review) =>
+					Review.bookmarkInfo(review, userId)
+				)
+			)
 			result = await Promise.all(
 				result.map((review) =>
 					Follow.checkFollowing(review, userId, review.user)

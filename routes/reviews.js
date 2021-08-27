@@ -96,6 +96,7 @@ router.get('/:reviewId', async (req, res, next) => {
 		const { comments } = review
 
 		review = Review.processLikesInfo(review, userId)
+        review = await Review.bookmarkInfo(review, userId)
 
 		review.comments = (await Promise.allSettled(comments.map(async (comment) => {
 			const user = await User.findById(comment.user).select('_id level nickname')

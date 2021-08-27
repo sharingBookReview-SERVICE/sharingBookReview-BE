@@ -15,11 +15,7 @@ const userSchema = new Schema({
 	own_image: { type: [String], default: ['image_1'] },
 	// True if user received treasure. False if user can receive treasure
 	treasure: { type: Boolean, default: false },
-    bookmark_reviews: [
-        {
-            type: Types.ObjectId,
-        }
-    ],
+    bookmark_reviews: [Types.ObjectId],
 	read_reviews: [
 		{
 			_id: Types.ObjectId,
