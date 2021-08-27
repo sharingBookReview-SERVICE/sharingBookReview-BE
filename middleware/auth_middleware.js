@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken'
 import { User } from '../models/index.js'
+import {validateToken} from '../controllers/utilities.js'
 
 /**
  * Returns middleware that validate JWT to check whether user is logged in
@@ -7,47 +8,10 @@ import { User } from '../models/index.js'
  * @returns {(function(*=, *, *): Promise<*|undefined>)|*}
  */
 const authMiddleware = (loginRequired) => {
-	/**
-	 * Validates headers from client.
-	 * @param req
-	 * @returns {mongoose.Schema.Types.ObjectId|Error} userId - user's ID from JWT | Error
-	 */
-	const validateToken = (req) => {
-		// Check header
-		const authorization = req.headers?.authorization
-		if (!authorization.length) throw new Error('헤더에 authorization 이 없습니다. loginRequired 가 false 일 경우 비 회원으로 진행합니다.')
-		// Check token
-
-		let tokenScheme, tokenValue
-		try {
-			[tokenScheme, tokenValue] = authorization.split(' ')
-		} catch (e) {
-			console.error(e)
-			return new Error('토큰 구조 분해를 실패했습니다.')
-		}
-		if (tokenValue === 'null') throw new Error('토큰 값이 null 입니다. loginRequired 가 false 일 경우 비 회원으로 진행합니다.')
-		if (!tokenScheme || !tokenValue)
-			return new Error('토큰 형식이나 토큰 값이 없습니다.')
-
-		// Parse jwt token and get user's ID
-
-		let userId
-		try {
-			userId = jwt.verify(tokenValue, process.env.TOKEN_KEY).userId
-		} catch (e) {
-            console.error(e)
-            if(e.name === 'TokenExpiredError'){
-                throw { message : 'JWT 토큰의 유효기간이 만료되었습니다.' , status : 498}
-            }
-			return new Error('JWT 토큰 검증을 실패했습니다.')
-		}
-
-		return userId
-	}
 
 	return async (req, res, next) => {
 		try {
-			const userId = validateToken(req)
+			const userId = validateToken({req})
 
 			const user = await User.findById(userId)
 
