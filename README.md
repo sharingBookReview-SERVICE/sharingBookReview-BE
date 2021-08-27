@@ -44,14 +44,14 @@ ES6+ 의 기본뿐만 아니라 최신 버전 ECMAScript 의 문법적 설탕을
 
 ---
 
-#### 1.1.1 Promise.allSettled
-To reduce time consumption on crawling, we implemented [Promise.allSettled()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/allSettled).
+#### 1.1.1 [Promise.allSettled()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/allSettled)
+To reduce time consumption on crawling, we implemented **Promise.allSettled()**.
 
 Because we can query on anytime later, being rejected on some requests was not a big deal &ndash; and this DOES happen due to advertisement in source URL.
 
 ---
 
-크롤링 시 시간 소요를 줄이기 위해 [Promise.allSettled()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/allSettled) 를 사용하였습니다.
+크롤링 시 시간 소요를 줄이기 위해 **Promise.allSettled()** 를 사용하였습니다.
 
 나중에라도 다시 받아오면 되기 때문에 몇개 실패한다고 하더라도 큰 문제가 아니었기 때문입니다. 크롤링 대상의 예기치 못한 광고 때문이었습니다.
 
@@ -70,13 +70,13 @@ const getBestsellers = async () => {
 	return [...await Promise.allSettled(promises)].filter((p) => p.status === 'fulfilled').map((p) => p.value)
 }
 ```
-#### 1.1.2 Optional Chaining
+#### 1.1.2 [Optional Chaining (?.)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Optional_chaining)
 
-#### 1.1.3 Nullish Coalescing
+#### 1.1.3 [Nullish Coalescing](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Nullish_coalescing_operator)
 
-#### 1.1.4 Async / Await
+#### 1.1.4 [Async / Await](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Async_await)
 
-#### 1.1.5 Import (ESModule)
+#### 1.1.5 [Import (ESModule)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import)
 
 ---
 
