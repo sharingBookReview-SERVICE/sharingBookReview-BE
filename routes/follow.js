@@ -1,6 +1,6 @@
 import express from 'express'
 import authMiddleware from '../middleware/auth_middleware.js'
-import { Follow, User } from '../models/index.js'
+import { Follow, User, Alert } from '../models/index.js'
 
 const router = new express.Router()
 
@@ -90,6 +90,16 @@ router.put('/:userId', async (req, res, next) => {
             status = true
             await User.getExpAndLevelUp(receiver, "follow")
         }
+
+        const alert = new Alert({
+            type: 'follow',
+            sender,
+        })
+        await User.findByIdAndUpdate(receiver, {
+            $push: {
+                alerts: alert,
+            },
+        })
 
         const followings = await Follow.find({sender}).populate({path: 'receiver', select: 'level profileImage _id nickname'})
         for (let following of followings){
