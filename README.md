@@ -2,8 +2,13 @@
 
 A Node.js + Express based backend project.
 
+Diver provides collections and reviews of books and users can share them like a social network.
 
-Click [Frontend side](https://github.com/sharingBookReview-SERVICE/sharingBookReview-FE) to go to corresponding React.js
+---
+
+다이버는 책 컬렉션과 리뷰를 제공하며 사용자들은 그것들을 소셜네트워크처럼 공유할 수 있습니다. 
+
+🔗 Click [Frontend side](https://github.com/sharingBookReview-SERVICE/sharingBookReview-FE) to go to corresponding React.js
 based frontend project.
 
 ---
