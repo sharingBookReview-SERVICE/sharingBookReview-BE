@@ -29,7 +29,7 @@ app.use((req, res, next) => {
 
 app.use((err, req, res, next) => {
 	console.error(err)
-	return res.status(400).json({ error: err.message })
+	return res.status(err.status ?? 400).json({ error: err.message })
 })
 
 app.listen(app.get('port') || 3000, () => {

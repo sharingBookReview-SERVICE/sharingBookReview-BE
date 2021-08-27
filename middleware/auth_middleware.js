@@ -35,7 +35,10 @@ const authMiddleware = (loginRequired) => {
 		try {
 			userId = jwt.verify(tokenValue, process.env.TOKEN_KEY).userId
 		} catch (e) {
-			console.error(e)
+            console.error(e)
+            if(e.name === 'TokenExpiredError'){
+                throw { message : 'JWT 토큰의 유효기간이 만료되었습니다.' , status : 498}
+            }
 			return new Error('JWT 토큰 검증을 실패했습니다.')
 		}
 
