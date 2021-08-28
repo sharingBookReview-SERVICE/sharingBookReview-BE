@@ -229,4 +229,16 @@ router.get('/alerts', async (req, res, next) => {
 
     res.json({alerts})
 })
+
+// check alert
+router.put('/checkAlert', async (req, res, next) => {
+    const { _id: userId } = res.locals.user
+    
+    let user = await User.findById(userId)
+    user.check_alert = false
+
+    await user.save()
+
+    res.sendStatus(200)
+})
 export default router
