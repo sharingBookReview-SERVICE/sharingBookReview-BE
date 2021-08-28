@@ -96,11 +96,6 @@ router.put('/:userId', async (req, res, next) => {
             followingList.push(following.receiver)
         }
         
-        const followingCount = (await Follow.find({sender})).length
-        const followerCount = (await Follow.find({receiver})).length
-
-        await User.findByIdAndUpdate(sender, {followingCount})
-        await User.findByIdAndUpdate(receiver, {followerCount})
         return res.json({status, followingList})
     } catch(e){
         return next(new Error('팔로우를 실패했습니다.'))
