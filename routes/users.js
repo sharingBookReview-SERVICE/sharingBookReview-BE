@@ -75,7 +75,8 @@ router.get('/feeds', async (req, res, next) => {
 	const { _id: userId } = res.locals.user
 
 	try {
-        const user = await User.findById(userId)
+        let user = await User.findById(userId)
+        user = await user.followCount()
 		const reviews = await Review.find({user: userId}).populate('book').sort('-created_at')
 		const collections = await Collection.find({user: userId}).sort('-created_at')
 
@@ -92,6 +93,7 @@ router.get('/feeds/:userId', async (req, res, next) => {
     
 	try {
         let user = await User.findById(userId).select("nickname level exp followingCount followerCount profileImage _id")
+        user = await user.followCount()
         user = await Follow.checkFollowing(user, myUserId, userId)
 		const reviews = await Review.find({user: userId}).populate("book").sort('-created_at')
 		const collections = await Collection.find({user: userId}).sort('-created_at')

@@ -2,7 +2,7 @@ import mongoose from 'mongoose'
 
 const { Schema, Types, model } = mongoose
 import expList from '../exp_list.js'
-import { Follow } from './index.js'
+import { Follow, User } from './index.js'
 
 const userSchema = new Schema({
 	nickname: String,
@@ -60,12 +60,14 @@ userSchema.statics.deleteExp = async function (userId, event) {
 	await user.save()
 }
 
-userSchema.virtual('followingCount').get(async function() {
-    return (await Follow.find({sender: this._id})).length
-})
+userSchema.methods.followCount = async function() {
+    const user = this.toJSON()
+    user.followingCount = (await Follow.find({sender: this._id})).length
+    user.followerCount = (await Follow.find({receiver: this._id})).length
 
-userSchema.virtual('followerCount').get(async function() {
-    return (await Follow.find({receiver: this._id})).length
-})
+    return user
+}
+
+
 
 export default model('User', userSchema)
