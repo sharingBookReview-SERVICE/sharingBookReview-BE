@@ -8,6 +8,7 @@ import kakaoPassportConfig from "./routes/kakao_passport.js";
 import googlePassportConfig from './routes/google_passport.js'
 import { Server } from 'socket.io'
 import { createServer } from "http";
+import helmet from 'helmet'
 
 config()
 
@@ -17,6 +18,8 @@ const server = createServer(app)
 app.set('port', process.env.PORT)
 
 app.use(cors())
+app.use(helmet())
+app.disable('x-powered-by')
 
 app.use(router)
 
