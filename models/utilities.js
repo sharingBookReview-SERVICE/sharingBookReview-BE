@@ -1,4 +1,4 @@
-import { User } from './index.js'
+import { User, Alert } from './index.js'
 import moment from 'moment-timezone'
 import 'moment/locale/ko.js'
 
@@ -27,6 +27,22 @@ const likeUnlike = (Model, parameterName) => {
 			await document.save()
 
 			document = Model.processLikesInfo(document, userId)
+
+            if(userId !== document.user && document.myLike === true){
+                const alert = new Alert({
+                    type: 'like',
+                    sender: userId,
+                    reviewId: documentId
+                })
+                await User.findByIdAndUpdate(document.user, {
+                    check_alert: true,
+                    $push: {
+                        alerts: alert,
+                    },
+                })
+            }
+
+
 			res.json(({ [parameterName]: document }))
 		} catch (e) {
 			console.error(e)

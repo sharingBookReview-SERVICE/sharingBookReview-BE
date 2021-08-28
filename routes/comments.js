@@ -1,6 +1,6 @@
 // /api/books/:bookId/reviews/:reviewId/
 import express from 'express'
-import { Review, Comment, User } from '../models/index.js'
+import { Review, Comment, User, Alert } from '../models/index.js'
 import authMiddleware from '../middleware/auth_middleware.js'
 import { validateId } from '../controllers/utilities.js'
 
@@ -39,11 +39,24 @@ router.post('/', async (req, res, next) => {
         console.error(e)
 		return next(new Error('경험치 등록을 실패헀습니다.'))
     }
-        
+    
     try{
+        if(userId !== review.user){
+            const alert = new Alert({
+                type: 'comment',
+                sender: userId,
+                reviewId
+            })
+            await User.findByIdAndUpdate(review.user, {
+                $push: {
+                    alerts: alert,
+                },
+            })
+        }
         const comment = new Comment({ content, user: userId })
 
 		await Review.findByIdAndUpdate(reviewId, {
+            check_alert: true,
 			$push: {
 				comments: comment,
 			},
