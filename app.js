@@ -6,10 +6,13 @@ import './controllers/schedule_job.js'
 import router from './routes/index.js'
 import kakaoPassportConfig from "./routes/kakao_passport.js";
 import googlePassportConfig from './routes/google_passport.js'
+import { Server } from 'socket.io'
+import { createServer } from "http";
 
 config()
 
 const app = new express()
+const server = createServer(app)
 
 app.set('port', process.env.PORT)
 
@@ -20,6 +23,11 @@ app.use(router)
 kakaoPassportConfig()
 googlePassportConfig()
 
+const io = new Server(server,{
+    cors : {
+        origin: '*'
+    }
+})
 app.get('/', (req,res) =>{
     res.status(204)
 })
@@ -35,6 +43,4 @@ app.use((err, req, res, next) => {
 	return res.status(err.status ?? 400).json({ error: err.message })
 })
 
-app.listen(app.get('port') || 3000, () => {
-	console.log(`Server listening on port ${app.get('port')}`)
-})
+export { io, server, app }
