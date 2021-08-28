@@ -18,7 +18,17 @@ const likeUnlike = (Model, parameterName) => {
 				(await Model.findById(documentId)) ??
 				new Error('존재하지 않는 리뷰입니다.')
 
-            if(userId !== document.user){
+			await User.getExpAndLevelUp(document.user, 'like')
+
+			document.getMyLike(userId)
+				? document.liked_users.pull(userId)
+				: document.liked_users.push(userId)
+
+			await document.save()
+
+			document = Model.processLikesInfo(document, userId)
+
+            if(userId !== document.user && document.myLike === true){
                 const alert = new Alert({
                     type: 'like',
                     sender: userId,
@@ -31,15 +41,7 @@ const likeUnlike = (Model, parameterName) => {
                 })
             }
 
-			await User.getExpAndLevelUp(document.user, 'like')
 
-			document.getMyLike(userId)
-				? document.liked_users.pull(userId)
-				: document.liked_users.push(userId)
-
-			await document.save()
-
-			document = Model.processLikesInfo(document, userId)
 			res.json(({ [parameterName]: document }))
 		} catch (e) {
 			console.error(e)
