@@ -212,12 +212,21 @@ router.get('/profile/treasure', async (req,res,next) => {
 
     res.json({treasure})
 })
-
+// 북마크
 router.get('/profile/bookmark', async (req, res, next) => {
     const { _id: userId} = res.locals.user
     
     const {bookmark_reviews} = await User.findById(userId).populate({path:'bookmark_reviews', populate: 'book'})
 
     res.json({bookmark_reviews})
+})
+
+// alert list
+router.get('/alerts', async (req, res, next) => {
+    const { _id: userId } = res.locals.user
+
+    const { alerts } = await User.findById(userId)
+
+    res.json({alerts})
 })
 export default router
