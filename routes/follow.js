@@ -90,17 +90,18 @@ router.put('/:userId', async (req, res, next) => {
             status = true
             await User.getExpAndLevelUp(receiver, "follow")
         }
-
-        const alert = new Alert({
-            type: 'follow',
-            sender,
-        })
-        await User.findByIdAndUpdate(receiver, {
-            $push: {
-                alerts: alert,
-            },
-        })
-
+        if(status === true){
+            const alert = new Alert({
+                type: 'follow',
+                sender,
+            })
+            await User.findByIdAndUpdate(receiver, {
+                $push: {
+                    alerts: alert,
+                },
+            })
+        }
+        
         const followings = await Follow.find({sender}).populate({path: 'receiver', select: 'level profileImage _id nickname'})
         for (let following of followings){
             followingList.push(following.receiver)
