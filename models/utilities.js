@@ -35,6 +35,7 @@ const likeUnlike = (Model, parameterName) => {
                     reviewId: documentId
                 })
                 await User.findByIdAndUpdate(document.user, {
+                    check_alert: true,
                     $push: {
                         alerts: alert,
                     },

@@ -96,6 +96,7 @@ router.put('/:userId', async (req, res, next) => {
                 sender,
             })
             await User.findByIdAndUpdate(receiver, {
+                check_alert: true,
                 $push: {
                     alerts: alert,
                 },

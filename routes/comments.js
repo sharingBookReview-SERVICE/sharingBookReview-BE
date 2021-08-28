@@ -56,6 +56,7 @@ router.post('/', async (req, res, next) => {
         const comment = new Comment({ content, user: userId })
 
 		await Review.findByIdAndUpdate(reviewId, {
+            check_alert: true,
 			$push: {
 				comments: comment,
 			},
