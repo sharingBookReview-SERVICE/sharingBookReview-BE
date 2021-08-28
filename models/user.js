@@ -28,6 +28,7 @@ const userSchema = new Schema({
 			created_at: Date,
 		},
 	],
+    // todo: alert schema가 아니라 alert id로 저장시키자
     alerts: [alertSchema],
     check_alert: { type : Boolean, default: false}
 })
