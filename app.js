@@ -20,6 +20,16 @@ app.set('port', process.env.PORT)
 app.use(cors())
 app.use(helmet())
 app.disable('x-powered-by')
+app.use(cors(corsOptions))
+
+var corsOptions = {
+    origin: [
+        'https://bookdiver.net',
+        'http://localhost:3000'
+    ],
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    optionsSuccessStatus: 204
+}
 
 app.use(router)
 
