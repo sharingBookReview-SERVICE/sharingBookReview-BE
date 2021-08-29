@@ -4,14 +4,14 @@ import authMiddleware from '../middleware/auth_middleware.js'
 
 const router = new express.Router()
 
+const SCROLL_SIZE = 10
+
 router.get('/', authMiddleware(false), async (req, res, next) => {
 	/**
 	 * Number of reviews to send per request.
 	 * @type {number}
 	 */
-	const SCROLL_SIZE = 10
 	const userId = res.locals.user?._id
-	const { lastItemId } = req.query
 
 	try {
 		// 0. Declare constants to query.
@@ -82,41 +82,6 @@ router.get('/', authMiddleware(false), async (req, res, next) => {
 		// 4. If no reviews are found by all three queries.
 		return res.sendStatus(204)
 
-		let reviews
-		let result
-
-		if (!lastItemId) {
-			reviews = await Review.find()
-				.sort('-created_at')
-				.limit(SCROLL_SIZE)
-				.populate({ path: 'user', select: '_id profileImage nickname' })
-				.populate({ path: 'book', select: '_id title author' })
-		} else {
-			reviews = await Review.find()
-				.sort('-created_at')
-				.where('_id')
-				.lt(lastItemId)
-				.limit(SCROLL_SIZE)
-				.populate({ path: 'user', select: '_id profileImage nickname' })
-				.populate({ path: 'book', select: '_id title author' })
-		}
-
-		if (userId) {
-			result = reviews.map((review) =>
-				Review.processLikesInfo(review, userId)
-			)
-			result = await Promise.all(
-				result.map((review) => Review.bookmarkInfo(review, userId))
-			)
-			result = await Promise.all(
-				result.map((review) =>
-					Follow.checkFollowing(review, userId, review.user)
-				)
-			)
-		} else {
-			result = reviews
-		}
-		return res.json(result)
 	} catch (e) {
 		console.error(e)
 		return next(new Error('피드 불러오기를 실패했습니다.'))
@@ -155,6 +120,53 @@ router.patch('/:reviewId', authMiddleware(true), async (req, res, next) => {
 	} catch (e) {
 		console.error(e)
 		return next(new Error('읽음 확인을 실패했습니다.'))
+	}
+})
+
+router.get('/recent', authMiddleware(false), async (req, res, next) => {
+    
+	const userId = res.locals.user?._id
+	const { lastItemId } = req.query
+
+	try {
+		let reviews
+		let result
+
+		if (!lastItemId) {
+			reviews = await Review.find()
+				.sort('-created_at')
+				.limit(SCROLL_SIZE)
+				.populate({ path: 'user', select: '_id profileImage nickname' })
+				.populate({ path: 'book', select: '_id title author' })
+		} else {
+			reviews = await Review.find()
+				.sort('-created_at')
+				.where('_id')
+				.lt(lastItemId)
+				.limit(SCROLL_SIZE)
+				.populate({ path: 'user', select: '_id profileImage nickname' })
+				.populate({ path: 'book', select: '_id title author' })
+		}
+
+		if (userId) {
+			result = reviews.map((review) =>
+				Review.processLikesInfo(review, userId)
+			)
+			result = await Promise.all(
+				result.map((review) => Review.bookmarkInfo(review, userId))
+			)
+			result = await Promise.all(
+				result.map((review) =>
+					Follow.checkFollowing(review, userId, review.user)
+				)
+			)
+		} else {
+			result = reviews
+		}
+		return res.json(result)
+	} catch (e) {
+		console.error(e)
+		return next(new Error('피드 불러오기를 실패했습니다.'))
 	}
 })
 
