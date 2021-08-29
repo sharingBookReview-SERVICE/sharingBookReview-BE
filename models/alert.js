@@ -1,4 +1,5 @@
 import mongoose from 'mongoose'
+import { KoreaTime } from './utilities.js'
 
 const alertSchema = new mongoose.Schema({
 	type: {
@@ -15,6 +16,7 @@ const alertSchema = new mongoose.Schema({
 		ref: 'Review',
 		immutable: true,
     },
+    comment: String,
     collectionId:{
         type: mongoose.Schema.Types.ObjectId,
 		ref: 'Collection',
@@ -30,6 +32,8 @@ const alertSchema = new mongoose.Schema({
 	}
     
 })
+
+KoreaTime(alertSchema)
 
 export default mongoose.model('Alert', alertSchema)
 export { alertSchema }

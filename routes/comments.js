@@ -45,9 +45,11 @@ router.post('/', async (req, res, next) => {
             const alert = new Alert({
                 type: 'comment',
                 sender: userId,
-                reviewId
+                reviewId,
+                comment: content
             })
             await User.findByIdAndUpdate(review.user, {
+                check_alert: true,
                 $push: {
                     alerts: alert,
                 },
@@ -56,7 +58,6 @@ router.post('/', async (req, res, next) => {
         const comment = new Comment({ content, user: userId })
 
 		await Review.findByIdAndUpdate(reviewId, {
-            check_alert: true,
 			$push: {
 				comments: comment,
 			},
