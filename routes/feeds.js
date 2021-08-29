@@ -1,5 +1,5 @@
 import express from 'express'
-import { Follow, Review, User } from '../models/index.js'
+import { Follow, Review, User, Trend } from '../models/index.js'
 import authMiddleware from '../middleware/auth_middleware.js'
 
 const router = new express.Router()
@@ -57,9 +57,17 @@ router.get('/', authMiddleware(false), async (req, res, next) => {
 		if (followingReviews.length) return res.json(followingReviews)
 
 		// 2. Return trending reviews (reviews with high trending point, in other words, recent review with lots of likes)
+		const trend = await Trend.findOne({}, {}, { sort: { created_at: -1 } })
+		const trendingReviewIdArr = trend.trendingReviews.map(review => review._id)
+		const trendingReviews = await Review.find({
+			_id: { $in: trendingReviewIdArr },
+		})
+			//todo: $sample 넣기
+			.limit(SCROLL_SIZE)
+			.populate({ path: 'user', select: '_id profileImage nickname' })
+			.populate({ path: 'book', select: '_id title author' })
 
-		const trendingReviews = {}
-		if (trendingReviews.length) return json(trendingReviews)
+		if (trendingReviews.length) return res.json(trendingReviews)
 
 		// 3. Return all recent unread reviews regardless of following.
 
@@ -97,10 +105,8 @@ router.get('/', authMiddleware(false), async (req, res, next) => {
 			result = reviews.map((review) =>
 				Review.processLikesInfo(review, userId)
 			)
-            result = await Promise.all(
-				result.map((review) =>
-					Review.bookmarkInfo(review, userId)
-				)
+			result = await Promise.all(
+				result.map((review) => Review.bookmarkInfo(review, userId))
 			)
 			result = await Promise.all(
 				result.map((review) =>
