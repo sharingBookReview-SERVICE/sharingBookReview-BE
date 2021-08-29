@@ -1,6 +1,9 @@
 language: node_js
 node_js:
   - "14.17"
+branches:
+  only:
+    - main
 notifications:
   email:
     recipients:
