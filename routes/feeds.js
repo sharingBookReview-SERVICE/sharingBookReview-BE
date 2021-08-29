@@ -60,7 +60,7 @@ router.get('/', authMiddleware(false), async (req, res, next) => {
 		const trend = await Trend.findOne({}, {}, { sort: { created_at: -1 } })
 		const trendingReviewIdArr = trend.trendingReviews.map(review => review._id)
 		const trendingReviews = await Review.find({
-			_id: { $in: trendingReviewIdArr },
+			_id: { $in: trendingReviewIdArr, $nin: readReviews },
 		})
 			//todo: $sample 넣기
 			.limit(SCROLL_SIZE)
