@@ -226,17 +226,27 @@ router.get('/alerts', async (req, res, next) => {
     const { _id: userId } = res.locals.user
 
     let { alerts } = await User.findById(userId)
-    
-    alerts = await Promise.all(alerts.map(async (alert) => {
-        const sender = await User.findById(alert.sender).select('_id nickname')
-        const review = await Review.findById(alert.reviewId).select('_id book image')
-        alert = alert.toJSON()
-        alert.sender = sender
-        alert.reviewId = review
-        return alert
-    }))
 
-    res.json({alerts})
+    try{
+        alerts = await Promise.all(alerts.map(async (alert) => {
+
+            const sender = await User.findById(alert.sender).select('_id nickname')
+            const review = await Review.findById(alert.reviewId).select('_id book image')
+
+            alert = alert.toJSON()
+
+            alert.sender = sender
+            alert.reviewId = review
+            
+            return alert
+        }))
+
+        res.json({alerts})
+    }catch(e){
+        return next(new Error('alert list를 불러오는데 실패했습니다.'))
+    }
+    
+
 })
 
 // check alert
