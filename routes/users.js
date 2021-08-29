@@ -229,7 +229,7 @@ router.get('/alerts', async (req, res, next) => {
     
     alerts = await Promise.all(alerts.map(async (alert) => {
         const sender = await User.findById(alert.sender).select('_id nickname')
-        const review = await Review.findById(alert.reviewId).select('_id book content image')
+        const review = await Review.findById(alert.reviewId).select('_id book image')
         alert = alert.toJSON()
         alert.sender = sender
         alert.reviewId = review

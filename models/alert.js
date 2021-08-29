@@ -15,6 +15,9 @@ const alertSchema = new mongoose.Schema({
 		ref: 'Review',
 		immutable: true,
     },
+    comment:{
+        type: String
+    },
     collectionId:{
         type: mongoose.Schema.Types.ObjectId,
 		ref: 'Collection',
