@@ -1,0 +1,7 @@
+language: node_js
+node_js:
+  - "14.17"
+notifications:
+  email:
+    recipients:
+      - kobbb2100@gmail.com
