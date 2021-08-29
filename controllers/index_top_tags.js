@@ -35,6 +35,8 @@ const getChangedTags = async (isbnArr) => {
 		 * @type {string[]}
 		 */
 		const allTags = book.reviews.reduce((acc, review) => {
+			// If hashtags is empty, continue without change
+			if (!review.hashtags) return acc
 			return [...acc, ...review.hashtags]
 		}, [])
 		/**
