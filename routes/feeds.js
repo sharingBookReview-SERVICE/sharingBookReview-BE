@@ -75,11 +75,11 @@ router.get('/', authMiddleware(false), async (req, res, next) => {
 			.sort({ created_at: -1 })
 			.limit(SCROLL_SIZE)
 			.populate({ path: 'user', select: '_id profileImage nickname' })
-			.populate({ path: 'book', select: '_id title author' })``
+			.populate({ path: 'book', select: '_id title author' })
 
 		if (recentReviews.length) return res.json(recentReviews)
 
-		// If no reviews are found by all three queries.
+		// 4. If no reviews are found by all three queries.
 		return res.sendStatus(204)
 
 		let reviews
