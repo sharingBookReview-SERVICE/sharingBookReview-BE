@@ -8,7 +8,6 @@ import mongoose from 'mongoose'
 const getCollectionImage = (ID) => {
 	if (!mongoose.Types.ObjectId.isValid(ID))
 		throw new Error('잘못된 ID 입니다.')
-
 	const imageURLs = [
 		'https://images.unsplash.com/photo-1630278107980-46fde63cdc12?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=750&q=80',
 		'https://images.unsplash.com/photo-1630209642854-432d7f3f0e52?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80',
@@ -22,7 +21,7 @@ const getCollectionImage = (ID) => {
 		'https://images.unsplash.com/photo-1630048911157-66276d027a31?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80',
 	]
 
-	const lastDigit = String(ID).slice(-1)
+	const lastDigit = parseInt(String(ID)) % 10
 
 	return imageURLs[lastDigit]
 }
