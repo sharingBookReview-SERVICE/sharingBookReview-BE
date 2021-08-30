@@ -2,6 +2,7 @@ import mongoose from 'mongoose'
 const { Schema, Types, model } = mongoose
 import { commentSchema } from './comment.js'
 import { KoreaTime } from './utilities.js'
+import getCollectionImage from '../controllers/get_collection_image.js'
 
 const collectionSchema = new Schema({
 	name: { type: String, required: true },
@@ -31,6 +32,10 @@ KoreaTime(collectionSchema)
 
 collectionSchema.pre('save', function () {
 	this.likeCount = this.liked_users.length
+})
+
+collectionSchema.post('save', function() {
+	if (!this.image) this.image = getCollectionImage(this._id)
 })
 
 export default model('Collection', collectionSchema)
