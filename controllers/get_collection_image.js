@@ -21,9 +21,13 @@ const getCollectionImage = (ID) => {
 		'https://images.unsplash.com/photo-1630048911157-66276d027a31?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80',
 	]
 
-	const lastDigit = parseInt(String(ID)) % 10
+	const lastDigit = getRandomInt(10)
 
 	return imageURLs[lastDigit]
+}
+
+function getRandomInt(max) {
+    return Math.floor(Math.random() * max);
 }
 
 export default getCollectionImage
