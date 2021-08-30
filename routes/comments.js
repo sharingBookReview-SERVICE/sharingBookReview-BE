@@ -41,7 +41,7 @@ router.post('/', async (req, res, next) => {
     }
     
     try{
-        if(userId !== review.user){
+        if(String(userId) !== String(review.user)){
             const alert = new Alert({
                 type: 'comment',
                 sender: userId,
