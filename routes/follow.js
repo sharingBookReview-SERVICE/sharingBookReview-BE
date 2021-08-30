@@ -70,19 +70,18 @@ router.get('/followerList', async (req, res, next) => {
     }
 })
 
-// 팔로잉 목록 조회(타 유저)
+/**
+ * Returns array of users whom user in parameter follow.
+ */
 router.get('/followingList/:userId', async (req, res, next) => {
-    try{
+    try {
         const { userId } = req.params
+        const followingList = await getFollowingUsers(userId)
 
-        const followList = await Follow.find({sender : userId}).populate({path : 'receiver', select : selectedProperties})
-        const followingList = followList.map((follow) => {
-            return follow.receiver
-        })
-        res.json({followingList})
-    }catch(e){
-		console.error(e)
-        return next(new Error('팔로잉 리스트 불러오기를 실패했습니다.'))
+        return res.json({ followingList })
+    } catch (e) {
+        console.error(e)
+        return next(new Error('해당 유저가 팔로우 중인 유저의 목록 불러오기를 실패했습니다.'))
     }
 })
 
