@@ -28,6 +28,18 @@ const getFollowingUsers = async (userId) => {
 	return follows.map((follow) => follow.receiver)
 }
 
+const getFollowers = async (userId) => {
+	if (!mongoose.isValidObjectId(userId))
+		throw { message: '유효하지 않은 user ID 입니다.', status: 400 }
+
+	const follows = await Follow.find({ receiver: userId }).populate({
+		path: 'sender',
+		select: selectedProperties,
+	})
+
+	return follows.map((follow) => follow.sender)
+}
+
 /**
  * Returns array of users whom I follow.
  */
@@ -66,12 +78,13 @@ router.get('/followingList/:userId', async (req, res, next) => {
     try{
         const { userId } = req.params
 
-        const followList = await Follow.find({sender : userId}).populate({path : 'receiver', select : '_id level nickname profileImage'})
+        const followList = await Follow.find({sender : userId}).populate({path : 'receiver', select : selectedProperties})
         const followingList = followList.map((follow) => {
             return follow.receiver
         })
         res.json({followingList})
     }catch(e){
+		console.error(e)
         return next(new Error('팔로잉 리스트 불러오기를 실패했습니다.'))
     }
 })
@@ -87,6 +100,7 @@ router.get('/followerList/:userId', authMiddleware(true), async (req, res, next)
         })
         res.json({followerList})
     }catch(e){
+		console.error(e)
         return next(new Error('팔로잉 리스트 불러오기를 실패했습니다.'))
     }
 })
@@ -125,17 +139,17 @@ router.put('/:userId', async (req, res, next) => {
                 },
             })
         }
-        
+
         const followings = await Follow.find({sender}).populate({path: 'receiver', select: 'level profileImage _id nickname'})
         for (let following of followings){
             followingList.push(following.receiver)
         }
-        
+
         return res.json({status, followingList})
     } catch(e){
         return next(new Error('팔로우를 실패했습니다.'))
     }
-    
+
 })
 
 // 나를 팔로우 하는 사람 삭제, 관계 취소
@@ -158,7 +172,7 @@ router.put('/delete/:userId', async (req, res, next) => {
         for (let follower of followers){
             followerList.push(follower.sender)
         }
-        
+
         const followingCount = (await Follow.find({sender})).length
         const followerCount = (await Follow.find({receiver})).length
 
@@ -170,7 +184,7 @@ router.put('/delete/:userId', async (req, res, next) => {
     } catch(e){
         return next(new Error('팔로우 삭제를 실패했습니다.'))
     }
-    
+
 })
 
 export default router
