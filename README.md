@@ -1,29 +1,93 @@
 # 🌊 DIVER BACKEND 🌊
 
-A Node.js + Express based backend project.
+❓ <b>Business Model</b> - Diver provides collections and reviews of books and users can share them like a social network.
 
-Diver provides collections and reviews of books and users can share them like a social network.
+🌌 <b>Base</b> - A Node.js + Express based backend project.
 
----
-
-다이버는 책 컬렉션과 리뷰를 제공하며 사용자들은 그것들을 소셜네트워크처럼 공유할 수 있습니다. 
-
-🔗 Click [Frontend side](https://github.com/sharingBookReview-SERVICE/sharingBookReview-FE) to go to corresponding React.js
+🔗 <b>Our frontend</b> - Click [Frontend side](https://github.com/sharingBookReview-SERVICE/sharingBookReview-FE) to go to corresponding React.js
 based frontend project.
 
 ---
 
 ## Table of Contents / 목차
 
-1. Architecture · 구조
-2. Contributors · 인원
-3. Core features · 핵심 기능
-4. Goal · 목표
-5. Sample Codes · 코드 예시 
-6. Dependencies · 의존성
-7. Project structure · 프로젝트 구조 
+0. Get Started · 시작하기
+1. Goal · 목표
+2. Architecture · 구조
+3. Dependencies · 의존성
+4. Sample Codes · 샘플 코드
+5. Contributors · 인원
 
-##1. 🥅 Goal / 목표
+# 0. Get Started · 시작하기
+
+## Node
+
+- #### Node installation on Windows
+
+  Just go on [official Node.js website](https://nodejs.org/) and download the installer. Also, be sure to have `git`
+  available in your PATH, `npm` might need it (You can find git [here](https://git-scm.com/)).
+
+- #### Node installation on Ubuntu
+
+  You can install nodejs and npm easily with apt install, just run the following commands.
+
+      $ sudo apt install nodejs
+      $ sudo apt install npm
+
+- #### Other Operating Systems
+  You can find more information about the installation on the [official Node.js website](https://nodejs.org/) and
+  the [official NPM website](https://npmjs.org/).
+
+    ---
+
+    If the installation was successful, you should be able to run the following command.
+
+        $ node --version
+        v8.11.3
+
+        $ npm --version
+        6.1.0
+
+    If you need to update `npm`, you can make it using `npm`! Cool right? After running the following command, just open
+    again the command line and be happy.
+
+        $ npm install npm -g
+
+---
+## Yarn installation
+
+After installing node, this project will need yarn too, so just run the following command.
+
+      $ npm install -g yarn
+
+---
+
+## Install
+
+    $ git clone https://github.com/YOUR_USERNAME/PROJECT_TITLE
+    $ cd PROJECT_TITLE
+    $ yarn install
+
+---
+## Configure app
+
+Open `a/nice/path/to/a.file` then edit it with your settings. You will need:
+
+- A setting;
+- Another setting;
+- One more setting;
+---
+## Running the project
+
+    $ yarn start
+---
+## Simple build for production
+
+    $ yarn build
+
+
+
+# 1. Goal / 목표 🥅
 
 At the beginning of the project, deciding which part to focus and which part to discard &ndash; in terms of the tech
 stack &ndash; was the most difficult task.
@@ -91,8 +155,11 @@ const getBestsellers = async () => {
 
 ### 1.2 Version Control 	![Git](https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white)
 
-##2. 🧑‍🤝‍🧑 Contributors 
-## 2️⃣ Dependencies
+
+# 2. Architecture 👷
+
+
+# 3. Dependencies 🤝
 
 - Node.js@16.6.2
 - aws-sdk@2.975.0
@@ -113,7 +180,7 @@ const getBestsellers = async () => {
 - puppeteer@10.2.0
 - xml2js@0.4.23
 
-## 3. 💡 Sample Codes
+# 4. Sample Codes 💡
 
 ### 1. Routing / API Structuring
 
@@ -180,65 +247,4 @@ router.use('/api/books/:bookId/reviews/:reviewId/comments')
 
 For development, you will only need Node.js and a node global package, Yarn, installed in your environement.
 
-### Node
-
-- #### Node installation on Windows
-
-  Just go on [official Node.js website](https://nodejs.org/) and download the installer. Also, be sure to have `git`
-  available in your PATH, `npm` might need it (You can find git [here](https://git-scm.com/)).
-
-- #### Node installation on Ubuntu
-
-  You can install nodejs and npm easily with apt install, just run the following commands.
-
-      $ sudo apt install nodejs
-      $ sudo apt install npm
-
-- #### Other Operating Systems
-  You can find more information about the installation on the [official Node.js website](https://nodejs.org/) and
-  the [official NPM website](https://npmjs.org/).
-
-If the installation was successful, you should be able to run the following command.
-
-    $ node --version
-    v8.11.3
-
-    $ npm --version
-    6.1.0
-
-If you need to update `npm`, you can make it using `npm`! Cool right? After running the following command, just open
-again the command line and be happy.
-
-    $ npm install npm -g
-
-###
-
-### Yarn installation
-
-After installing node, this project will need yarn too, so just run the following command.
-
-      $ npm install -g yarn
-
----
-
-## Install
-
-    $ git clone https://github.com/YOUR_USERNAME/PROJECT_TITLE
-    $ cd PROJECT_TITLE
-    $ yarn install
-
-## Configure app
-
-Open `a/nice/path/to/a.file` then edit it with your settings. You will need:
-
-- A setting;
-- Another setting;
-- One more setting;
-
-## Running the project
-
-    $ yarn start
-
-## Simple build for production
-
-    $ yarn build
+# 5. Contributors 🧑‍🤝‍🧑 
