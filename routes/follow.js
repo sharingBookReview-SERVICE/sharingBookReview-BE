@@ -30,7 +30,8 @@ router.get('/followingList', async (req, res, next) => {
 
         return res.json({followingList: followingUserIdArr})
     }catch(e){
-        return next(new Error('팔로잉 리스트 불러오기를 실패했습니다.'))
+        console.error(e)
+        return next(new Error('내가 팔로우중인 유저의 목록 불러오기를 실패했습니다.'))
     }
 })
 
