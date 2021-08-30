@@ -7,6 +7,8 @@ const router = new express.Router()
 // todo 함수나 static으로 밑의 4개 합쳐보기
 // 팔로잉 목록 조회(나의)
 
+const selectedProperties = '_id level nickname profileImage'
+
 /**
  * All routes in the module requires login.
  */
@@ -19,14 +21,12 @@ router.get('/followingList', async (req, res, next) => {
     try{
         const { _id : userId } = res.locals.user
 
-        const followingUsers = await Follow.find({ sender: userId }).populate({
+		const followingUsers = await Follow.find({ sender: userId }).populate({
 			path: 'receiver',
-			select: '_id level nickname profileImage',
+			select: selectedProperties,
 		})
 
-        const followingUserIdArr = followingUsers.map((follow) => {
-            return follow.receiver
-        })
+        const followingUserIdArr = followingUsers.map((follow) => follow.receiver)
 
         return res.json({followingList: followingUserIdArr})
     }catch(e){
