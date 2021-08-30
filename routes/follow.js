@@ -7,8 +7,14 @@ const router = new express.Router()
 // todo 함수나 static으로 밑의 4개 합쳐보기
 // 팔로잉 목록 조회(나의)
 
+/**
+ * All routes in the module requires login.
+ */
 router.use(authMiddleware(true))
 
+/**
+ * Returns array of users whom I follow.
+ */
 router.get('/followingList', async (req, res, next) => {
     try{
         const { _id : userId } = res.locals.user
