@@ -35,7 +35,7 @@ collectionSchema.pre('save', function () {
 })
 
 collectionSchema.post('save', function() {
-	if (!this.image) this.image = getCollectionImage(this._id)
+	this.image ?? (this.image = getCollectionImage(this._id))
 })
 
 export default model('Collection', collectionSchema)
