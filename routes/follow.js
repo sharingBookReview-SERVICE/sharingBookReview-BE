@@ -14,6 +14,18 @@ const selectedProperties = '_id level nickname profileImage'
  */
 router.use(authMiddleware(true))
 
+const getFollowingUsers = async (userId) => {
+	if (!mongoose.isValidObjectId(userId))
+		throw { message: '유효하지 않은 user ID 입니다.', status: 400 }
+
+	const follows = await Follow.find({ sender: userId }).populate({
+		path: 'receiver',
+		select: selectedProperties,
+	})
+
+	return follows.map((follow) => follow.receiver)
+}
+
 /**
  * Returns array of users whom I follow.
  */
