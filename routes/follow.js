@@ -19,11 +19,16 @@ router.get('/followingList', async (req, res, next) => {
     try{
         const { _id : userId } = res.locals.user
 
-        const followList = await Follow.find({sender : userId}).populate({path : 'receiver', select : '_id level nickname profileImage'})
-        const followingList = followList.map((follow) => {
+        const followingUsers = await Follow.find({ sender: userId }).populate({
+			path: 'receiver',
+			select: '_id level nickname profileImage',
+		})
+
+        const followingUserIdArr = followingUsers.map((follow) => {
             return follow.receiver
         })
-        res.json({followingList})
+
+        return res.json({followingList: followingUserIdArr})
     }catch(e){
         return next(new Error('팔로잉 리스트 불러오기를 실패했습니다.'))
     }
