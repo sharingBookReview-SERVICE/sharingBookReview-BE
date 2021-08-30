@@ -30,18 +30,12 @@ const getFollowingUsers = async (userId) => {
  * Returns array of users whom I follow.
  */
 router.get('/followingList', async (req, res, next) => {
-    try{
-        const { _id : userId } = res.locals.user
+    try {
+        const { _id: userId } = res.locals.user
 
-		const followingUsers = await Follow.find({ sender: userId }).populate({
-			path: 'receiver',
-			select: selectedProperties,
-		})
-
-        const followingUserIdArr = followingUsers.map((follow) => follow.receiver)
-
-        return res.json({followingList: followingUserIdArr})
-    }catch(e){
+        const followingList = await getFollowingUsers(userId)
+        return res.json({ followingList })
+    } catch (e) {
         console.error(e)
         return next(new Error('내가 팔로우중인 유저의 목록 불러오기를 실패했습니다.'))
     }
