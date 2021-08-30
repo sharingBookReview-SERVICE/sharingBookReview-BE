@@ -1,6 +1,8 @@
 import express from 'express'
 import authMiddleware from '../middleware/auth_middleware.js'
 import { Follow, User, Alert } from '../models/index.js'
+import mongoose from 'mongoose'
+
 
 const router = new express.Router()
 
