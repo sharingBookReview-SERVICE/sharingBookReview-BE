@@ -34,8 +34,11 @@ collectionSchema.pre('save', function () {
 	this.likeCount = this.liked_users.length
 })
 
-collectionSchema.post('save', function() {
-	this.image ?? (this.image = getCollectionImage(this._id))
+collectionSchema.post('save', async function() {
+    if (!this.image) {
+        this.image = getCollectionImage(this._id)
+        await this.save()
+    }
 })
 
 export default model('Collection', collectionSchema)
