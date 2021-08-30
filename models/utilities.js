@@ -27,8 +27,8 @@ const likeUnlike = (Model, parameterName) => {
 			await document.save()
 
 			document = Model.processLikesInfo(document, userId)
-
-            if(userId !== document.user && document.myLike === true){
+            console.log((String(userId) !== String(document.user)) && (document.myLike === true))
+            if((String(userId) !== String(document.user)) && (document.myLike === true)){
                 const alert = new Alert({
                     type: 'like',
                     sender: userId,
