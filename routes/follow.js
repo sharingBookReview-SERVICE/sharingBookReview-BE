@@ -36,17 +36,20 @@ router.get('/followingList', async (req, res, next) => {
 })
 
 // 팔로워 목록 조회(나의)
+/**
+ * Returns array of users who follow me.
+ */
 router.get('/followerList', async (req, res, next) => {
     try{
         const { _id : userId } = res.locals.user
 
-        const followList = await Follow.find({receiver : userId}).populate({path : 'sender', select : '_id level nickname profileImage'})
-        const followerList = followList.map((follow) => {
-            return follow.sender
-        })
-        res.json({followerList})
+        const followedUsers = await Follow.find({receiver : userId}).populate({path : 'sender', select : selectedProperties})
+		const followedUserIdArr = followedUsers.map((follow) => follow.sender)
+
+        return res.json({followerList: followedUserIdArr})
     }catch(e){
-        return next(new Error('팔로잉 리스트 불러오기를 실패했습니다.'))
+        console.error(e)
+        return next(new Error('나를 팔로우중인 유저의 목록 불러오기를 실패했습니다.'))
     }
 })
 
