@@ -16,6 +16,11 @@ const selectedProperties = '_id level nickname profileImage'
  */
 router.use(authMiddleware(true))
 
+/**
+ * Get all users whom userId follows.
+ * @param userId {ObjectId}
+ * @returns {Promise<Document[]>}
+ */
 const getFollowingUsers = async (userId) => {
 	if (!mongoose.isValidObjectId(userId))
 		throw { message: '유효하지 않은 user ID 입니다.', status: 400 }
@@ -28,6 +33,11 @@ const getFollowingUsers = async (userId) => {
 	return follows.map((follow) => follow.receiver)
 }
 
+/**
+ * Get all users who follow userId.
+ * @param userId {ObjectId}
+ * @returns {Promise<Document[]>}
+ */
 const getFollowers = async (userId) => {
 	if (!mongoose.isValidObjectId(userId))
 		throw { message: '유효하지 않은 user ID 입니다.', status: 400 }
