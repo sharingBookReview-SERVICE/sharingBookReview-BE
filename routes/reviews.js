@@ -15,9 +15,12 @@ router.use(authMiddleware(true))
 router.post('/', upload.single('image'), ImageUpload.uploadImage, async (req, res, next) => {
 	const { _id: userId } = res.locals.user
 	const { bookId } = req.params
-	const image = res.locals?.url
+	let image = res.locals?.url
 	const { quote, content } = req.body
 	const hashtags = JSON.parse(req.body.hashtags)
+    if(!image){
+        image = req.body.imageUrl
+    }
 
 	const book = await Book.findById(bookId)
 
