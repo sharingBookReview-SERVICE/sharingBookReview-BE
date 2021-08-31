@@ -148,6 +148,10 @@ router.get('/recent', authMiddleware(false), async (req, res, next) => {
 				.populate({ path: 'book', select: '_id title author' })
 		}
 
+        if(!reviews.length){
+            return res.sendStatus(204)
+        }
+
 		if (userId) {
 			result = reviews.map((review) =>
 				Review.processLikesInfo(review, userId)
