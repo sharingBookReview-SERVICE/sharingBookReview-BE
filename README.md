@@ -258,8 +258,77 @@ import helmet from 'helmet'
 
 ### 1.2 Version Control 	![Git](https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white)
 
+[배달의 민족 Git-flow](https://techblog.woowahan.com/2553/)
+
+[Our Git Flow]()
 
 # 2. Architecture 👷
+
+```js
+.
+├── ...
+├── controllers
+|   ├── crawl.js 
+|   ├── get_collection_image.js
+|   ├── get_trending_review.js
+|   ├── image_upload.js
+|   ├── index_top_tags.js
+|   ├── schedule_job.js
+|   ├── searchbooks.js
+|   └── utilities.js
+|
+├── middleware
+|   └── auth_middleware.js
+|          
+├── models
+|   ├── alert.js 
+|   ├── book.js
+|   ├── changes_index.js
+|   ├── collection.js
+|   ├── comment.js
+|   ├── follow.js
+|   ├── index.js
+|   ├── review.js
+|   ├── suggestion.js
+|   ├── trend.js
+|   ├── user.js
+|   └── utilities.js
+| 
+├── models
+|   ├── alert.js 
+|   ├── book.js
+|   ├── changes_index.js
+|   ├── collection.js
+|   ├── comment.js
+|   ├── follow.js
+|   ├── index.js
+|   ├── review.js
+|   ├── suggestion.js
+|   ├── trend.js
+|   ├── user.js
+|   └── utilities.js
+| 
+├── routes
+|   ├── book.js 
+|   ├── collection.js
+|   ├── comments.js
+|   ├── feeds.js
+|   ├── follow.js
+|   ├── google_passport.js
+|   ├── index.js
+|   ├── kakao_passport.js
+|   ├── review.js
+|   ├── search.js
+|   ├── suggestion.js
+|   └── user.js
+| 
+├── app.js
+├── config.js
+├── exp_list.js
+├── s3.js
+├── server.js
+├── socket.js
+├── ...
 
 
 # 3. Dependencies 🤝
