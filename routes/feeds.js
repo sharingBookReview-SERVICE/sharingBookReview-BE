@@ -1,6 +1,7 @@
 import express from 'express'
 import { Follow, Review, User, Trend } from '../models/index.js'
 import authMiddleware from '../middleware/auth_middleware.js'
+import { showLikeFollowBookMarkStatus } from '../controllers/utilities.js'
 
 const router = new express.Router()
 
@@ -53,8 +54,13 @@ router.get('/', authMiddleware(false), async (req, res, next) => {
 			.populate({ path: 'user', select: '_id profileImage nickname' })
 			.populate({ path: 'book', select: '_id title author' })
 
+            
+    
+
 		// If no documents found with query, continue until next if statement. This keep goes on.
-		if (followingReviews.length) return res.json(followingReviews)
+		if (followingReviews.length){
+            return res.json(await showLikeFollowBookMarkStatus(followingReviews, userId))
+        } 
 
 		// 2. Return trending reviews (reviews with high trending point, in other words, recent review with lots of likes)
 		const trend = await Trend.findOne({}, {}, { sort: { created_at: -1 } })
@@ -67,8 +73,9 @@ router.get('/', authMiddleware(false), async (req, res, next) => {
 			.populate({ path: 'user', select: '_id profileImage nickname' })
 			.populate({ path: 'book', select: '_id title author' })
 
-		if (trendingReviews.length) return res.json(trendingReviews)
-
+		if (trendingReviews.length) {
+            return res.json(await showLikeFollowBookMarkStatus(trendingReviews, userId))
+        }
 		// 3. Return all recent unread reviews regardless of following.
 
 		const recentReviews = await Review.find(query)
@@ -77,8 +84,9 @@ router.get('/', authMiddleware(false), async (req, res, next) => {
 			.populate({ path: 'user', select: '_id profileImage nickname' })
 			.populate({ path: 'book', select: '_id title author' })
 
-		if (recentReviews.length) return res.json(recentReviews)
-
+		if (recentReviews.length){
+            return res.json(await showLikeFollowBookMarkStatus(recentReviews, userId))
+        }
 		// 4. If no reviews are found by all three queries.
 		return res.sendStatus(204)
 
@@ -153,17 +161,7 @@ router.get('/recent', authMiddleware(false), async (req, res, next) => {
         }
 
 		if (userId) {
-			result = reviews.map((review) =>
-				Review.processLikesInfo(review, userId)
-			)
-			result = await Promise.all(
-				result.map((review) => Review.bookmarkInfo(review, userId))
-			)
-			result = await Promise.all(
-				result.map((review) =>
-					Follow.checkFollowing(review, userId, review.user)
-				)
-			)
+			result = await showLikeFollowBookMarkStatus(reviews, userId)
 		} else {
 			result = reviews
 		}

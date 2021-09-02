@@ -1,4 +1,4 @@
-import { Book } from '../models/index.js'
+import { Review, Book, Follow } from '../models/index.js'
 import { getBookDescription } from './crawl.js'
 import jwt from 'jsonwebtoken'
 
@@ -75,4 +75,21 @@ const validateToken = ({req, token}) => {
     return userId
 }
 
-export { validateId, saveBook, validateToken }
+async function showLikeFollowBookMarkStatus(reviews, userId) {
+
+    let result = reviews.map((review) =>
+        Review.processLikesInfo(review, userId)
+    )
+    result = await Promise.all(
+        result.map((review) => Review.bookmarkInfo(review, userId))
+    )
+    result = await Promise.all(
+        result.map((review) =>
+            Follow.checkFollowing(review, userId, review.user)
+        )
+    )
+
+	return result
+}
+
+export { validateId, saveBook, validateToken, showLikeFollowBookMarkStatus }
