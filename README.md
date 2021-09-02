@@ -329,7 +329,7 @@ import helmet from 'helmet'
 ├── server.js
 ├── socket.js
 ├── ...
-
+```
 
 # 3. Dependencies 🤝
 
@@ -420,3 +420,9 @@ router.use('/api/books/:bookId/reviews/:reviewId/comments')
 For development, you will only need Node.js and a node global package, Yarn, installed in your environement.
 
 # 5. Contributors 🧑‍🤝‍🧑 
+
+<table>
+<!-- 1st Row -->
+<tr>
+<td align="center"><a href="https://github.com/seungbin0508"><img src="https://avatars.githubusercontent.com/u/24871719?v=4" width="100px;" alt=""/><br /><sub><b>김승빈</b></sub></a><br />
+<td align="center"><a href="https://github.com/ohbin-kwon"><img src="https://avatars.githubusercontent.com/u/77604219?v=4" width="100px;" alt=""/><br /><sub><b>권오빈</b></sub></a><br />
