@@ -145,11 +145,114 @@ const getBestsellers = async () => {
 ```
 #### 1.1.2 [Optional Chaining (?.)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Optional_chaining)
 
+When saving an image, we used optional chaining to avoid returning errors even if we did not register the picture. It is shorter than using the if statement and can be expressed in a simple expression.
+
+---
+
+이미지 저장 시, 사진을 등록하지 않더라도 오류를 반환하지 않기 위해, optional chaining을 사용했습니다. if문을 사용하는 것 보다 짧고, 단순한 표현식으로 표현 할 수 있습니다.
+
+```javascript
+router.post('/', upload.single('image'), ImageUpload.uploadImage, async (req, res, next) => {
+	const { _id: userId } = res.locals.user
+	const { bookId } = req.params
+	const image = res.locals?.url
+	const { quote, content } = req.body
+	const hashtags = JSON.parse(req.body.hashtags)
+
+	try {
+		// Add document to Review collection
+		let review = await Review.create({
+			quote,
+			content,
+			hashtags,
+			image,
+		})
+        review = await review.populate('book').populate({path: 'user', select:'_id level nickname profileImage' }).execPopulate()
+
+		// Update reviews property of corresponding book document.
+		const book = await Book.findById(bookId)
+		book.reviews.push(review._id)
+		await book.save()
+
+		return res.json({ review })
+	} catch (e) {
+		console.error(e)
+		return next(new Error('리뷰작성을 실패했습니다.'))
+	}
+})
+```
+
 #### 1.1.3 [Nullish Coalescing](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Nullish_coalescing_operator)
+When the return value of the collection does not exist, it can be returned with a simple, simple expression. Since the left operand value should contain the false value, nullish coalescing was used without using the OR operator.
+
+---
+
+collection의 반환값이 존재 하지 않을때, 간편하고, 단순한 표현식으로 다른 값을 반환 할 수 있다. 왼쪽 피연산자값은 falsy값은 포함해야하므로 OR연산자를 사용하지 않고 Nullish Coalescing을 사용했다.
+
+
+```javascript
+const updateCollection = async (tag) => {
+	if (!tag) return
+
+	const collection =
+		// Check if collection exists. Otherwise create new one.
+		(await Collection.findOne({ name: tag, type: 'tag' })) ??
+		(await Collection.create({ name: tag, type: 'tag' }))
+
+	/**
+	 * Books having the tag in topTags property.
+	 * @type {Document[]}
+	 */
+	const books = await Book.find({ topTags: tag })
+	collection.contents = books.map((book) => {
+		return { book: book.isbn }
+	})
+	console.log(`${collection.name} 컬렉션이 업데이트 되었습니다.`)
+	await collection.save()
+}
+```
 
 #### 1.1.4 [Async / Await](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Async_await)
 
+```javascript
+const saveBook = async (searchResult) => {
+	const newBook = new Book()
+    
+	for (const [key, value] of Object.entries(searchResult)) {
+		if (key === 'description') {
+			newBook[key] = await getBookDescription(searchResult.link)
+		} else {
+			newBook[key] = value
+		}
+	}
+	return await newBook.save()
+}
+```
+
 #### 1.1.5 [Import (ESModule)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import)
+when we use 'require', we can't selectively load only the pieces we need. But with imports, we can selectively load only the pieces I need. That can save memory.
+
+Loading is synchronous for require. On the other hand, import can be asynchronous. so it can perform better than require.
+
+---
+'require'를 사용했을 때 우리는 선택적으로 우리가 필요한 부분들을 불러올 수 없다. 하지만 'import'를 사용한다면 우리는 선택적으로 우리가 필요한 부분만을 선택할 수있고, memory를 아낄 수 있다.
+
+require은 비동기적으로 작동하지만, import는 동기적으로 작동하므로 수행 능력이 뛰어날 수 있다.
+
+
+```javascript
+import express from 'express'
+import config from './config.js'
+import cors from 'cors'
+import './models/index.js'
+import './controllers/schedule_job.js'
+import router from './routes/index.js'
+import kakaoPassportConfig from "./routes/kakao_passport.js";
+import googlePassportConfig from './routes/google_passport.js'
+import { Server } from 'socket.io'
+import { createServer } from "http";
+import helmet from 'helmet'
+```
 
 ---
 
