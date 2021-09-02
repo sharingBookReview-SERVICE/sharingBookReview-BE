@@ -1,29 +1,93 @@
 # 🌊 DIVER BACKEND 🌊
 
-A Node.js + Express based backend project.
+❓ <b>Business Model</b> - Diver provides collections and reviews of books and users can share them like a social network.
 
-Diver provides collections and reviews of books and users can share them like a social network.
+🌌 <b>Base</b> - A Node.js + Express based backend project.
 
----
-
-다이버는 책 컬렉션과 리뷰를 제공하며 사용자들은 그것들을 소셜네트워크처럼 공유할 수 있습니다. 
-
-🔗 Click [Frontend side](https://github.com/sharingBookReview-SERVICE/sharingBookReview-FE) to go to corresponding React.js
+🔗 <b>Our frontend</b> - Click [Frontend side](https://github.com/sharingBookReview-SERVICE/sharingBookReview-FE) to go to corresponding React.js
 based frontend project.
 
 ---
 
 ## Table of Contents / 목차
 
-1. Architecture · 구조
-2. Contributors · 인원
-3. Core features · 핵심 기능
-4. Goal · 목표
-5. Sample Codes · 코드 예시 
-6. Dependencies · 의존성
-7. Project structure · 프로젝트 구조 
+0. Get Started · 시작하기
+1. Goal · 목표
+2. Architecture · 구조
+3. Dependencies · 의존성
+4. Sample Codes · 샘플 코드
+5. Contributors · 인원
 
-##1. 🥅 Goal / 목표
+# 0. Get Started · 시작하기
+
+## Node
+
+- #### Node installation on Windows
+
+  Just go on [official Node.js website](https://nodejs.org/) and download the installer. Also, be sure to have `git`
+  available in your PATH, `npm` might need it (You can find git [here](https://git-scm.com/)).
+
+- #### Node installation on Ubuntu
+
+  You can install nodejs and npm easily with apt install, just run the following commands.
+
+      $ sudo apt install nodejs
+      $ sudo apt install npm
+
+- #### Other Operating Systems
+  You can find more information about the installation on the [official Node.js website](https://nodejs.org/) and
+  the [official NPM website](https://npmjs.org/).
+
+    ---
+
+    If the installation was successful, you should be able to run the following command.
+
+        $ node --version
+        v8.11.3
+
+        $ npm --version
+        6.1.0
+
+    If you need to update `npm`, you can make it using `npm`! Cool right? After running the following command, just open
+    again the command line and be happy.
+
+        $ npm install npm -g
+
+---
+## Yarn installation
+
+After installing node, this project will need yarn too, so just run the following command.
+
+      $ npm install -g yarn
+
+---
+
+## Install
+
+    $ git clone https://github.com/YOUR_USERNAME/PROJECT_TITLE
+    $ cd PROJECT_TITLE
+    $ yarn install
+
+---
+## Configure app
+
+Open `a/nice/path/to/a.file` then edit it with your settings. You will need:
+
+- A setting;
+- Another setting;
+- One more setting;
+---
+## Running the project
+
+    $ yarn start
+---
+## Simple build for production
+
+    $ yarn build
+
+
+
+# 1. Goal / 목표 🥅
 
 At the beginning of the project, deciding which part to focus and which part to discard &ndash; in terms of the tech
 stack &ndash; was the most difficult task.
@@ -81,18 +145,193 @@ const getBestsellers = async () => {
 ```
 #### 1.1.2 [Optional Chaining (?.)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Optional_chaining)
 
+When saving an image, we used optional chaining to avoid returning errors even if we did not register the picture. It is shorter than using the if statement and can be expressed in a simple expression.
+
+---
+
+이미지 저장 시, 사진을 등록하지 않더라도 오류를 반환하지 않기 위해, optional chaining을 사용했습니다. if문을 사용하는 것 보다 짧고, 단순한 표현식으로 표현 할 수 있습니다.
+
+```javascript
+router.post('/', upload.single('image'), ImageUpload.uploadImage, async (req, res, next) => {
+	const { _id: userId } = res.locals.user
+	const { bookId } = req.params
+	const image = res.locals?.url
+	const { quote, content } = req.body
+	const hashtags = JSON.parse(req.body.hashtags)
+
+	try {
+		// Add document to Review collection
+		let review = await Review.create({
+			quote,
+			content,
+			hashtags,
+			image,
+		})
+        review = await review.populate('book').populate({path: 'user', select:'_id level nickname profileImage' }).execPopulate()
+
+		// Update reviews property of corresponding book document.
+		const book = await Book.findById(bookId)
+		book.reviews.push(review._id)
+		await book.save()
+
+		return res.json({ review })
+	} catch (e) {
+		console.error(e)
+		return next(new Error('리뷰작성을 실패했습니다.'))
+	}
+})
+```
+
 #### 1.1.3 [Nullish Coalescing](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Nullish_coalescing_operator)
+When the return value of the collection does not exist, it can be returned with a simple, simple expression. Since the left operand value should contain the false value, nullish coalescing was used without using the OR operator.
+
+---
+
+collection의 반환값이 존재 하지 않을때, 간편하고, 단순한 표현식으로 다른 값을 반환 할 수 있다. 왼쪽 피연산자값은 falsy값은 포함해야하므로 OR연산자를 사용하지 않고 Nullish Coalescing을 사용했다.
+
+
+```javascript
+const updateCollection = async (tag) => {
+	if (!tag) return
+
+	const collection =
+		// Check if collection exists. Otherwise create new one.
+		(await Collection.findOne({ name: tag, type: 'tag' })) ??
+		(await Collection.create({ name: tag, type: 'tag' }))
+
+	/**
+	 * Books having the tag in topTags property.
+	 * @type {Document[]}
+	 */
+	const books = await Book.find({ topTags: tag })
+	collection.contents = books.map((book) => {
+		return { book: book.isbn }
+	})
+	console.log(`${collection.name} 컬렉션이 업데이트 되었습니다.`)
+	await collection.save()
+}
+```
 
 #### 1.1.4 [Async / Await](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Async_await)
 
+```javascript
+const saveBook = async (searchResult) => {
+	const newBook = new Book()
+    
+	for (const [key, value] of Object.entries(searchResult)) {
+		if (key === 'description') {
+			newBook[key] = await getBookDescription(searchResult.link)
+		} else {
+			newBook[key] = value
+		}
+	}
+	return await newBook.save()
+}
+```
+
 #### 1.1.5 [Import (ESModule)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import)
+when we use 'require', we can't selectively load only the pieces we need. But with imports, we can selectively load only the pieces I need. That can save memory.
+
+Loading is synchronous for require. On the other hand, import can be asynchronous. so it can perform better than require.
+
+---
+'require'를 사용했을 때 우리는 선택적으로 우리가 필요한 부분들을 불러올 수 없다. 하지만 'import'를 사용한다면 우리는 선택적으로 우리가 필요한 부분만을 선택할 수있고, memory를 아낄 수 있다.
+
+require은 비동기적으로 작동하지만, import는 동기적으로 작동하므로 수행 능력이 뛰어날 수 있다.
+
+
+```javascript
+import express from 'express'
+import config from './config.js'
+import cors from 'cors'
+import './models/index.js'
+import './controllers/schedule_job.js'
+import router from './routes/index.js'
+import kakaoPassportConfig from "./routes/kakao_passport.js";
+import googlePassportConfig from './routes/google_passport.js'
+import { Server } from 'socket.io'
+import { createServer } from "http";
+import helmet from 'helmet'
+```
 
 ---
 
 ### 1.2 Version Control 	![Git](https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white)
 
-##2. 🧑‍🤝‍🧑 Contributors 
-## 2️⃣ Dependencies
+[배달의 민족 Git-flow](https://techblog.woowahan.com/2553/)
+
+[Our Git Flow]()
+
+# 2. Architecture 👷
+
+```js
+.
+├── ...
+├── controllers
+|   ├── crawl.js 
+|   ├── get_collection_image.js
+|   ├── get_trending_review.js
+|   ├── image_upload.js
+|   ├── index_top_tags.js
+|   ├── schedule_job.js
+|   ├── searchbooks.js
+|   └── utilities.js
+|
+├── middleware
+|   └── auth_middleware.js
+|          
+├── models
+|   ├── alert.js 
+|   ├── book.js
+|   ├── changes_index.js
+|   ├── collection.js
+|   ├── comment.js
+|   ├── follow.js
+|   ├── index.js
+|   ├── review.js
+|   ├── suggestion.js
+|   ├── trend.js
+|   ├── user.js
+|   └── utilities.js
+| 
+├── models
+|   ├── alert.js 
+|   ├── book.js
+|   ├── changes_index.js
+|   ├── collection.js
+|   ├── comment.js
+|   ├── follow.js
+|   ├── index.js
+|   ├── review.js
+|   ├── suggestion.js
+|   ├── trend.js
+|   ├── user.js
+|   └── utilities.js
+| 
+├── routes
+|   ├── book.js 
+|   ├── collection.js
+|   ├── comments.js
+|   ├── feeds.js
+|   ├── follow.js
+|   ├── google_passport.js
+|   ├── index.js
+|   ├── kakao_passport.js
+|   ├── review.js
+|   ├── search.js
+|   ├── suggestion.js
+|   └── user.js
+| 
+├── app.js
+├── config.js
+├── exp_list.js
+├── s3.js
+├── server.js
+├── socket.js
+├── ...
+```
+
+# 3. Dependencies 🤝
 
 - Node.js@16.6.2
 - aws-sdk@2.975.0
@@ -113,7 +352,7 @@ const getBestsellers = async () => {
 - puppeteer@10.2.0
 - xml2js@0.4.23
 
-## 3. 💡 Sample Codes
+# 4. Sample Codes 💡
 
 ### 1. Routing / API Structuring
 
@@ -180,65 +419,10 @@ router.use('/api/books/:bookId/reviews/:reviewId/comments')
 
 For development, you will only need Node.js and a node global package, Yarn, installed in your environement.
 
-### Node
+# 5. Contributors 🧑‍🤝‍🧑 
 
-- #### Node installation on Windows
-
-  Just go on [official Node.js website](https://nodejs.org/) and download the installer. Also, be sure to have `git`
-  available in your PATH, `npm` might need it (You can find git [here](https://git-scm.com/)).
-
-- #### Node installation on Ubuntu
-
-  You can install nodejs and npm easily with apt install, just run the following commands.
-
-      $ sudo apt install nodejs
-      $ sudo apt install npm
-
-- #### Other Operating Systems
-  You can find more information about the installation on the [official Node.js website](https://nodejs.org/) and
-  the [official NPM website](https://npmjs.org/).
-
-If the installation was successful, you should be able to run the following command.
-
-    $ node --version
-    v8.11.3
-
-    $ npm --version
-    6.1.0
-
-If you need to update `npm`, you can make it using `npm`! Cool right? After running the following command, just open
-again the command line and be happy.
-
-    $ npm install npm -g
-
-###
-
-### Yarn installation
-
-After installing node, this project will need yarn too, so just run the following command.
-
-      $ npm install -g yarn
-
----
-
-## Install
-
-    $ git clone https://github.com/YOUR_USERNAME/PROJECT_TITLE
-    $ cd PROJECT_TITLE
-    $ yarn install
-
-## Configure app
-
-Open `a/nice/path/to/a.file` then edit it with your settings. You will need:
-
-- A setting;
-- Another setting;
-- One more setting;
-
-## Running the project
-
-    $ yarn start
-
-## Simple build for production
-
-    $ yarn build
+<table>
+<!-- 1st Row -->
+<tr>
+<td align="center"><a href="https://github.com/seungbin0508"><img src="https://avatars.githubusercontent.com/u/24871719?v=4" width="100px;" alt=""/><br /><sub><b>김승빈</b></sub></a><br />
+<td align="center"><a href="https://github.com/ohbin-kwon"><img src="https://avatars.githubusercontent.com/u/77604219?v=4" width="100px;" alt=""/><br /><sub><b>권오빈</b></sub></a><br />
