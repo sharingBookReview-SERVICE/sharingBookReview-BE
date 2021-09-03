@@ -285,68 +285,218 @@ import helmet from 'helmet'
 
 # 4. Sample Codes 💡
 
-### 1. Routing / API Structuring
+### 1. Feeds
 
-- All routes are served in a single module to achieve low maintenance effort.
+<table>
+<thead>
+<th>단계</th>
+<th>7일 이내</th>
+<th>팔로우 여부</th>
+<th>인기</th>
+</thead>
+<tr>
+<td>1. Recent unread reviews of following users.</td>
+<td>🟢</td>
+<td>🟢</td>
+<td>❌</td>
+</tr>
+<tr>
+<td>2. Trending reviews (reviews with high trending point, in other words, recent review with lots of likes)</td>
+<td>🟢</td>
+<td>❌</td>
+<td>🟢</td>
+</tr>
+<tr>
+<td>3. All recent unread reviews regardless of following.</td>
+<td>🟢</td>
+<td>❌</td>
+<td>❌</td>
+</tr>
+</table>
 
 ```javascript
-// app.js
+// ./routes/feeds.js
 // ...
-import router from './routes/index.js'
+router.get('/', authMiddleware(false), async (req, res, next) => {
+	/**
+	 * Number of reviews to send per request.
+	 * @type {number}
+	 */
+	const userId = res.locals.user?._id
 
-app.use(router)
+	try {
+		// 0. Declare constants to query.
+
+		const user = await User.findById(userId)
+		/**
+		 * Array of ObjectId of read reviews of user. If user is null (i.e. not logged in) assigned as undefined.
+		 *  @type {ObjectId[]}
+		 */
+		const readReviews = user?.read_reviews.map((element) => element._id)
+		/**
+		 * Query statement for reviews: unread and created within one week
+		 *  @type {Object}
+		 */
+		const query = {
+			_id: { $nin: readReviews },
+			created_at: { $gte: new Date() - 1000 * 60 * 60 * 24 * 7 },
+		}
+
+		// 1. Return recent unread reviews of following users.
+
+		/**
+		 * Array of user IDs that the the user in parameter is following.
+		 * @type {ObjectId[]}
+		 */
+		const followees = (await Follow.find({ sender: userId })).map(
+			(follow) => follow.receiver
+		)
+		/**
+		 * Array of reviews of following users
+		 *  @type {Document[]}
+		 */
+		const followingReviews = await Review.find({
+			...query,
+			user: { $in: [...followees, userId] },
+		})
+			.sort({ created_at: -1 })
+			.limit(SCROLL_SIZE)
+			.populate({ path: 'user', select: '_id profileImage nickname' })
+			.populate({ path: 'book', select: '_id title author' })
+
+            
+    
+
+		// If no documents found with query, continue until next if statement. This keep goes on.
+		if (followingReviews.length){
+            return res.json(await showLikeFollowBookMarkStatus(followingReviews, userId))
+        } 
+
+		// 2. Return trending reviews (reviews with high trending point, in other words, recent review with lots of likes)
+		const trend = await Trend.findOne({}, {}, { sort: { created_at: -1 } })
+		const trendingReviewIdArr = trend.trendingReviews.map(review => review._id)
+		const trendingReviews = await Review.find({
+			_id: { $in: trendingReviewIdArr, $nin: readReviews },
+		})
+			//todo: $sample 넣기
+			.limit(SCROLL_SIZE)
+			.populate({ path: 'user', select: '_id profileImage nickname' })
+			.populate({ path: 'book', select: '_id title author' })
+
+		if (trendingReviews.length) {
+            return res.json(await showLikeFollowBookMarkStatus(trendingReviews, userId))
+        }
+		// 3. Return all recent unread reviews regardless of following.
+
+		const recentReviews = await Review.find(query)
+			.sort({ created_at: -1 })
+			.limit(SCROLL_SIZE)
+			.populate({ path: 'user', select: '_id profileImage nickname' })
+			.populate({ path: 'book', select: '_id title author' })
+
+		if (recentReviews.length){
+            return res.json(await showLikeFollowBookMarkStatus(recentReviews, userId))
+        }
+		// 4. If no reviews are found by all three queries.
+		return res.sendStatus(204)
+
+	} catch (e) {
+		console.error(e)
+		return next(new Error('피드 불러오기를 실패했습니다.'))
+	}
+})
+
 // ...
 ```
 
-```javascript
-// /routes/index.js
-import express from 'express'
-import usersRouter from './users.js'
-import reviewsRouter from './reviews.js'
-// ...
+### 2. Tags
 
-const router = express.Router()
-router.use('/api/users', usersRouter)
-router.use('/api/books/:bookId/reviews', reviewsRouter)
-// ...
+1. Indexing reviews every day
+2. Saving 10 of the most used tags in each book
+3. When writing reviews, expose the top frequency tag to encourage users to use the top frequency tag
+
+
+```js
+/**
+ * Returns set of isbns which changed since last run
+ * @returns {Promise<Set<number>>}
+ */
+const getChangedISBNs = async () => {
+	const changes = await ChangesIndex.find()
+
+	return new Set(changes.map((change) => change.isbn))
+}
+/**
+ * Returns set of tags from given array of books (=isbns).
+ * @param isbnArr {number[]}
+ * @returns {Promise<Set<string>>}
+ */
+const getChangedTags = async (isbnArr) => {
+	const result = new Set()
+
+	/**
+	 *  Books to be updated on their topTags property.
+	 * @type {Document[]}
+	 */
+	const books = await Book.find({
+		_id: {
+			$in: isbnArr,
+		},
+	})
+	.select('reviews')
+	.populate({path:'reviews', select:'hashtags'})
+
+	for (const book of books) {
+		/**
+		 * Array of all tags from hashtags of reviews of book
+		 * @type {string[]}
+		 */
+		const allTags = book.reviews.reduce((acc, review) => {
+			// If hashtags is empty, continue without change
+			if (!review.hashtags) return acc
+			return [...acc, ...review.hashtags]
+		}, [])
+		/**
+		 * Array of unique tags from allTags.
+		 * @type {string[]}
+		 */
+		const uniqueTags = [...new Set(allTags)]
+
+		// Update topTags property of book.
+		book.topTags = uniqueTags
+			.map((tag) => {
+				return {
+					name: tag,
+					occurrence: allTags.filter((_tag) => _tag === tag).length,
+				}
+			})
+			.sort((a, b) => b.occurrence - a.occurrence)
+			.slice(0, 9)
+			.map((tag) => tag.name)
+
+		await book.save()
+		result.add(...book.topTags)
+	}
+
+	return result
+}
+
+const indexTopTags = async () => {
+	try {
+		console.log('indexTopTags 함수가 실행됩니다.')
+		const changedISBNs = await getChangedISBNs()
+		const changedTags = await getChangedTags([...changedISBNs])
+		changedTags.forEach(await updateCollection)
+		await ChangesIndex.deleteMany()
+	} catch (e) {
+		console.error(e)
+	}
+}
+
 ```
 
-- API has highly hierarchical structure to make it REST-ful.
 
-  Of course, there was an idea of shortening URL, however, as no such a route that serves for _'all reviews of all
-  books'_
-  or _'all comments of all reviews'_ exists, we decided to keep the structure.
 
-  Moreover, the former already has a similar route called _'/feeds'_: a route serving recent and unread reviews with few
-  more tweaks.
-
-  Details of feeds router will be further discussed later
-
-```javascript
-// /routes/index.js
-
-// router for comments on reviews
-// ...
-router.use('/api/books/:bookId/reviews/:reviewId/comments')
-// ...
-```
-
-- Reduced duplicate codes by abstraction.
-
-  Both '/api/books/:bookId/reviews/:reviewId/comments' and '/api/collections/:collectionId/comments' routes serve for
-  comments.
-
-  In order to remove redundancy, callbacks for both routes become abstract.
-
-```javascript
-// Previously
-// reviews.js 의 post 첨부하기
-
-```
-
-### 2. Error Handling
-
-## Requirements
 
 For development, you will only need Node.js and a node global package, Yarn, installed in your environement.
 
