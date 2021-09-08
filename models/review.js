@@ -39,11 +39,7 @@ class Review {
             review = review.toJSON()
         }
         const { bookmark_reviews } = await User.findById(userId)
-        if(bookmark_reviews.includes(review._id)){
-            review.bookmark = true
-        }else{
-            review.bookmark = false
-        }
+        review.bookmark = bookmark_reviews.includes(review._id);
         return review
     }
 }
