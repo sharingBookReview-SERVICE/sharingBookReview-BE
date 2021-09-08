@@ -1,6 +1,9 @@
 import { Book, Review, User } from '../models/index.js'
 import searchBooks from '../controllers/searchbooks.js'
 import { saveBook } from '../controllers/utilities.js'
+import mongoose from 'mongoose'
+import user from '../models/user.js'
+const { isValidObjectId } = mongoose
 
 export default class ReviewController {
 	static async apiPostReview(req, res, next) {
@@ -46,7 +49,7 @@ export default class ReviewController {
 		const { bookId } = req.params
 
 		try {
-			const { reviews }  = await Book.findById(bookId)
+			const { reviews } = await Book.findById(bookId)
 				.select('reviews -_id')
 				.populate({
 					path: 'reviews',
@@ -138,6 +141,30 @@ export default class ReviewController {
 		} catch (err) {
 			console.error(err)
 			return next({ message: '리뷰 삭제를 실패했습니다.', status: 500 })
+		}
+	}
+
+	static async bookmarkReview(req, res, next) {
+		const { _id: userId } = res.locals.user
+		const { reviewId } = req.params
+
+		if (!isValidObjectId(reviewId)) return next({ message: '잘못된 리뷰 아이디입니다.', status: 400 })
+
+		try {
+			const user = await User.findById(userId)
+			const { bookmark_reviews } = user
+			let bookmarkStatus = bookmark_reviews.includes(reviewId)
+
+			bookmarkStatus ? bookmark_reviews.pull(reviewId) : bookmark_reviews.push(reviewId)
+			await user.save()
+
+			bookmarkStatus = !bookmarkStatus
+			console.log(bookmarkStatus)
+
+			return res.status(201).json({ status: bookmarkStatus })
+		} catch (err) {
+			console.error(err)
+			return next({ message: '북마크 등록 / 해제를 실패했습니다.', status: 500 })
 		}
 	}
 }
