@@ -17,27 +17,7 @@ router.route('/')
 
 router.route('/:reviewId')
 	.get(ReviewCtrl.apiGetReview)
-
-router.put('/:reviewId', async (req, res, next) => {
-    const userId = res.locals.user._id
-	const { reviewId } = req.params
-	const { quote, content, hashtags } = req.body
-
-	try {
-		const targetReview = await Review.findById(reviewId)
-        if (targetReview == null)return next(new Error('리뷰가 존재하지 않습니다.'))
-        if(String(targetReview.user) !== String(userId)) return next(new Error("본인이 아닙니다."))
-        await targetReview.updateOne({
-			quote,
-			content,
-			hashtags,
-		})
-        const result = await Review.findById(reviewId).populate('book').populate({path:'user', select:'_id level nickname profileImage'})
-		return res.status(202).json({review: result})
-	} catch (e) {
-		return next(new Error('리뷰 수정을 실패했습니다.'))
-	}
-})
+	.put(ReviewCtrl.apiPutReview)
 
 router.delete('/:reviewId', async (req, res, next) => {
     const userId = res.locals.user._id

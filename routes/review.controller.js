@@ -31,7 +31,7 @@ export default class ReviewController {
 
 			await User.getExpAndLevelUp(userId, 'review')
 
-			return res.json({ review: result })
+			return res.status(201).json({ review: result })
 		} catch (err) {
 			console.error(err)
 			return next({ message: '리뷰 작성을 실패했습니다.', status: 500 })
@@ -98,7 +98,7 @@ export default class ReviewController {
 			let review = await Review.findById(reviewId)
 
 			if (!review) return next({ message: '존재하지 않는 리뷰 아이디 입니다.', status: 400 })
-			if (String(review.user) !== String(userId)) return next({ message: '현 사용자와 리뷰 작성자가 일치하지 않습니다.' })
+			if (String(review.user) !== String(userId)) return next({ message: '현 사용자와 리뷰 작성자가 일치하지 않습니다.', status: 403 })
 
 			review = await review.updateOne(req.body, { new: true })
 
