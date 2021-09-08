@@ -46,15 +46,17 @@ export default class ReviewController {
 		const { bookId } = req.params
 
 		try {
-			const { reviews } = await Book.findById(bookId)
-				.select('reviews')
+			const { reviews }  = await Book.findById(bookId)
+				.select('reviews -_id')
 				.populate({
-					path: 'reviews', populate: 'user',
-					options: { sort: { created_at: -1 } },
+					path: 'reviews',
+					populate: {
+						path: 'user',
+						model: 'User',
+						options: { sort: { created_at: -1 } },
+					},
 				})
-
 			const reviewsWithLikesInfo = reviews.map(review => Review.processLikesInfo(review, userId))
-
 			return res.json({ reviews: reviewsWithLikesInfo })
 		} catch (err) {
 			console.error(err)
