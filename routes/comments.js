@@ -27,8 +27,7 @@ router.post('/', async (req, res, next) => {
     try{
         const { commented_users } = review
         
-        const canGetExp = Boolean(commented_users.filter((_id)=>String(_id) === String(userId)).length)
-
+        const canGetExp = commented_users.some((_id) => String(_id) === String(userId))
         if(!canGetExp){
             await User.getExpAndLevelUp(userId, "firstComment")
             commented_users.push(userId)

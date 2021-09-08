@@ -25,11 +25,7 @@ class Review {
 	static processLikesInfo = (review, userId) => {
 		review = review.toJSON()
 
-		review.myLike = Boolean(
-			review.liked_users.filter((_user) => {
-				return String(_user) === String(userId)
-			}).length
-		)
+		review.myLike = review.liked_users.some((_user) => String(_user) === String(userId))
 		delete review.liked_users
 		return review
 	}
