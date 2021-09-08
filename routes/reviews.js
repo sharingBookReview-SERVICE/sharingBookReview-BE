@@ -1,71 +1,17 @@
-import express from 'express'
+import { Router } from 'express'
 import { Book, Review, User } from '../models/index.js'
 import { likeUnlike } from '../models/utilities.js'
-import { saveBook } from '../controllers/utilities.js'
-import searchBooks from '../controllers/searchbooks.js'
 import authMiddleware from '../middleware/auth_middleware.js'
 import multer from 'multer'
 import ImageUpload from '../controllers/image_upload.js'
+import ReviewCtrl from './review.controller.js'
 
-const router = new express.Router({ mergeParams: true })
+const router = new Router({ mergeParams: true })
 const upload = multer({ dest: 'uploads/' })
 
 router.use(authMiddleware(true))
 
-router.post('/', upload.single('image'), ImageUpload.uploadImage, async (req, res, next) => {
-	const { _id: userId } = res.locals.user
-	const { bookId } = req.params
-	let image = res.locals?.url
-	const { quote, content } = req.body
-	const hashtags = JSON.parse(req.body.hashtags)
-    if(!image){
-        image = req.body.imageUrl
-    }
-
-	const book = await Book.findById(bookId)
-
-	if (!book) {
-		// Save new book into db
-		try {
-			const [searchResult] = await searchBooks('isbn', bookId)
-			await saveBook(searchResult)
-		} catch (e) {
-			console.error(e)
-			return next(new Error('책 정보 저장을 실패했습니다.'))
-		}
-	}
-
-	// Process user level and experience.
-	try {
-		await User.getExpAndLevelUp(userId, 'review')
-	} catch (e) {
-		console.error(e)
-		return next(new Error('경험치 등록을 실패했습니다.'))
-	}
-
-	try {
-		// Add document to Review collection
-		let review = await Review.create({
-			quote,
-			content,
-			hashtags,
-			image,
-			book: bookId,
-			user: userId,
-		})
-        review = await review.populate('book').populate({path: 'user', select:'_id level nickname profileImage' }).execPopulate()
-
-		// Update reviews property of corresponding book document.
-		const book = await Book.findById(bookId)
-		book.reviews.push(review._id)
-		await book.save()
-
-		return res.json({ review })
-	} catch (e) {
-		console.error(e)
-		return next(new Error('리뷰작성을 실패했습니다.'))
-	}
-})
+router.post('/', upload.single('image'), ImageUpload.uploadImage, ReviewCtrl.apiPostReview)
 
 router.get('/', async (req, res, next) => {
 	const { bookId } = req.params
