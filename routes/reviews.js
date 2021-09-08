@@ -18,25 +18,7 @@ router.route('/')
 router.route('/:reviewId')
 	.get(ReviewCtrl.apiGetReview)
 	.put(ReviewCtrl.apiPutReview)
-
-router.delete('/:reviewId', async (req, res, next) => {
-    const userId = res.locals.user._id
-	const { reviewId } = req.params
-
-	// By using Document instead of Query (or Model),
-	// pre deleteOne middleware can bind the document as this
-	try {
-		const review = await Review.findById(reviewId)
-        if (review == null)return next(new Error('리뷰가 존재하지 않습니다.'))
-        if(String(review.user) !== String(userId)) return next(new Error("본인이 아닙니다."))
-		await review.deleteOne()
-
-		return res.sendStatus(202)
-	} catch (e) {
-        console.error(e)
-		return next(new Error('리뷰 삭제를 실패했습니다.'))
-	}
-})
+	.delete(ReviewCtrl.apiDeleteReview)
 
 router.put('/:reviewId/likes', await likeUnlike(Review, 'review'))
 

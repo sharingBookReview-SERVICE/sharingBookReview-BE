@@ -108,4 +108,23 @@ export default class ReviewController {
 			return next({ message: '리뷰 수정을 실패했습니다.', status: 500 })
 		}
 	}
+
+	static async apiDeleteReview(req, res, next) {
+		const { _id: userId } = res.locals.user
+		const { reviewId } = req.params
+
+		try {
+			const review = await Review.findById(reviewId)
+
+			if (!review) return next({ message: '존재하지 않는 리뷰 아이디 입니다.', status: 400 })
+			if (String(review.user) !== String(userId)) return next({ message: '현 사용자와 리뷰 작성자가 일치하지 않습니다.', status: 403 })
+
+			await review.deleteOne()
+
+			return res.sendStatus(202)
+		} catch (err) {
+			console.error(err)
+			return next({ message: '리뷰 삭제를 실패했습니다.', status: 500 })
+		}
+	}
 }
