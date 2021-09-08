@@ -13,29 +13,7 @@ router.use(authMiddleware(true))
 
 router.post('/', upload.single('image'), ImageUpload.uploadImage, ReviewCtrl.apiPostReview)
 
-router.get('/', async (req, res, next) => {
-	const { bookId } = req.params
-	const { _id: userId } = res.locals.user
-
-	try {
-		const { reviews } = await Book.findById(bookId)
-			.select('reviews')
-			.populate({
-				path: 'reviews', populate : 'user',
-				options: { sort: { created_at: -1 } },
-			})
-
-		/**
-		 * Add myLike and likes properties and Delete liked_users property.
-		 */
-		const result = reviews.map(review => Review.processLikesInfo(review, userId))
-
-		return res.json({reviews: result})
-	} catch (e) {
-		console.error(e)
-		return next(new Error('리뷰 목록 가져오기를 실패했습니다.'))
-	}
-})
+router.get('/', ReviewCtrl.apiGetReviews)
 
 router.get('/:reviewId', async (req, res, next) => {
 	const { reviewId } = req.params

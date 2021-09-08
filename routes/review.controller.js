@@ -34,7 +34,28 @@ export default class ReviewController {
 			return res.json({ review: result })
 		} catch (err) {
 			console.error(err)
-			return next({message: '리뷰 작성을 실패했습니다.', status: 500})
+			return next({ message: '리뷰 작성을 실패했습니다.', status: 500 })
+		}
+	}
+
+	static async apiGetReviews(req, res, next) {
+		const { _id: userId } = res.locals.user
+		const { bookId } = req.params
+
+		try {
+			const { reviews } = await Book.findById(bookId)
+				.select('reviews')
+				.populate({
+					path: 'reviews', populate: 'user',
+					options: { sort: { created_at: -1 } },
+				})
+
+			const reviewsWithLikesInfo = reviews.map(review => Review.processLikesInfo(review, userId))
+
+			return res.json({ reviews: reviewsWithLikesInfo })
+		} catch (err) {
+			console.error(err)
+			return next({ message: '리뷰 불러오기를 실패했습니다.', status: 500 })
 		}
 	}
 }
