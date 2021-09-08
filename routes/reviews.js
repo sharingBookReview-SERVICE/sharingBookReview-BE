@@ -11,9 +11,9 @@ const upload = multer({ dest: 'uploads/' })
 
 router.use(authMiddleware(true))
 
-router.post('/', upload.single('image'), ImageUpload.uploadImage, ReviewCtrl.apiPostReview)
-
-router.get('/', ReviewCtrl.apiGetReviews)
+router.route('/')
+	.post(upload.single('image'), ImageUpload.uploadImage, ReviewCtrl.apiPostReview)
+	.get(ReviewCtrl.apiGetReviews)
 
 router.get('/:reviewId', async (req, res, next) => {
 	const { reviewId } = req.params
@@ -98,7 +98,7 @@ router.put('/:reviewId/bookmark', authMiddleware(true), async (req, res, next) =
             bookmark_reviews.push(reviewId)
             status = true
         }
-        
+
         await user.save()
 
 		return res.status(202).json({status})
