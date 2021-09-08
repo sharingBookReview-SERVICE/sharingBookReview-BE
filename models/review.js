@@ -25,11 +25,7 @@ class Review {
 	static processLikesInfo = (review, userId) => {
 		review = review.toJSON()
 
-		review.myLike = Boolean(
-			review.liked_users.filter((_user) => {
-				return String(_user) === String(userId)
-			}).length
-		)
+		review.myLike = review.liked_users.some((_user) => String(_user) === String(userId))
 		delete review.liked_users
 		return review
 	}
@@ -43,11 +39,7 @@ class Review {
             review = review.toJSON()
         }
         const { bookmark_reviews } = await User.findById(userId)
-        if(bookmark_reviews.includes(review._id)){
-            review.bookmark = true
-        }else{
-            review.bookmark = false
-        }
+        review.bookmark = bookmark_reviews.includes(review._id);
         return review
     }
 }
