@@ -55,7 +55,37 @@ export default class ReviewController {
 			return res.json({ reviews: reviewsWithLikesInfo })
 		} catch (err) {
 			console.error(err)
-			return next({ message: '리뷰 불러오기를 실패했습니다.', status: 500 })
+			return next({ message: '전체 리뷰 불러오기를 실패했습니다.', status: 500 })
+		}
+	}
+
+	static async apiGetReview(req, res, next) {
+		const { _id: userId } = res.locals.user
+		const { reviewId } = req.params
+
+		try {
+			let review = await Review.findById(reviewId)
+				.populate('book')
+				.populate({
+					path: 'user',
+					select: 'level nickname profileImage'
+				})
+			const { comments } = review
+
+			review = Review.processLikesInfo(review, userId)
+			review = Review.bookmarkInfo(review, userId)
+
+			review.comments = (await Promise.allSettled(comments.map(async (comment) => {
+				const user = await User.findById(comment.user).select('_id level nickname')
+				comment = comment.toJSON()
+				comment.user = user
+				return comment
+			}))).map((p) => p.value)
+
+			return res.json({ review })
+		} catch (err) {
+			console.error(err)
+			return next({ message: '개별 리뷰 불러오기를 실패했습니다.', status: 500})
 		}
 	}
 }

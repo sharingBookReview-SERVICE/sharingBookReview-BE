@@ -15,29 +15,8 @@ router.route('/')
 	.post(upload.single('image'), ImageUpload.uploadImage, ReviewCtrl.apiPostReview)
 	.get(ReviewCtrl.apiGetReviews)
 
-router.get('/:reviewId', async (req, res, next) => {
-	const { reviewId } = req.params
-	const { _id: userId } = res.locals.user
-
-	try {
-		let review = await Review.findById(reviewId).populate('book').populate({path:'user', select:'_id level nickname profileImage'})
-		const { comments } = review
-
-		review = Review.processLikesInfo(review, userId)
-        review = await Review.bookmarkInfo(review, userId)
-
-		review.comments = (await Promise.allSettled(comments.map(async (comment) => {
-			const user = await User.findById(comment.user).select('_id level nickname')
-			comment = comment.toJSON()
-			comment.user = user
-			return comment
-		}))).map((p) => p.value)
-
-		return res.json({ review })
-	} catch (e) {
-		return next(new Error('리뷰 조회를 실패했습니다.'))
-	}
-})
+router.route('/:reviewId')
+	.get(ReviewCtrl.apiGetReview)
 
 router.put('/:reviewId', async (req, res, next) => {
     const userId = res.locals.user._id
