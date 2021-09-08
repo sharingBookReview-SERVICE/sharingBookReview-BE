@@ -20,18 +20,21 @@ export default class ReviewController {
 				await saveBook(searchResult)
 			}
 
-			const review = await Review.create({ quote, content, hashtags, image, book: bookId, user: userId })
+			let review = await Review.create({ quote, content, hashtags, image, book: bookId, user: userId })
 			book.reviews.push(review._id)
 			await book.save()
 
-			const result = await review.populate('book').populate({
+			review = await review.populate('book').populate({
 				path: 'user',
 				select: 'level nickname profileImage',
 			}).execPopulate()
 
 			await User.getExpAndLevelUp(userId, 'review')
 
-			return res.status(201).json({ review: result })
+			review = Review.processLikesInfo(review, userId)
+			review = Review.bookmarkInfo(review, userId)
+
+			return res.status(201).json({ review })
 		} catch (err) {
 			console.error(err)
 			return next({ message: '리뷰 작성을 실패했습니다.', status: 500 })
@@ -98,9 +101,14 @@ export default class ReviewController {
 			let review = await Review.findById(reviewId)
 
 			if (!review) return next({ message: '존재하지 않는 리뷰 아이디 입니다.', status: 400 })
-			if (String(review.user) !== String(userId)) return next({ message: '현 사용자와 리뷰 작성자가 일치하지 않습니다.', status: 403 })
+			if (String(review.user) !== String(userId)) return next({
+				message: '현 사용자와 리뷰 작성자가 일치하지 않습니다.',
+				status: 403,
+			})
 
 			review = await review.updateOne(req.body, { new: true })
+			review = Review.processLikesInfo(review, userId)
+			review = Review.bookmarkInfo(review, userId)
 
 			return res.json({ review })
 		} catch (err) {
@@ -117,7 +125,10 @@ export default class ReviewController {
 			const review = await Review.findById(reviewId)
 
 			if (!review) return next({ message: '존재하지 않는 리뷰 아이디 입니다.', status: 400 })
-			if (String(review.user) !== String(userId)) return next({ message: '현 사용자와 리뷰 작성자가 일치하지 않습니다.', status: 403 })
+			if (String(review.user) !== String(userId)) return next({
+				message: '현 사용자와 리뷰 작성자가 일치하지 않습니다.',
+				status: 403,
+			})
 
 			await review.deleteOne()
 
