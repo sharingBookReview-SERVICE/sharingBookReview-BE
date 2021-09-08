@@ -20,6 +20,7 @@ router.route('/:reviewId')
 	.put(ReviewCtrl.apiPutReview)
 	.delete(ReviewCtrl.apiDeleteReview)
 
+//todo: 하단의 두 라우터도 컨트롤러로 옮기기
 router.put('/:reviewId/likes', await likeUnlike(Review, 'review'))
 
 router.put('/:reviewId/bookmark', authMiddleware(true), async (req, res, next) => {
