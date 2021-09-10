@@ -117,4 +117,28 @@ export default class CollectionController {
 			return next({ message: '컬렉션 수정을 실패했습니다.', status: 500 })
 		}
 	}
+
+	static async apiDeleteCollection(req, res, next) {
+		const { _id: userId } = res.locals.user
+		const { collectionId } = req.params
+
+		if (!isValidObjectId(collectionId)) return next({ message: '유효하지 않은 컬렉션 아이디입니다.', status: 400 })
+
+		try {
+			const collection = await Collection.findById(collectionId)
+
+			if (!collection) return next({ message: '존재하지 않는 컬렉션 아이디입니다.', status: 400 })
+			if (String(collection.user) !== String(userId)) return next({
+				message: '현 사용자와 컬렉션 작성자가 일치하지 않습니다.',
+				status: 403,
+			})
+
+			await collection.delete()
+
+			return res.sendStatus(204)
+		} catch (err) {
+			console.error(err)
+			return next({ message: '컬렉션 삭제를 실패했습니다.', status: 500 })
+		}
+	}
 }

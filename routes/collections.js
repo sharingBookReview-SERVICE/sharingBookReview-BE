@@ -32,32 +32,7 @@ router.post('/', upload.single('image'), ImageUpload.uploadImage, CollectionCtrl
 router.route('/:collectionId')
 	.get(CollectionCtrl.apiGetCollection)
 	.put(CollectionCtrl.apiPutCollection)
-
-/**
- * Delete a collection by ID
- */
-router.delete('/:collectionId', async (req, res, next) => {
-	const { collectionId } = req.params
-	const { _id: userId } = res.locals.user
-
-	try {
-		//todo put 과 묶어서 함수로 빼기
-		const collection = await Collection.findById(collectionId)
-
-		if (!collection)
-			return next(new Error('존재하지 않는 컬렉션 아이디입니다.'))
-
-		if (String(collection.user) !== String(userId))
-			return next(new Error('로그인된 사용자가 컬렉션 작성자가 아닙니다.'))
-
-		await collection.delete()
-
-		return res.sendStatus(204)
-	} catch (e) {
-		console.error(e)
-		return next(new Error('컬렉션 삭제를 실패했습니다.'))
-	}
-})
+	.delete(CollectionCtrl.apiDeleteCollection)
 
 /**
  * todo 컬렉션 댓글 기능
