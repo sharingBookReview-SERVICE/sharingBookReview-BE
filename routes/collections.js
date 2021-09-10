@@ -27,38 +27,7 @@ router.use(authMiddleware(true))
 /**
  * Create a collection
  */
-router.post('/', upload.single('image'), ImageUpload.uploadImage, async (req, res, next) => {
-	const { _id: userId } = res.locals.user
-    const image = res.locals?.url
-    const { name, description } = req.body
-    const contents = JSON.parse(req.body.contents)
-
-    try{
-        await User.getExpAndLevelUp(userId, "collection")
-    }catch (e) {
-        return next(new Error('경험치 등록을 실패했습니다.'))
-    }
-
-    try{
-        contents.map(async (content) => {
-            if(!await Book.findById(content.book)){
-                const [searchResult] = await searchBooks('isbn', content.book)
-                await saveBook(searchResult)
-            }
-        })
-    }catch(e){
-        return next(new Error('책 정보 저장을 실패했습니다.'))
-    }
-
-	try {
-		const collection = await Collection.create({ image, name, description, contents, type: 'custom', user: userId })
-
-		return res.status(201).json({collection})
-	} catch (e) {
-		console.error(e)
-		return next(new Error('컬렉션 작성을 실패했습니다.'))
-	}
-})
+router.post('/', upload.single('image'), ImageUpload.uploadImage, CollectionCtrl.apiPostCollection)
 
 /**
  * Get a collection by collection ID
