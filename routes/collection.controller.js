@@ -65,6 +65,8 @@ export default class CollectionController {
 	static async apiGetCollection(req, res, next) {
 		const { collectionId } = req.params
 
+		if (!isValidObjectId(collectionId)) return next({ message: '유효하지 않은 컬렉션 아이디입니다.', status: 400 })
+
 		try {
 			const collection = await Collection.findById(collectionId)
 				.populate({
