@@ -6,7 +6,7 @@ import ImageUpload from '../controllers/image_upload.js'
 import { validateId, saveBook } from '../controllers/utilities.js'
 import { likeUnlike } from '../models/utilities.js'
 import searchBooks from '../controllers/searchbooks.js'
-import CollectionCtrl  from './collection.controller.js'
+import CollectionCtrl from './collection.controller.js'
 
 const router = new express.Router()
 const upload = multer({
@@ -29,41 +29,9 @@ router.use(authMiddleware(true))
  */
 router.post('/', upload.single('image'), ImageUpload.uploadImage, CollectionCtrl.apiPostCollection)
 
-/**
- * Get a collection by collection ID
- */
-router.route('/:collectionId').get(CollectionCtrl.apiGetCollection)
-
-/**
- * Update a collection with req.body by ID
- */
-router.put('/:collectionId', async (req, res, next) => {
-	const { collectionId } = req.params
-	const { _id: userId } = res.locals.user
-    const { contents } = req.body
-
-	try {
-		const collection = await Collection.findByIdAndUpdate(collectionId, req.body, {runValidator: true, new: true})
-
-		if (!collection)
-			return next(new Error('존재하지 않는 컬렉션 아이디입니다.'))
-        
-		if (String(collection.user) !== String(userId))
-			return next(new Error('로그인된 사용자가 컬렉션 작성자가 아닙니다.'))
-        
-        contents.map(async (content) => {
-			if (!(await Book.findById(content.book))) {
-				const [searchResult] = await searchBooks('isbn', content.book)
-				await saveBook(searchResult)
-			}
-		})
-
-		return res.status(201).json({ collection })
-	} catch (e) {
-		console.error(e)
-		return next(new Error('컬렉션 수정을 실패했습니다.'))
-	}
-})
+router.route('/:collectionId')
+	.get(CollectionCtrl.apiGetCollection)
+	.put(CollectionCtrl.apiPutCollection)
 
 /**
  * Delete a collection by ID

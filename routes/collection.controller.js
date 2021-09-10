@@ -1,6 +1,9 @@
-import { Collection, User } from '../models/index.js'
+import { Book, Collection, User } from '../models/index.js'
 import searchBooks from '../controllers/searchbooks.js'
 import { saveBook } from '../controllers/utilities.js'
+import mongoose  from 'mongoose'
+
+const { isValidObjectId } = mongoose
 
 export default class CollectionController {
 	static async apiGetCollections(req, res, next) {
@@ -77,6 +80,39 @@ export default class CollectionController {
 		} catch (err) {
 			console.error(err)
 			return next({ message: '개별 컬렉션 불러기를 실패했습니다.', status: 500 })
+		}
+	}
+
+	static async apiPutCollection(req, res, next) {
+		const { _id: userId } = res.locals.user
+		const { collectionId } = req.params
+		const { contents } = req.body
+
+		if (!isValidObjectId(collectionId)) return next({ message: '유효하지 않은 컬렉션 아이디입니다.', status: 400 })
+
+		try {
+			const collection = await Collection.findByIdAndUpdate(collectionId, req.body, {
+				runValidators: true,
+				new: true,
+			})
+
+			if (!collection) return next({ message: '존재하지 않는 컬렉션 아이디입니다.', status: 400 })
+			if (String(collection.user) !== String(userId)) return next({
+				message: '현 사용자와 컬렉션 작성자가 일치하지 않습니다.',
+				status: 403,
+			})
+
+			contents.map(async (content) => {
+				if (!await Book.findById(content.book)) {
+					const [searchResult] = await searchBooks('isbn', content.book)
+					await saveBook(searchResult)
+				}
+			})
+
+			return res.status(201).json({ collection })
+		} catch (err) {
+			console.error(err)
+			return next({ message: '컬렉션 수정을 실패했습니다.', status: 500 })
 		}
 	}
 }
