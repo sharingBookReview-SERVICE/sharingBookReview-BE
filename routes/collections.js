@@ -6,6 +6,7 @@ import ImageUpload from '../controllers/image_upload.js'
 import { validateId, saveBook } from '../controllers/utilities.js'
 import { likeUnlike } from '../models/utilities.js'
 import searchBooks from '../controllers/searchbooks.js'
+import CollectionCtrl  from './collection.controller.js'
 
 const router = new express.Router()
 const upload = multer({
@@ -17,17 +18,7 @@ const upload = multer({
 /**
  * Get all collections
  */
-router.get('/', authMiddleware(false), async (req, res, next) => {
-	try {
-		// query = { name, type }
-		const collections = await Collection.find(req.query).populate('contents.book', '-reviews').sort('-created_at')
-
-		return res.json({ collections })
-	} catch (e) {
-		console.error(e)
-		return next(new Error('콜렉션 불러오기를 실패했습니다.'))
-	}
-})
+router.get('/', authMiddleware(false), CollectionCtrl.apiGetCollections)
 
 // Login compulsory
 
