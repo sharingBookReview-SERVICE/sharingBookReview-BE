@@ -32,17 +32,7 @@ router.post('/', upload.single('image'), ImageUpload.uploadImage, CollectionCtrl
 /**
  * Get a collection by collection ID
  */
-router.get('/:collectionId', async (req, res, next) => {
-	const { collectionId } = req.params
-	try {
-		const collection = await Collection.findById(collectionId).populate('contents.book', '-reviews').populate('user', 'nickname level followingCount followerCount')
-
-		return res.json({ collection })
-	} catch (e) {
-		console.error(e)
-		return next(new Error('컬렉션 내용 불러오기를 실패했습니다.'))
-	}
-})
+router.route('/:collectionId').get(CollectionCtrl.apiGetCollection)
 
 /**
  * Update a collection with req.body by ID
