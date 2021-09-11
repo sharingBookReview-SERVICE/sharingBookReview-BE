@@ -176,6 +176,24 @@ export default class CollectionController {
 		}
 	}
 
+	static async apiDeleteComment(req, res, next) {
+		const { _id: userId } = res.locals.user
+
+		try {
+			const { collectionId, commentId } = CollectionController.#getIds(req)
+			const collection = await Collection.findById(collectionId)
+
+			await collection.comments.pull(commentId)
+			await collection.save()
+
+			return res.sendStatus(204)
+		} catch (err) {
+			console.error(err)
+			if (err.status) return next(err)
+			return next({ message: '컬렉션 댓글 삭제를 실패했습니다.', status: 500 })
+		}
+	}
+
 	/**
 	 *
 	 * @param req
