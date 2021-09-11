@@ -13,18 +13,12 @@ const upload = multer({
 
 // Login optional
 
-/**
- * Get all collections
- */
 router.get('/', authMiddleware(false), CollectionCtrl.apiGetCollections)
 
 // Login compulsory
 
 router.use(authMiddleware(true))
 
-/**
- * Create a collection
- */
 router.post('/', upload.single('image'), ImageUpload.uploadImage, CollectionCtrl.apiPostCollection)
 
 router.route('/:collectionId')
