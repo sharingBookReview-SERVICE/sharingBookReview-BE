@@ -2,10 +2,11 @@ import { Book, Collection, Comment, User } from '../models/index.js'
 import searchBooks from '../controllers/searchbooks.js'
 import { saveBook } from '../controllers/utilities.js'
 import mongoose from 'mongoose'
+import SuperController from './super.controller.js'
 
 const { isValidObjectId } = mongoose
 
-export default class CollectionController {
+export default class CollectionController extends SuperController {
 	static async apiGetCollections(req, res, next) {
 		try {
 			const collections = await Collection
@@ -22,7 +23,6 @@ export default class CollectionController {
 			return next({ message: '컬렉션 불러오기를 실패했습니다.', status: 500 })
 		}
 	}
-
 	static async apiPostCollection(req, res, next) {
 		const { _id: userId } = res.locals.user
 		const { name, description } = req.body
@@ -60,10 +60,9 @@ export default class CollectionController {
 			return next({ message: '컬렉션 작성을 실패했습니다.', status: 500 })
 		}
 	}
-
 	static async apiGetCollection(req, res, next) {
 		try {
-			const { collectionId } = CollectionController.#getIds(req)
+			const { collectionId } = CollectionController._getIds(req)
 			const collection = await Collection.findById(collectionId)
 				.populate({
 					path: 'contents.book',
@@ -81,20 +80,19 @@ export default class CollectionController {
 			return next({ message: '개별 컬렉션 불러기를 실패했습니다.', status: 500 })
 		}
 	}
-
 	static async apiPutCollection(req, res, next) {
 		const { _id: userId } = res.locals.user
 		const { contents } = req.body
 
 		try {
-			const { collectionId } = CollectionController.#getIds(req)
+			const { collectionId } = CollectionController._getIds(req)
 			const collection = await Collection.findByIdAndUpdate(collectionId, req.body, {
 				runValidators: true,
 				new: true,
 			})
 
 			if (!collection) return next({ message: '존재하지 않는 컬렉션 아이디입니다.', status: 400 })
-			CollectionController.#validateAuthor(collection.user, userId)
+			CollectionController._validateAuthor(collection.user, userId)
 
 			contents.map(async (content) => {
 				if (!await Book.findById(content.book)) {
@@ -110,16 +108,15 @@ export default class CollectionController {
 			return next({ message: '컬렉션 수정을 실패했습니다.', status: 500 })
 		}
 	}
-
 	static async apiDeleteCollection(req, res, next) {
 		const { _id: userId } = res.locals.user
 
 		try {
-			const { collectionId } = CollectionController.#getIds(req)
+			const { collectionId } = CollectionController._getIds(req)
 			const collection = await Collection.findById(collectionId)
 
 			if (!collection) return next({ message: '존재하지 않는 컬렉션 아이디입니다.', status: 400 })
-			CollectionController.#validateAuthor(collection.user, userId)
+			CollectionController._validateAuthor(collection.user, userId)
 
 			await collection.delete()
 
@@ -130,13 +127,12 @@ export default class CollectionController {
 			return next({ message: '컬렉션 삭제를 실패했습니다.', status: 500 })
 		}
 	}
-
 	static async apiPostComment(req, res, next) {
 		const { _id: userId } = res.locals.user
 		const { content } = req.body
 
 		try {
-			const { collectionId } = CollectionController.#getIds(req)
+			const { collectionId } = CollectionController._getIds(req)
 			const collection = await Collection.findById(collectionId)
 			const comment = new Comment({ content, user: userId })
 
@@ -152,17 +148,16 @@ export default class CollectionController {
 			return next({ message: '컬렉션 댓글 작성을 실패했습니다.', status: 500 })
 		}
 	}
-
 	static async apiPatchComment(req, res, next) {
 		const { _id: userId } = res.locals.user
 		const { content } = req.body
 
 		try {
-			const { collectionId, commentId } = CollectionController.#getIds(req)
+			const { collectionId, commentId } = CollectionController._getIds(req)
 			const collection = await Collection.findById(collectionId)
 			const comment = collection.comments.id(commentId)
 
-			CollectionController.#validateAuthor(comment.user, userId)
+			CollectionController._validateAuthor(comment.user, userId)
 
 			comment.content = content
 			await collection.save()
@@ -174,12 +169,11 @@ export default class CollectionController {
 			return next({ message: '컬렉션 댓글 수정을 실패했습니다.', status: 500 })
 		}
 	}
-
 	static async apiDeleteComment(req, res, next) {
 		const { _id: userId } = res.locals.user
 
 		try {
-			const { collectionId, commentId } = CollectionController.#getIds(req)
+			const { collectionId, commentId } = CollectionController._getIds(req)
 			const collection = await Collection.findById(collectionId)
 
 			await collection.comments.pull(commentId)
@@ -191,23 +185,5 @@ export default class CollectionController {
 			if (err.status) return next(err)
 			return next({ message: '컬렉션 댓글 삭제를 실패했습니다.', status: 500 })
 		}
-	}
-
-	/**
-	 *
-	 * @param req
-	 * @returns {{commentId, collectionId}}
-	 */
-	static #getIds(req) {
-		const { collectionId, commentId } = req.params
-
-		if (!isValidObjectId(collectionId)) throw { message: '유효하지 않은 컬렉션 아이디입니다.', status: 400 }
-		if (commentId && !isValidObjectId(commentId)) throw { message: '유효하지 않은 댓글 아이디입니다.', status: 400 }
-
-		return { collectionId, commentId }
-	}
-
-	static #validateAuthor(author, currentUserId) {
-		if (String(author) !== String(currentUserId)) throw{ message: '현 사용자와 댓글 작성자가 일치하지 않습니다.', status: 403 }
 	}
 }
