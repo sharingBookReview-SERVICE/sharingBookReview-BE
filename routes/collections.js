@@ -37,26 +37,8 @@ router.route('/:collectionId')
 
 router.post('/:collectionId/comments', CollectionCtrl.apiPostComment)
 
-
-router.patch('/:collectionId/comments/:commentId', async (req, res, next) => {
-	const { _id: userId } = res.locals.user
-	const { collectionId, commentId } = req.params
-	const { content } = req.body
-
-	try {
-		const collection = await validateId(Collection, collectionId)
-
-		const comment = new Comment({ content, user: usrId })
-
-		collection.comments.id(commentId).content = content
-		await collection.save()
-
-		return res.json({ comment })
-	} catch (e) {
-		console.error(e)
-		return next(new Error('댓글 수정을 실패했습니다.'))
-	}
-})
+router.route('/:collectionId/comments/:commentId')
+	.patch(CollectionCtrl.apiPatchComment)
 
 router.delete('/:collectionId/comments/:commentId', async (req, res, next) => {
 	const { _id: userId } = res.locals.user
