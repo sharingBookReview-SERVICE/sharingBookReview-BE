@@ -189,4 +189,18 @@ export default class CollectionController {
 			return next({ message: '컬렉션 댓글 수정을 실패했습니다', status: 500 })
 		}
 	}
+
+	/**
+	 *
+	 * @param req
+	 * @returns {{commentId, collectionId}}
+	 */
+	static #getIds(req) {
+		const { collectionId, commentId } = req.params
+
+		if (!isValidObjectId(collectionId)) throw { message: '유효하지 않은 컬렉션 아이디입니다.', status: 400 }
+		if (commentId && !isValidObjectId(commentId)) throw { message: '유효하지 않은 댓글 아이디입니다.', status: 400 }
+
+		return { collectionId, commentId }
+	}
 }
