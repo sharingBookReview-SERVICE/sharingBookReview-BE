@@ -95,10 +95,7 @@ export default class CollectionController {
 			})
 
 			if (!collection) return next({ message: '존재하지 않는 컬렉션 아이디입니다.', status: 400 })
-			if (String(collection.user) !== String(userId)) return next({
-				message: '현 사용자와 컬렉션 작성자가 일치하지 않습니다.',
-				status: 403,
-			})
+			CollectionController.#validateAuthor(collection.user, userId)
 
 			contents.map(async (content) => {
 				if (!await Book.findById(content.book)) {
@@ -123,10 +120,7 @@ export default class CollectionController {
 			const collection = await Collection.findById(collectionId)
 
 			if (!collection) return next({ message: '존재하지 않는 컬렉션 아이디입니다.', status: 400 })
-			if (String(collection.user) !== String(userId)) return next({
-				message: '현 사용자와 컬렉션 작성자가 일치하지 않습니다.',
-				status: 403,
-			})
+			CollectionController.#validateAuthor(collection.user, userId)
 
 			await collection.delete()
 
@@ -169,7 +163,7 @@ export default class CollectionController {
 			const collection = await Collection.findById(collectionId)
 			const comment = collection.comments.id(commentId)
 
-			if (String(comment.user) !== String(userId)) return next({ message: '현 사용자와 댓글 작성자가 일치하지 않습니다.' })
+			CollectionController.#validateAuthor(comment.user, userId)
 
 			comment.content = content
 			await collection.save()
@@ -194,5 +188,9 @@ export default class CollectionController {
 		if (commentId && !isValidObjectId(commentId)) throw { message: '유효하지 않은 댓글 아이디입니다.', status: 400 }
 
 		return { collectionId, commentId }
+	}
+
+	static #validateAuthor(author, currentUserId) {
+		if (String(author) !== String(currentUserId)) throw{ message: '현 사용자와 댓글 작성자가 일치하지 않습니다.', status: 403 }
 	}
 }
