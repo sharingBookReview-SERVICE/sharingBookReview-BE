@@ -10,13 +10,15 @@ export default class SuperController {
 	 * @protected
 	 */
 	static _getIds(req) {
-		const { reviewId, collectionId, commentId } = req.params
+		const { bookId, reviewId, collectionId, commentId } = req.params
 
-		if (reviewId && !isValidObjectId(reviewId))
-			if (collectionId && !isValidObjectId(collectionId)) throw { message: '유효하지 않은 컬렉션 아이디입니다.', status: 400 }
+		// ISBN is 10 digits in U.S. and 13 elsewhere.
+		if (bookId && (bookId.length === 10 || bookId.length === 13)) throw { message: '유효하지 않은 ISBN 입니다. (ISBN 은 10자리 혹은 13자리여야합니다.)', status : 400 }
+		if (reviewId && !isValidObjectId(reviewId)) throw { message: '유효하지 않은 리뷰 아이디입니다.', status: 400 }
+		if (collectionId && !isValidObjectId(collectionId)) throw { message: '유효하지 않은 컬렉션 아이디입니다.', status: 400 }
 		if (commentId && !isValidObjectId(commentId)) throw { message: '유효하지 않은 댓글 아이디입니다.', status: 400 }
 
-		return { reviewId, collectionId, commentId }
+		return { bookId, reviewId, collectionId, commentId }
 	}
 
 	/**
