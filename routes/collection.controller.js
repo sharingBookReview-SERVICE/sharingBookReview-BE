@@ -175,6 +175,9 @@ export default class CollectionController extends SuperController {
 		try {
 			const { collectionId, commentId } = CollectionController._getIds(req)
 			const collection = await Collection.findById(collectionId)
+			const comment = collection.comments.id(commentId)
+
+			CollectionController._validateAuthor(comment.user, userId)
 
 			await collection.comments.pull(commentId)
 			await collection.save()
