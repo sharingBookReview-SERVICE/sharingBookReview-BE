@@ -24,7 +24,6 @@ export default class CollectionController {
 	}
 
 	static async apiPostCollection(req, res, next) {
-
 		const { _id: userId } = res.locals.user
 		const { name, description } = req.body
 		const contents = JSON.parse(req.body.contents)
@@ -172,7 +171,7 @@ export default class CollectionController {
 		} catch (err) {
 			console.error(err)
 			if (err.status) return next(err)
-			return next({ message: '컬렉션 댓글 수정을 실패했습니다', status: 500 })
+			return next({ message: '컬렉션 댓글 수정을 실패했습니다.', status: 500 })
 		}
 	}
 
