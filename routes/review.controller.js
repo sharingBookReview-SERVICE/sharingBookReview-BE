@@ -1,14 +1,12 @@
 import { Book, Review, User } from '../models/index.js'
 import searchBooks from '../controllers/searchbooks.js'
 import { saveBook } from '../controllers/utilities.js'
-import mongoose from 'mongoose'
 import user from '../models/user.js'
-const { isValidObjectId } = mongoose
+import SuperController from './super.controller.js'
 
-export default class ReviewController {
+export default class ReviewController extends SuperController {
 	static async apiPostReview(req, res, next) {
 		const { _id: userId } = res.locals.user
-		const { bookId } = req.params
 		const { quote, content } = req.body
 		const hashtags = JSON.parse(req.body.hashtags)
 		// res.locals.url: user input image
@@ -16,6 +14,7 @@ export default class ReviewController {
 		const image = res.locals?.url ?? req.body.imageUrl
 
 		try {
+			const { bookId } = ReviewController._getIds(req)
 			const book = await Book.findById(bookId)
 
 			if (!book) {
@@ -40,15 +39,16 @@ export default class ReviewController {
 			return res.status(201).json({ review })
 		} catch (err) {
 			console.error(err)
+			if (err.status) return next(err)
 			return next({ message: '리뷰 작성을 실패했습니다.', status: 500 })
 		}
 	}
 
 	static async apiGetReviews(req, res, next) {
 		const { _id: userId } = res.locals.user
-		const { bookId } = req.params
 
 		try {
+			const { bookId } = ReviewController._getIds(req)
 			const { reviews } = await Book.findById(bookId)
 				.select('reviews -_id')
 				.populate({
@@ -63,15 +63,16 @@ export default class ReviewController {
 			return res.json({ reviews: reviewsWithLikesInfo })
 		} catch (err) {
 			console.error(err)
+			if (err.status) return next(err)
 			return next({ message: '전체 리뷰 불러오기를 실패했습니다.', status: 500 })
 		}
 	}
 
 	static async apiGetReview(req, res, next) {
 		const { _id: userId } = res.locals.user
-		const { reviewId } = req.params
 
 		try {
+			const { reviewId } = ReviewController._getIds(req)
 			let review = await Review.findById(reviewId)
 				.populate('book')
 				.populate({
@@ -93,23 +94,21 @@ export default class ReviewController {
 			return res.json({ review })
 		} catch (err) {
 			console.error(err)
+			if (err.status) return next(err)
 			return next({ message: '개별 리뷰 불러오기를 실패했습니다.', status: 500 })
 		}
 	}
 
 	static async apiPutReview(req, res, next) {
 		const { _id: userId } = res.locals.user
-		const { reviewId } = req.params
 		const { quote, content, hashtags } = req.body
 
 		try {
+			const { reviewId } = ReviewController._getIds(req)
 			let review = await Review.findById(reviewId)
 
 			if (!review) return next({ message: '존재하지 않는 리뷰 아이디 입니다.', status: 400 })
-			if (String(review.user) !== String(userId)) return next({
-				message: '현 사용자와 리뷰 작성자가 일치하지 않습니다.',
-				status: 403,
-			})
+			ReviewController._validateAuthor(review.user, userId)
 
 			review = await review.updateOne(req.body, { new: true })
 			review = Review.processLikesInfo(review, userId)
@@ -124,33 +123,29 @@ export default class ReviewController {
 
 	static async apiDeleteReview(req, res, next) {
 		const { _id: userId } = res.locals.user
-		const { reviewId } = req.params
 
 		try {
+			const { reviewId } = ReviewController._getIds(req)
 			const review = await Review.findById(reviewId)
 
 			if (!review) return next({ message: '존재하지 않는 리뷰 아이디 입니다.', status: 400 })
-			if (String(review.user) !== String(userId)) return next({
-				message: '현 사용자와 리뷰 작성자가 일치하지 않습니다.',
-				status: 403,
-			})
+			ReviewController._validateAuthor(review.user, userId)
 
 			await review.deleteOne()
 
 			return res.sendStatus(202)
 		} catch (err) {
 			console.error(err)
+			if (err.status) next(err)
 			return next({ message: '리뷰 삭제를 실패했습니다.', status: 500 })
 		}
 	}
 
 	static async bookmarkReview(req, res, next) {
 		const { _id: userId } = res.locals.user
-		const { reviewId } = req.params
-
-		if (!isValidObjectId(reviewId)) return next({ message: '잘못된 리뷰 아이디입니다.', status: 400 })
 
 		try {
+			const { reviewId } = ReviewController._getIds(req)
 			const user = await User.findById(userId)
 			const { bookmark_reviews } = user
 			let bookmarkStatus = bookmark_reviews.includes(reviewId)
@@ -164,6 +159,7 @@ export default class ReviewController {
 			return res.status(201).json({ status: bookmarkStatus })
 		} catch (err) {
 			console.error(err)
+			if (err.status) return next(err)
 			return next({ message: '북마크 등록 / 해제를 실패했습니다.', status: 500 })
 		}
 	}
