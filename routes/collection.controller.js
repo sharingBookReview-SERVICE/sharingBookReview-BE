@@ -1,7 +1,7 @@
-import { Book, Collection, User } from '../models/index.js'
+import { Book, Collection, Comment, User } from '../models/index.js'
 import searchBooks from '../controllers/searchbooks.js'
 import { saveBook } from '../controllers/utilities.js'
-import mongoose  from 'mongoose'
+import mongoose from 'mongoose'
 
 const { isValidObjectId } = mongoose
 
@@ -139,6 +139,30 @@ export default class CollectionController {
 		} catch (err) {
 			console.error(err)
 			return next({ message: '컬렉션 삭제를 실패했습니다.', status: 500 })
+		}
+	}
+
+	static async apiPostComment(req, res, next) {
+		const { _id: userId } = res.locals.user
+		const { collectionId } = req.params
+		const { content } = req.body
+
+		if (!isValidObjectId(collectionId)) return next({ message: '유효하지 않은 컬렉션 아이디입니다.', status: 400 })
+		if (!content.length) return next({ message: '댓글 내용이 존재하지 않습니다.', status: 400 })
+
+		try {
+			const collection = await Collection.findById(collectionId)
+			const comment = new Comment({ content, user: userId })
+
+			collection.comments.push(comment)
+			await collection.save()
+
+			await User.getExpAndLevelUp(userId, 'comment')
+
+			return res.status(201).json({ collection })
+		} catch (err) {
+			console.error(err)
+			return next({ message: '컬렉션 댓글 작성을 실패했습니다.', status: 500 })
 		}
 	}
 }

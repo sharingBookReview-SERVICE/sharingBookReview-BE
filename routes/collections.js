@@ -34,31 +34,9 @@ router.route('/:collectionId')
 	.put(CollectionCtrl.apiPutCollection)
 	.delete(CollectionCtrl.apiDeleteCollection)
 
-/**
- * todo 컬렉션 댓글 기능
- * 미완성
- */
-router.post('/:collectionId/comments', async (req, res, next) => {
-	const { _id: userId } = res.locals.user
-	const { collectionId } = req.params
-	const { content } = req.body
 
-	try {
-		const collection = await validateId(Collection, collectionId)
+router.post('/:collectionId/comments', CollectionCtrl.apiPostComment)
 
-		const comment = new Comment({ content, user: userId })
-
-		collection.comments.push(comment)
-		await collection.save()
-
-		// todo 경험치 계산 추가하고 canGetExp 자체를 static method 로 분리시키기
-
-		return res.status(201).json({ comment })
-	} catch (e) {
-		console.error(e)
-		return next(new Error('댓글 작성을 실패했습니다.'))
-	}
-})
 
 router.patch('/:collectionId/comments/:commentId', async (req, res, next) => {
 	const { _id: userId } = res.locals.user
