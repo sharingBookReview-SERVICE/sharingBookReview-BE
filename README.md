@@ -17,6 +17,7 @@ based frontend project.
 4. Sample Codes · 샘플 코드
 5. Contributors · 인원
 
+---
 
 # 1. Goal / 목표 🥅
 
@@ -42,9 +43,13 @@ on.
 
 Not only using basics of ES6 superficially, we tried to implement syntactic sugars of recent versions of ECMAScript.
 
+Here are some codes that went through refactoring to apply ES6+
+
 ---
 
 ES6+ 의 기본뿐만 아니라 최신 버전 ECMAScript 의 문법적 설탕을 적용하기 위해서 노력했습니다.
+
+아래는 ES6+ 적용을 하여 리팩토링을 진행한 코드입니다.
 
 ---
 
@@ -57,7 +62,7 @@ Because we can query on anytime later, being rejected on some requests was not a
 
 크롤링 시 시간 소요를 줄이기 위해 **Promise.allSettled()** 를 사용하였습니다.
 
-나중에라도 다시 받아오면 되기 때문에 몇개 실패한다고 하더라도 큰 문제가 아니었기 때문입니다. 크롤링 대상의 예기치 못한 광고 때문이었습니다.
+나중에라도 다시 받아오면 되기 때문에 몇개 실패한다고 하더라도 큰 문제가 아니었기 때문입니다. 실패는 대상 페이지에 삽입된 예기치 못한 광고 때문이었습니다.
 
 ```javascript
 // ./controllers/crawl.js
@@ -76,116 +81,136 @@ const getBestsellers = async () => {
 ```
 #### 1.1.2 [Optional Chaining (?.)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Optional_chaining)
 
-When saving an image, we used optional chaining to avoid returning errors even if we did not register the picture. It is shorter than using the if statement and can be expressed in a simple expression.
+Optional Chaining was powerful and simple operator to process optional parameters. It created more readable code than `if` statement.
 
 ---
 
-이미지 저장 시, 사진을 등록하지 않더라도 오류를 반환하지 않기 위해, optional chaining을 사용했습니다. if문을 사용하는 것 보다 짧고, 단순한 표현식으로 표현 할 수 있습니다.
-
+옵셔널 체이닝은 선택적인 매개변수를 처리하기에 강력하고 간결한 연산자입니다.`if`문에 비해 더 읽기 좋은 코드가 되었습니다.  
 ```javascript
-router.post('/', upload.single('image'), ImageUpload.uploadImage, async (req, res, next) => {
-	const { _id: userId } = res.locals.user
-	const { bookId } = req.params
-	const image = res.locals?.url
-	const { quote, content } = req.body
-	const hashtags = JSON.parse(req.body.hashtags)
+// Saving a review with / without an image.
 
-	try {
-		// Add document to Review collection
-		let review = await Review.create({
-			quote,
-			content,
-			hashtags,
-			image,
-		})
-        review = await review.populate('book').populate({path: 'user', select:'_id level nickname profileImage' }).execPopulate()
+// Previously
+let image
+if (res.locals) image = res.locals.url
+await Review.create({content, quote, image})
 
-		// Update reviews property of corresponding book document.
-		const book = await Book.findById(bookId)
-		book.reviews.push(review._id)
-		await book.save()
+// Refactored
+const image = res.locals?.url
+await Review.create({content, quote, image })
 
-		return res.json({ review })
-	} catch (e) {
-		console.error(e)
-		return next(new Error('리뷰작성을 실패했습니다.'))
-	}
-})
+
 ```
 
-#### 1.1.3 [Nullish Coalescing](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Nullish_coalescing_operator)
-When the return value of the collection does not exist, it can be returned with a simple, simple expression. Since the left operand value should contain the false value, nullish coalescing was used without using the OR operator.
+#### 1.1.3 [Nullish Coalescing (??)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Nullish_coalescing_operator)
+
+`??` operator also helped to simply a complex `if` statement and reduce use of `let`. 
 
 ---
 
-collection의 반환값이 존재 하지 않을때, 간편하고, 단순한 표현식으로 다른 값을 반환 할 수 있다. 왼쪽 피연산자값은 falsy값은 포함해야하므로 OR연산자를 사용하지 않고 Nullish Coalescing을 사용했다.
-
+`??` 연산자 역시 복잡한 `if`문을 간단하게 해주고 `let`을 덜 사용하게 해주었습니다.
 
 ```javascript
+// Find a collection document by its name.
+// If such document doesn't exist, create one.
+
+// Previously
 const updateCollection = async (tag) => {
-	if (!tag) return
+	let collection
+	collection = await Collection.findOne({ name: tag, type: 'tag' })
+	if (!collection) collection = await Collection.create({ name: tag, type: 'tag ' })
 
-	const collection =
-		// Check if collection exists. Otherwise create new one.
-		(await Collection.findOne({ name: tag, type: 'tag' })) ??
-		(await Collection.create({ name: tag, type: 'tag' }))
+	//...
+}
 
-	/**
-	 * Books having the tag in topTags property.
-	 * @type {Document[]}
-	 */
-	const books = await Book.find({ topTags: tag })
-	collection.contents = books.map((book) => {
-		return { book: book.isbn }
-	})
-	console.log(`${collection.name} 컬렉션이 업데이트 되었습니다.`)
-	await collection.save()
+// Refactored
+const updateCollection = async (tag) => {
+	const collection = await Collection.findOne({ name: tag, type: 'tag' }) ?? await Collection.create({ name: tag, type: 'tag' })
+
+	//...
 }
 ```
 
 #### 1.1.4 [Async / Await](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Async_await)
 
+By using `async/await`, it was possible to avoid complex call backs and use `try/catch` to handle errors.
+
+---
+
+`async/await`을 사용하여 복잡한 콜백 구조를 피하고 `try/catch`로 에러를 처리할 수 있었습니다.
 ```javascript
-const saveBook = async (searchResult) => {
-	const newBook = new Book()
-    
-	for (const [key, value] of Object.entries(searchResult)) {
-		if (key === 'description') {
-			newBook[key] = await getBookDescription(searchResult.link)
-		} else {
-			newBook[key] = value
+export default class ReviewController extends SuperController {
+	//...
+	static async apiDeleteReview(req, res, next) {
+		const { _id: userId } = res.locals.user
+
+		try {
+			const { reviewId } = ReviewController._getIds(req)
+			const review = await Review.findById(reviewId)
+
+			if (!review) return next({ message: '존재하지 않는 리뷰 아이디 입니다.', status: 400 })
+			ReviewController._validateAuthor(review.user, userId)
+
+			await review.deleteOne()
+
+			return res.sendStatus(202)
+		} catch (err) {
+			console.error(err)
+			if (err.status) next(err)
+			return next({ message: '리뷰 삭제를 실패했습니다.', status: 500 })
 		}
 	}
-	return await newBook.save()
 }
 ```
 
 #### 1.1.5 [Import (ESModule)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import)
-when we use 'require', we can't selectively load only the pieces we need. But with imports, we can selectively load only the pieces I need. That can save memory.
-
-Loading is synchronous for require. On the other hand, import can be asynchronous. so it can perform better than require.
+By adopting ESModule, modules are loaded both asynchronously and partially. Thus saving memory and time. 
 
 ---
-'require'를 사용했을 때 우리는 선택적으로 우리가 필요한 부분들을 불러올 수 없다. 하지만 'import'를 사용한다면 우리는 선택적으로 우리가 필요한 부분만을 선택할 수있고, memory를 아낄 수 있다.
 
-require은 비동기적으로 작동하지만, import는 동기적으로 작동하므로 수행 능력이 뛰어날 수 있다.
+ES 모듈을 사용하여 모듈을 비-동기적 그리고 부분적으로 불러온다. 따라서 메모리를 아끼고 속도를 향상시킬 수 있다.
 
+---
+
+#### 1.1.6 [Class](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes)
+
+Object-oriented programming is possible with `class` in some degree. In Diver backend, both reviews and collections share common features: they need a user to be logged in to post, they are MongoDB documents, they are both related to book and so on.
+
+Therefore, Super class inherits shared common static methods &ndash; which I wish to be protected methods but current JS doesn't support such feature &ndash; to ReviewController and CollectionController classes.
+
+And controllers related to the same MongoDB collections &ndash; Review and Collection &ndash; are grouped into each class.
 
 ```javascript
-import express from 'express'
-import config from './config.js'
-import cors from 'cors'
-import './models/index.js'
-import './controllers/schedule_job.js'
-import router from './routes/index.js'
-import kakaoPassportConfig from "./routes/kakao_passport.js";
-import googlePassportConfig from './routes/google_passport.js'
-import { Server } from 'socket.io'
-import { createServer } from "http";
-import helmet from 'helmet'
-```
+export default class SuperController {
+	static _getIds(req) {
+		//...
+	}
+	static _validateAuthor(author, currentUserId) {
+		//...
+	}	
+}
 
----
+// review.controller.js
+import SuperController from './super.controller.js'
+export default class ReviewController extends SuperController {
+	static async apiPostReview(req, res, next) {
+		//...
+	}
+    //...
+}
+
+// routes/reviews.js
+//...
+import ReviewCtrl from './review.controller.js'
+router.route('/')
+	.post(upload.single('image'), ImageUpload.uploadImage, ReviewCtrl.apiPostReview)
+	.get(ReviewCtrl.apiGetReviews)
+
+router.route('/:reviewId')
+	.get(ReviewCtrl.apiGetReview)
+	.put(ReviewCtrl.apiPutReview)
+	.delete(ReviewCtrl.apiDeleteReview)
+//...
+```
 
 ### 1.2 Version Control 	![Git](https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white)
 
