@@ -1,6 +1,6 @@
 # 🌊 DIVER BACKEND 🌊
 
-❓ <b>Business Model</b> - Diver provides collections and reviews of books and users can share them like a social network.
+❓ <b>Business Model</b> - Diver provides collections and reviews of books and users can share them like in a social network.
 
 🌌 <b>Base</b> - A Node.js + Express based backend project.
 
@@ -287,6 +287,7 @@ import helmet from 'helmet'
 
 ### 1. Feeds
 
+<!--suppress ALL -->
 <table>
 <thead>
 <th>단계</th>
