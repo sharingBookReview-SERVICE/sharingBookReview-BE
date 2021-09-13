@@ -195,7 +195,7 @@ import helmet from 'helmet'
 
 # 2. Architecture 👷
 
-```js
+```
 .
 ├── ...
 ├── controllers
