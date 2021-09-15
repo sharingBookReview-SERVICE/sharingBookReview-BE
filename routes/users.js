@@ -125,12 +125,11 @@ router.get('/feeds', async (req, res, next) => {
 		},
 	]
 	try {
-        let user = await User.findById(userId)
-        user = await user.followCount()
-		const reviews = await Review.find({user: userId}).populate('book').sort('-created_at')
-		const collections = await Collection.find({user: userId}).sort('-created_at')
+		const user = await User.aggregate([query, projection, ...followAggregation])
+		const reviews = await Review.find({ user: userId }).populate('book').sort('-created_at')
+		const collections = await Collection.find({ user: userId }).sort('-created_at')
 
-		return res.json({user, reviews, collections})
+		return res.json({ user, reviews, collections })
 	} catch (e) {
 		console.error(e)
 		return next(new Error('개인 피드 불러오기를 실패했습니다.'))
