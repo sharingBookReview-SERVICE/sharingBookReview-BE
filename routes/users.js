@@ -73,7 +73,57 @@ router.use(authMiddleware(true))
 // Returns all reviews and collections made by a user(mine)
 router.get('/feeds', async (req, res, next) => {
 	const { _id: userId } = res.locals.user
-
+	const query = {
+		$match: { _id: userId },
+	}
+	const projection = {
+		$project: {
+			check_alert: 0,
+			alerts: 0,
+			read_reviews: 0,
+			own_image: 0,
+		},
+	}
+	const followAggregation = [
+		{
+			'$lookup': {
+				'from': 'follows',
+				'let': { 'id': '$_id' },
+				'pipeline': [
+					{
+						'$match': {
+							'$expr': { '$eq': ['$$id', '$sender'] },
+						},
+					},
+					{ '$count': 'count' },
+				],
+				'as': 'followerCount',
+			},
+		}, {
+			'$lookup': {
+				'from': 'follows',
+				'let': { 'id': '$_id' },
+				'pipeline': [
+					{
+						'$match': {
+							'$expr': { '$eq': ['$$id', '$receiver'] },
+						},
+					},
+					{ '$count': 'count' },
+				],
+				'as': 'followingCount',
+			},
+		}, {
+			'$addFields': {
+				'followerCount': {
+					'$sum': '$followerCount.count',
+				},
+				'followingCount': {
+					'$sum': '$followingCount.count',
+				},
+			},
+		},
+	]
 	try {
         let user = await User.findById(userId)
         user = await user.followCount()
