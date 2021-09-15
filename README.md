@@ -212,7 +212,96 @@ router.route('/:reviewId')
 //...
 ```
 
-### 1.2 Version Control 	![Git](https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white)
+### 1.2 MongoDB / Mongoose
+
+1.2.1 [Aggregation](https://docs.mongodb.com/manual/aggregation/)
+
+Formerly, complex document manipulation was done in Node.js server.
+```javascript
+router.get('/feeds', async (req, res, next) => {
+	const { _id: userId } = res.locals.user
+
+	try {
+        let user = await User.findById(userId)
+        // User .followCount method to create .followingCount and .followerCount properties.
+        user = await user.followCount()
+		const reviews = await Review.find({user: userId}).populate('book').sort('-created_at')
+		const collections = await Collection.find({user: userId}).sort('-created_at')
+
+		return res.json({user, reviews, collections})
+	} catch (e) {
+		console.error(e)
+		return next(new Error('개인 피드 불러오기를 실패했습니다.'))
+	}
+})
+```
+
+Later, the code was refactored by using aggregation pipelines. So the process is now done in MongoDB server (Mongo Atlas).
+```javascript
+router.get('/feeds', async (req, res, next) => {
+	const { _id: userId } = res.locals.user
+	const query = { 
+		//...
+	}
+	const projection = { 
+		//...
+	}
+	// Using $lookup to calculate follower / following counts.
+	const followAggregation = [
+		{
+			'$lookup': {
+				'from': 'follows',
+				'let': { 'id': '$_id' },
+				'pipeline': [
+					{
+						'$match': {
+							'$expr': { '$eq': ['$$id', '$sender'] },
+						},
+					},
+					{ '$count': 'count' },
+				],
+				'as': 'followerCount',
+			},
+		}, {
+			'$lookup': {
+				'from': 'follows',
+				'let': { 'id': '$_id' },
+				'pipeline': [
+					{
+						'$match': {
+							'$expr': { '$eq': ['$$id', '$receiver'] },
+						},
+					},
+					{ '$count': 'count' },
+				],
+				'as': 'followingCount',
+			},
+		}, {
+			'$addFields': {
+				'followerCount': {
+					'$sum': '$followerCount.count',
+				},
+				'followingCount': {
+					'$sum': '$followingCount.count',
+				},
+			},
+		},
+	]
+	try {
+		// Simpler code with aggregation.
+		const user = await User.aggregate([query, projection, ...followAggregation])
+		const reviews = await Review.find({ user: userId }).populate('book').sort('-created_at')
+		const collections = await Collection.find({ user: userId }).sort('-created_at')
+
+		return res.json({ user, reviews, collections })
+	} catch (e) {
+		console.error(e)
+		return next(new Error('개인 피드 불러오기를 실패했습니다.'))
+	}
+})
+```
+
+### 1.3 Version Control 	![Git](https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white)
 
 [배달의 민족 Git-flow](https://techblog.woowahan.com/2553/)
 
