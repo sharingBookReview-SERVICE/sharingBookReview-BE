@@ -73,14 +73,63 @@ router.use(authMiddleware(true))
 // Returns all reviews and collections made by a user(mine)
 router.get('/feeds', async (req, res, next) => {
 	const { _id: userId } = res.locals.user
-
+	const query = {
+		$match: { _id: userId },
+	}
+	const projection = {
+		$project: {
+			check_alert: 0,
+			alerts: 0,
+			read_reviews: 0,
+			own_image: 0,
+		},
+	}
+	const followAggregation = [
+		{
+			'$lookup': {
+				'from': 'follows',
+				'let': { 'id': '$_id' },
+				'pipeline': [
+					{
+						'$match': {
+							'$expr': { '$eq': ['$$id', '$sender'] },
+						},
+					},
+					{ '$count': 'count' },
+				],
+				'as': 'followerCount',
+			},
+		}, {
+			'$lookup': {
+				'from': 'follows',
+				'let': { 'id': '$_id' },
+				'pipeline': [
+					{
+						'$match': {
+							'$expr': { '$eq': ['$$id', '$receiver'] },
+						},
+					},
+					{ '$count': 'count' },
+				],
+				'as': 'followingCount',
+			},
+		}, {
+			'$addFields': {
+				'followerCount': {
+					'$sum': '$followerCount.count',
+				},
+				'followingCount': {
+					'$sum': '$followingCount.count',
+				},
+			},
+		},
+	]
 	try {
-        let user = await User.findById(userId)
-        user = await user.followCount()
-		const reviews = await Review.find({user: userId}).populate('book').sort('-created_at')
-		const collections = await Collection.find({user: userId}).sort('-created_at')
+		const user = await User.aggregate([query, projection, ...followAggregation])
+		const reviews = await Review.find({ user: userId }).populate('book').sort('-created_at')
+		const collections = await Collection.find({ user: userId }).sort('-created_at')
 
-		return res.json({user, reviews, collections})
+		return res.json({ user, reviews, collections })
 	} catch (e) {
 		console.error(e)
 		return next(new Error('개인 피드 불러오기를 실패했습니다.'))
