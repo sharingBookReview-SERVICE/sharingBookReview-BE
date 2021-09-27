@@ -13,6 +13,13 @@ export default class crawlController {
 			'isbn': 'd_isbn',
 		}
 		const URL = `https://openapi.naver.com/v1/search/book_adv.xml?${TARGETS[target]}=${encodeURI(query)}`
+
+		const { data } = await axios.get(URL, {
+			headers: {
+				'X-Naver-Client-Id': CLIENT_ID,
+				'X-Naver-Client-Secret': CLIENT_SECRET,
+			}
+		})
 	}
 }
 
@@ -69,5 +76,3 @@ const searchBooks = async (target, query) => {
 	})
 	return removeArrayInValue(searchList)
 }
-
-export default searchBooks
