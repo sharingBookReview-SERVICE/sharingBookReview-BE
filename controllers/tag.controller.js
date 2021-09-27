@@ -105,11 +105,11 @@ export default class tagController {
 		try {
 			const updatedBooks = await tagController.#getUpdatedBooks()
 			const updatedTags = await tagController.#updateTopTags(updatedBooks)
-			await tagController.#updateTagCollections(updatedTags)
+			const numOfUpdatedTags = await tagController.#updateTagCollection(updatedTags)
+			console.log(`updateTopTags 가 성공적으로 완료되었으며, 총 ${numOfUpdatedTags} 개의 태그가 생성 또는 수정되었습니다.`)
 		} catch (err) {
 			console.error(err)
 		}
-		console.log('updateTopTags 를 종료합니다.')
 	}
 
 	/**
