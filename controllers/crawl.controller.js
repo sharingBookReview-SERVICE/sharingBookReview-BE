@@ -59,4 +59,28 @@ export default class crawlController {
 		const $ = cheerio.load(data)
 		return $('#bookIntroContent').text()
 	}
+
+	static async getBestsellers() {
+		const URL = 'https://www.kyobobook.co.kr/bestSellerNew/bestseller.laf'
+
+		const { data } = await axios.get(URL)
+		const $ = cheerio.load(data)
+		// todo
+		// Legacy code using puppeteer
+		// const isbnList = await page.$$eval(
+		// 	'ul > input[name=barcode]',
+		// 	(inputList) =>
+		// 		inputList.map((input) => {
+		// 			return input.value
+		// 		})
+		// )
+		//
+		// await (await page.browser()).close()
+		//
+		// const top10 = isbnList.slice(0,9)
+		// const promises = top10.map((isbn) => crawlController.searchBooks('isbn', isbn))
+		// return [...await Promise.allSettled(promises)]
+		// 	.filter((p) => p.status === 'fulfilled')
+		// 	.map((p)=>p.value)
+	}
 }

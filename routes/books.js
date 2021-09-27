@@ -1,6 +1,5 @@
 import express from 'express'
 import { Book } from '../models/index.js'
-import { getBestsellers } from '../controllers/crawl.js'
 import dotenv from 'dotenv'
 import crawlController from '../controllers/crawl.controller.js'
 dotenv.config()
@@ -30,16 +29,16 @@ router.get('/', async (req, res, next) => {
 	}
 })
 
+// todo Bestseller Crawl
 // 베스트 샐러
-router.get('/bestsellers', async(req, res, next) => {
-    try{
-        const bestsellers = await getBestsellers()
-	return res.json({bestsellers})
-    } catch(e){
-        return next(new Error('베스트셀러 목록을 불러오는데 실패했습니다.'))
-    }
-
-})
+// router.get('/bestsellers', async(req, res, next) => {
+//     try{
+//         // const bestsellers = await getBestsellers()
+// 	return res.json({bestsellers})
+//     } catch(e){
+//         return next(new Error('베스트셀러 목록을 불러오는데 실패했습니다.'))
+//     }
+// })
 
 // 개별 책 선택
 router.get('/:bookId', async (req, res, next) => {
