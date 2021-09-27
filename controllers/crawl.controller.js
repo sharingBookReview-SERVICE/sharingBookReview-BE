@@ -23,10 +23,10 @@ export default class crawlController {
 
 		const parsedString = await parseStringPromise(data)
 		const searchResult = parsedString.rss.channel[0].item
-		return crawlController.reformatSearchResult(searchResult)
+		return crawlController.#reformatSearchResult(searchResult)
 	}
 
-	static reformatSearchResult(searchResult) {
+	static #reformatSearchResult(searchResult) {
 		return searchResult.map(book => {
 			const object = {}
 			for (const [key, value] of Object.entries(book)) {
