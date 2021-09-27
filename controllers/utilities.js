@@ -1,6 +1,6 @@
 import { Review, Book, Follow } from '../models/index.js'
-import { getBookDescription } from './crawl.js'
 import jwt from 'jsonwebtoken'
+import crawlController from './crawl.controller.js'
 
 /**
  * Check if the document with given id exists in the Collection of the Model
@@ -28,7 +28,7 @@ const saveBook = async (searchResult) => {
 	 */
 	for (const [key, value] of Object.entries(searchResult)) {
 		if (key === 'description') {
-			newBook[key] = await getBookDescription(searchResult.link)
+			newBook[key] = await crawlController.getDetailedBookDescription(searchResult.link)
 		} else {
 			newBook[key] = value
 		}

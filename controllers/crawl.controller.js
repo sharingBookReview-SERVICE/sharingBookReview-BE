@@ -3,6 +3,12 @@ import { parseStringPromise } from 'xml2js'
 import cheerio from 'cheerio'
 
 export default class crawlController {
+	/**
+	 * Search books with target and query in naver dev api
+	 * @param target {제목|저자|출판사|isbn}
+	 * @param query {string|number}
+	 * @returns {Promise<Object[]>}
+	 */
 	static async searchBooks (target, query) {
 		const CLIENT_ID = process.env.BOOK_API_CLIENT_ID
 		const CLIENT_SECRET = process.env.BOOK_API_CLIENT_SECRET
@@ -27,6 +33,11 @@ export default class crawlController {
 		return crawlController.#reformatSearchResult(searchResult)
 	}
 
+	/**
+	 * Change original search result of a nested array to an array of objects
+	 * @param searchResult
+	 * @returns {Object[]}
+	 */
 	static #reformatSearchResult(searchResult) {
 		return searchResult.map(book => {
 			const object = {}
@@ -38,6 +49,11 @@ export default class crawlController {
 		})
 	}
 
+	/**
+	 * Get detailed book description from link
+	 * @param link {string} Naver detailed book description
+	 * @returns {Promise<string>} Description text
+	 */
 	static async getDetailedBookDescription(link) {
 		const { data } = await axios.get(link)
 		const $ = cheerio.load(data)

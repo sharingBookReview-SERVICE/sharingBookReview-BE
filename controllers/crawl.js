@@ -53,19 +53,3 @@ const getBestsellers = async () => {
  * @param {string} link - Naver Books URL
  * @returns {Promise<string>} Text - Detailed description of book
  */
-const getBookDescription = async (link) => {
-	try {
-		// HTTP response's data
-		const { data } = await axios.get(link)
-		// Parsed HTML by cheerio
-		const $ = cheerio.load(data)
-		// Detailed description of book in string
-		const text = $('#bookIntroContent').text()
-		return text
-	} catch (e) {
-		console.error(e)
-		return e
-	}
-}
-
-export { getBestsellers, getBookDescription }
