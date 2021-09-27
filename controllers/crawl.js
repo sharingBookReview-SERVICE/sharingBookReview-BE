@@ -1,7 +1,7 @@
 import puppeteer from 'puppeteer'
-import searchBooks from './searchbooks.js'
 import axios from 'axios'
 import cheerio from 'cheerio'
+import crawlController from './crawl.controller.js'
 
 
 /**
@@ -42,7 +42,7 @@ const getBestsellers = async () => {
 	await (await page.browser()).close()
 
 	const top10 = isbnList.slice(0,9)
-	const promises = top10.map((isbn) => searchBooks('isbn', isbn))
+	const promises = top10.map((isbn) => crawlController.searchBooks('isbn', isbn))
 	return [...await Promise.allSettled(promises)]
 		.filter((p) => p.status === 'fulfilled')
 		.map((p)=>p.value)
