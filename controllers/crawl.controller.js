@@ -3,7 +3,16 @@ import { parseString } from 'xml2js'
 
 export default class crawlController {
 	static async searchBooks (target, query) {
-
+		const CLIENT_ID = process.env.BOOK_API_CLIENT_ID
+		const CLIENT_SECRET = process.env.BOOK_API_CLIENT_SECRET
+		// noinspection NonAsciiCharacters,SpellCheckingInspection
+		const TARGETS = {
+			'제목': 'd_titl',
+			'저자': 'd_auth',
+			'출판사': 'd_publ',
+			'isbn': 'd_isbn',
+		}
+		const URL = `https://openapi.naver.com/v1/search/book_adv.xml?${TARGETS[target]}=${encodeURI(query)}`
 	}
 }
 
