@@ -318,7 +318,7 @@ router.get('/feeds', async (req, res, next) => {
 |   ├── get_trending_review.js
 |   ├── image_upload.js
 |   ├── index_top_tags.js
-|   ├── schedule_job.js
+|   ├── schedule.controller.js
 |   ├── searchbooks.js
 |   └── utilities.js
 |
