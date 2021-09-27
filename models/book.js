@@ -25,9 +25,4 @@ const bookSchema = new Schema(
 	},
 )
 
-bookSchema.post('save', async function() {
-	const updatedBookISBN = this.isbn
-	await ChangesIndex.create({ isbn: updatedBookISBN })
-})
-
 export default model('Book', bookSchema)
