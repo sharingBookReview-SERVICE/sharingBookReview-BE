@@ -34,7 +34,7 @@ export default class ReviewController extends SuperController {
 			await User.getExpAndLevelUp(userId, 'review')
 
 			review = Review.processLikesInfo(review, userId)
-			review = Review.bookmarkInfo(review, userId)
+			review = await Review.bookmarkInfo(review, userId)
 
 			return res.status(201).json({ review })
 		} catch (err) {
