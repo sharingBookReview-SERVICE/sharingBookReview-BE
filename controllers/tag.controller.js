@@ -156,7 +156,22 @@ export default class tagController {
 		}
 	}
 
-	static async #updateTagCollections(updatedTags) {
-
+	/**
+	 * Update tag collection's contents field with books having the tag in its topTags field.
+	 * @param tags {string[]}
+	 * @returns {Promise<number>} Number of tag documents that successfully updated.
+	 */
+	static async #updateTagCollection(tags) {
+		const promises = tags.map(async tag => {
+			const tagDocument = { name: tag, type: 'tag' }
+			const collection = await Collection.findOne(tagDocument) ?? await Collection.create(tagDocument)
+			const booksContainingTag = await Book.find({ topTags: tag })
+			collection.contents = booksContainingTag.map((book) => {
+				return { book: book.isbn }
+			})
+			return collection.save()
+		})
+		const result = await Promise.allSettled(promises)
+		return result.filter(res => res.status === 'fulfilled').length
 	}
 }
