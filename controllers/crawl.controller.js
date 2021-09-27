@@ -1,6 +1,12 @@
 import axios from 'axios'
 import { parseString } from 'xml2js'
 
+export default class crawlController {
+	static async searchBooks (target, query) {
+
+	}
+}
+
 const removeArrayInValue = async (array) => {
 	const bookList =[]
 	for (let i = 0; i < array.length; i++){
