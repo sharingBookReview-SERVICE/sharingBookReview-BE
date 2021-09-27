@@ -39,17 +39,8 @@ export default class crawlController {
 	}
 
 	static async getDetailedBookDescription(link) {
-		try {
-			// HTTP response's data
-			const { data } = await axios.get(link)
-			// Parsed HTML by cheerio
-			const $ = cheerio.load(data)
-			// Detailed description of book in string
-			const text = $('#bookIntroContent').text()
-			return text
-		} catch (e) {
-			console.error(e)
-			return e
-		}
+		const { data } = await axios.get(link)
+		const $ = cheerio.load(data)
+		return $('#bookIntroContent').text()
 	}
 }
