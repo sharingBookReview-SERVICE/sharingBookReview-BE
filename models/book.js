@@ -1,4 +1,5 @@
 import mongoose from 'mongoose'
+
 const { Schema, Types, model } = mongoose
 import { ChangesIndex } from './index.js'
 
@@ -14,8 +15,9 @@ const bookSchema = new Schema(
 		publisher: String,
 		description: String,
 		pubdate: Date,
-		reviews: { type: [Types.ObjectId], default: [], ref: 'Review', },
+		reviews: { type: [Types.ObjectId], default: [], ref: 'Review' },
 		topTags: [String],
+		updateOnTag: { type: Boolean, default: false },
 	},
 	{
 		toJSON: { virtuals: true },
@@ -23,7 +25,7 @@ const bookSchema = new Schema(
 	},
 )
 
-bookSchema.post('save', async function () {
+bookSchema.post('save', async function() {
 	const updatedBookISBN = this.isbn
 	await ChangesIndex.create({ isbn: updatedBookISBN })
 })
