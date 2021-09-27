@@ -124,8 +124,31 @@ export default class tagController {
 		})
 	}
 
-	static async #updateTopTags(isbnArr) {
+	/**
+	 * For each book in books, calculate most used hashtags of its reviews. Then save them as topTags field in the book.
+	 * @param books {Document[]} - Array of mongodb documents
+	 * @returns {Promise<void>}
+	 */
+	static async #updateTopTags(books) {
+		const promises = books.map(book => {
+			const allTagsOfOneBook = book.reviews.reduce((acc, review) => {
+				if (!review.hashtags) return acc
+				return [...acc, ...review.hashtags]
+			}, [])
+			const uniqueTagsOfOneBook = [...new Set(allTagsOfOneBook)]
+			book.topTags = getMostUsedTagsForOneBook(allTagsOfOneBook, uniqueTagsOfOneBook)
+			return book.save()
+		})
+		await Promise.allSettled(promises)
 
+		function getMostUsedTagsForOneBook(allTags, uniqueTags) {
+			return uniqueTags.map((tag) => {
+				return {
+					name: tag,
+					occurrence: allTags.filter((_tag) => tag === tag).length,
+				}
+			}).sort((a, b) => b.occurrence - a.occurrence).slice(0, 9).map((tag) => tag.name)
+		}
 	}
 
 	static async #updateTagCollections(updatedTags) {
