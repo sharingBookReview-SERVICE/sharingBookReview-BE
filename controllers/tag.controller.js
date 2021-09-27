@@ -26,8 +26,8 @@ const getChangedTags = async (isbnArr) => {
 			$in: isbnArr,
 		},
 	})
-	.select('reviews')
-	.populate({path:'reviews', select:'hashtags'})
+		.select('reviews')
+		.populate({ path: 'reviews', select: 'hashtags' })
 
 	for (const book of books) {
 		/**
@@ -99,4 +99,28 @@ const indexTopTags = async () => {
 	}
 }
 
-export default indexTopTags
+export default class tagController {
+	static async updateTopTags() {
+		console.log('updateTopTags 를 실행합니다.')
+		try {
+			const updatedBooks = await tagController.#getUpdatedBooks()
+			const updatedTags = await tagController.#updateTopTags(updatedBooks)
+			await tagController.#updateTagCollections(updatedTags)
+		} catch (err) {
+			console.error(err)
+		}
+		console.log('updateTopTags 를 종료합니다.')
+	}
+
+	static async #getUpdatedBooks() {
+
+	}
+
+	static async #updateTopTags() {
+
+	}
+
+	static async #updateTagCollections(updatedTags) {
+
+	}
+}
