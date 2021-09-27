@@ -104,6 +104,7 @@ export default class tagController {
 		console.log('updateTopTags 를 실행합니다.')
 		try {
 			const updatedBooks = await tagController.#getUpdatedBooks()
+			console.log(updatedBooks)
 			const updatedTags = await tagController.#updateTopTags(updatedBooks)
 			await tagController.#updateTagCollections(updatedTags)
 		} catch (err) {
@@ -112,11 +113,18 @@ export default class tagController {
 		console.log('updateTopTags 를 종료합니다.')
 	}
 
+	/**
+	 * Returns array of isbn of which updateOnTag field is true.
+	 * @returns {Promise<Document<>[]>} Array of mongoose documents with id and reviews field.
+	 */
 	static async #getUpdatedBooks() {
-
+		return Book.find({ updateOnTag: true }, { reviews: 1, topTags: 1 }).populate({
+			path: 'reviews',
+			select: 'hashtags',
+		})
 	}
 
-	static async #updateTopTags() {
+	static async #updateTopTags(isbnArr) {
 
 	}
 
