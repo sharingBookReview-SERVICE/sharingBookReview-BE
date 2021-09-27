@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { parseStringPromise } from 'xml2js'
+import cheerio from 'cheerio'
 
 export default class crawlController {
 	static async searchBooks (target, query) {
@@ -35,5 +36,20 @@ export default class crawlController {
 			}
 			return object
 		})
+	}
+
+	static async getDetailedBookDescription(link) {
+		try {
+			// HTTP response's data
+			const { data } = await axios.get(link)
+			// Parsed HTML by cheerio
+			const $ = cheerio.load(data)
+			// Detailed description of book in string
+			const text = $('#bookIntroContent').text()
+			return text
+		} catch (e) {
+			console.error(e)
+			return e
+		}
 	}
 }
