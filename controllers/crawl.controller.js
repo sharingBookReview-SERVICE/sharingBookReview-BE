@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { parseString } from 'xml2js'
+import { parseStringPromise } from 'xml2js'
 
 export default class crawlController {
 	static async searchBooks (target, query) {
@@ -20,6 +20,10 @@ export default class crawlController {
 				'X-Naver-Client-Secret': CLIENT_SECRET,
 			}
 		})
+
+		const parsedString = await parseStringPromise(data)
+		const searchResult = parsedString.rss.channel[0].item
+		return crawlController.reformatSearchResult(searchResult)
 	}
 }
 
