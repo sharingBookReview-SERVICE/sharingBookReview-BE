@@ -8,9 +8,10 @@ export default class ImageUploadController {
 
 	static async uploadImage(req, res, next) {
 		const { file } = req
-		if (file === undefined) {
-			return next()
-		}
+
+		if (!file) return next()
+
+
 		const result = await uploadFile(file)
 		await unlinkFile(file.path)
 		res.locals.url = result.Location
