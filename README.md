@@ -50,7 +50,7 @@ on.
 |   ├── crawl.controller.js
 |   ├── get_collection_image.js
 |   ├── get_trending_review.js
-|   ├── image_upload.js
+|   ├── image_upload,controller.js
 |   ├── index_top_tags.js
 |   ├── schedule_job.js
 |   └── utilities.js

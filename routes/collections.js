@@ -2,9 +2,9 @@ import express from 'express'
 import { Collection } from '../models/index.js'
 import authMiddleware from '../middleware/auth_middleware.js'
 import multer from 'multer'
-import ImageUpload from '../controllers/image_upload.js'
 import { likeUnlike } from '../models/utilities.js'
 import CollectionCtrl from './collection.controller.js'
+import ImageUploadController from '../controllers/image_upload.controller.js'
 
 const router = new express.Router()
 const upload = multer({
@@ -19,7 +19,7 @@ router.get('/', authMiddleware(false), CollectionCtrl.apiGetCollections)
 
 router.use(authMiddleware(true))
 
-router.post('/', upload.single('image'), ImageUpload.uploadImage, CollectionCtrl.apiPostCollection)
+router.post('/', upload.single('image'), ImageUploadController.uploadImage, CollectionCtrl.apiPostCollection)
 
 router.route('/:collectionId')
 	.get(CollectionCtrl.apiGetCollection)
