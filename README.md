@@ -103,7 +103,6 @@ on.
 ├── app.js
 ├── config.js
 ├── exp_list.js
-├── s3.js
 ├── server.js
 ├── socket.js
 ├── ...
