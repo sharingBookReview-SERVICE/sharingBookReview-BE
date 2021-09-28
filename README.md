@@ -66,6 +66,7 @@ Because we can query on anytime later, being rejected on some requests was not a
 
 ```javascript
 // ./controllers/crawl.js
+// todo Deprecated example
 
 const getBestsellers = async () => {
 	const BESTSELLER_URL = 'https://www.kyobobook.co.kr/bestSellerNew/bestseller.laf'
@@ -313,13 +314,12 @@ router.get('/feeds', async (req, res, next) => {
 .
 ├── ...
 ├── controllers
-|   ├── crawl.js 
+|   ├── crawl.controller.js
 |   ├── get_collection_image.js
 |   ├── get_trending_review.js
 |   ├── image_upload.js
 |   ├── tag.controller.js
 |   ├── schedule.controller.js
-|   ├── searchbooks.js
 |   └── utilities.js
 |
 ├── middleware

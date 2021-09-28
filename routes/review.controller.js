@@ -1,8 +1,8 @@
 import { Book, Review, User } from '../models/index.js'
-import searchBooks from '../controllers/searchbooks.js'
 import { saveBook } from '../controllers/utilities.js'
 import user from '../models/user.js'
 import SuperController from './super.controller.js'
+import crawlController from '../controllers/crawl.controller.js'
 
 export default class ReviewController extends SuperController {
 	static async apiPostReview(req, res, next) {
@@ -18,7 +18,7 @@ export default class ReviewController extends SuperController {
 			const book = await Book.findById(bookId)
 
 			if (!book) {
-				const [searchResult] = await searchBooks('isbn', bookId)
+				const [searchResult] = await crawlController.searchBooks('isbn', bookId)
 				await saveBook(searchResult)
 			}
 

@@ -1,8 +1,8 @@
 import { Book, Collection, Comment, User } from '../models/index.js'
-import searchBooks from '../controllers/searchbooks.js'
 import { saveBook } from '../controllers/utilities.js'
 import mongoose from 'mongoose'
 import SuperController from './super.controller.js'
+import crawlController from '../controllers/crawl.controller.js'
 
 const { isValidObjectId } = mongoose
 
@@ -33,7 +33,7 @@ export default class CollectionController extends SuperController {
 		try {
 			contents.map(async (content) => {
 				if (!await Book.findById(content.book)) {
-					const [searchResult] = await searchBooks('isbn', content.book)
+					const [searchResult] = await crawlController.searchBooks('isbn', content.book)
 					await saveBook(searchResult)
 				}
 			})
@@ -96,7 +96,7 @@ export default class CollectionController extends SuperController {
 
 			contents.map(async (content) => {
 				if (!await Book.findById(content.book)) {
-					const [searchResult] = await searchBooks('isbn', content.book)
+					const [searchResult] = await crawlController.searchBooks('isbn', content.book)
 					await saveBook(searchResult)
 				}
 			})
