@@ -1,6 +1,8 @@
 import { uploadFile } from '../s3.js'
 import fs from 'fs/promises'
+import dotenv from 'dotenv'
 
+dotenv.config()
 export default class ImageUploadController {
 
 	static async uploadImage(req, res, next) {
