@@ -11,10 +11,10 @@ export default class ImageUploadController {
 
 		if (!file) return next()
 
+		const { Location } = await uploadFile(file)
+		res.locals.url  = Location
 
-		const result = await uploadFile(file)
 		await unlinkFile(file.path)
-		res.locals.url = result.Location
 		return next()
 
 	}
