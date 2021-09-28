@@ -7,7 +7,7 @@ const unlinkFile = util.promisify(fs.unlink)
 export default class ImageUploadController {
 
 	static async uploadImage(req, res, next) {
-		const file = req.file
+		const { file } = req
 		if (file === undefined) {
 			return next()
 		}
