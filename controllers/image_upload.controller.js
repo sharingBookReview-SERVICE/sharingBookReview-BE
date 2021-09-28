@@ -1,8 +1,5 @@
 import { uploadFile } from '../s3.js'
-import util from 'util'
-import fs from 'fs'
-
-const unlinkFile = util.promisify(fs.unlink)
+import fs from 'fs/promises'
 
 export default class ImageUploadController {
 
@@ -14,7 +11,7 @@ export default class ImageUploadController {
 		const { Location } = await uploadFile(file)
 		res.locals.url  = Location
 
-		await unlinkFile(file.path)
+		await fs.unlink(file.path)
 		return next()
 
 	}
