@@ -2,7 +2,7 @@ import express from 'express'
 import config from './config.js'
 import cors from 'cors'
 import './models/index.js'
-import './controllers/schedule_job.js'
+import './controllers/schedule.controller.js'
 import router from './routes/index.js'
 import kakaoPassportConfig from "./routes/kakao_passport.js";
 import googlePassportConfig from './routes/google_passport.js'
@@ -20,6 +20,7 @@ app.set('port', process.env.PORT)
 app.use(cors())
 app.use(helmet())
 app.disable('x-powered-by')
+// noinspection JSUnusedAssignment
 app.use(cors(corsOptions))
 
 var corsOptions = {
@@ -51,6 +52,7 @@ app.use((req, res, next) => {
 	next(error)
 })
 
+// noinspection JSUnusedLocalSymbols
 app.use((err, req, res, next) => {
 	console.error(err)
 	return res.status(err.status ?? 400).json({ error: err.message })

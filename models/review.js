@@ -1,7 +1,9 @@
+// noinspection JSUnresolvedVariable
+
 import mongoose from 'mongoose'
 const { Schema, Types, model } = mongoose
 import { commentSchema } from './comment.js'
-import { User } from './index.js'
+import { Book, User } from './index.js'
 import { KoreaTime } from './utilities.js'
 
 const reviewSchema = new Schema({
@@ -44,8 +46,15 @@ class Review {
     }
 }
 
-reviewSchema.pre('save', function () {
+reviewSchema.pre('save', function (next) {
 	this.likeCount = this.liked_users.length
+	return next()
+})
+
+reviewSchema.pre('save', async function () {
+	await Book.findByIdAndUpdate(this.book, {
+		$set: { updateOnTag: true }
+	})
 })
 
 reviewSchema.loadClass(Review)
