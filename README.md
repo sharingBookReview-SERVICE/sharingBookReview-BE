@@ -13,13 +13,14 @@ based frontend project.
 
 1. Goal · 목표
 2. Architecture · 구조
-3. Dependencies · 의존성
+3. Main features · 주요 기능
 4. Sample Codes · 샘플 코드
-5. Contributors · 인원
+5. Dependencies · 의존성
+6. Contributors · 인원
 
 ---
 
-# 1. Goal / 목표 🥅
+# 1. Goal · 목표 🥅
 
 At the beginning of the project, deciding which part to focus and which part to discard &ndash; in terms of the tech
 stack &ndash; was the most difficult task.
@@ -39,287 +40,19 @@ on.
 
 * * *
 
-### 1.1 Javascript/ES6+ ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
-
-Not only using basics of ES6 superficially, we tried to implement syntactic sugars of recent versions of ECMAScript.
-
-Here are some codes that went through refactoring to apply ES6+
-
----
-
-ES6+ 의 기본뿐만 아니라 최신 버전 ECMAScript 의 문법적 설탕을 적용하기 위해서 노력했습니다.
-
-아래는 ES6+ 적용을 하여 리팩토링을 진행한 코드입니다.
-
----
-
-#### 1.1.1 [Promise.allSettled()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/allSettled)
-To reduce time consumption on crawling, we implemented **Promise.allSettled()**.
-
-Because we can query on anytime later, being rejected on some requests was not a big deal &ndash; and this DOES happen due to advertisement in source URL.
-
----
-
-크롤링 시 시간 소요를 줄이기 위해 **Promise.allSettled()** 를 사용하였습니다.
-
-나중에라도 다시 받아오면 되기 때문에 몇개 실패한다고 하더라도 큰 문제가 아니었기 때문입니다. 실패는 대상 페이지에 삽입된 예기치 못한 광고 때문이었습니다.
-
-```javascript
-// ./controllers/crawl.js
-// todo Deprecated example
-
-const getBestsellers = async () => {
-	const BESTSELLER_URL = 'https://www.kyobobook.co.kr/bestSellerNew/bestseller.laf'
-	const query = 'ul > input[name=barcode]'
-	const page = await launchBrowserAndGotoURL(BESTSELLER_URL)
-    
-	const isbnArr = await page.$$eval(query, (inputList) => inputList.map((input) => input.value))
-	await (await page.browser()).close()
-	const top10 = isbnList.slice(0, 9)
-	const promises = top10.map((isbn) => searchBooks('isbn', isbn))
-	return [...await Promise.allSettled(promises)].filter((p) => p.status === 'fulfilled').map((p) => p.value)
-}
-```
-#### 1.1.2 [Optional Chaining (?.)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Optional_chaining)
-
-Optional Chaining was powerful and simple operator to process optional parameters. It created more readable code than `if` statement.
-
----
-
-옵셔널 체이닝은 선택적인 매개변수를 처리하기에 강력하고 간결한 연산자입니다.`if`문에 비해 더 읽기 좋은 코드가 되었습니다.  
-```javascript
-// Saving a review with / without an image.
-
-// Previously
-let image
-if (res.locals) image = res.locals.url
-await Review.create({content, quote, image})
-
-// Refactored
-const image = res.locals?.url
-await Review.create({content, quote, image })
-
-
-```
-
-#### 1.1.3 [Nullish Coalescing (??)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Nullish_coalescing_operator)
-
-`??` operator also helped to simply a complex `if` statement and reduce use of `let`. 
-
----
-
-`??` 연산자 역시 복잡한 `if`문을 간단하게 해주고 `let`을 덜 사용하게 해주었습니다.
-
-```javascript
-// Find a collection document by its name.
-// If such document doesn't exist, create one.
-
-// Previously
-const updateCollection = async (tag) => {
-	let collection
-	collection = await Collection.findOne({ name: tag, type: 'tag' })
-	if (!collection) collection = await Collection.create({ name: tag, type: 'tag ' })
-
-	//...
-}
-
-// Refactored
-const updateCollection = async (tag) => {
-	const collection = await Collection.findOne({ name: tag, type: 'tag' }) ?? await Collection.create({ name: tag, type: 'tag' })
-
-	//...
-}
-```
-
-#### 1.1.4 [Async / Await](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Async_await)
-
-By using `async/await`, it was possible to avoid complex call backs and use `try/catch` to handle errors.
-
----
-
-`async/await`을 사용하여 복잡한 콜백 구조를 피하고 `try/catch`로 에러를 처리할 수 있었습니다.
-```javascript
-export default class ReviewController extends SuperController {
-	//...
-	static async apiDeleteReview(req, res, next) {
-		const { _id: userId } = res.locals.user
-
-		try {
-			const { reviewId } = ReviewController._getIds(req)
-			const review = await Review.findById(reviewId)
-
-			if (!review) return next({ message: '존재하지 않는 리뷰 아이디 입니다.', status: 400 })
-			ReviewController._validateAuthor(review.user, userId)
-
-			await review.deleteOne()
-
-			return res.sendStatus(202)
-		} catch (err) {
-			console.error(err)
-			if (err.status) next(err)
-			return next({ message: '리뷰 삭제를 실패했습니다.', status: 500 })
-		}
-	}
-}
-```
-
-#### 1.1.5 [Import (ESModule)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import)
-By adopting ESModule, modules are loaded both asynchronously and partially. Thus saving memory and time. 
-
----
-
-ES 모듈을 사용하여 모듈을 비-동기적 그리고 부분적으로 불러온다. 따라서 메모리를 아끼고 속도를 향상시킬 수 있다.
-
----
-
-#### 1.1.6 [Class](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes)
-
-Object-oriented programming is possible with `class` in some degree. In Diver backend, both reviews and collections share common features: they need a user to be logged in to post, they are MongoDB documents, they are both related to book and so on.
-
-Therefore, Super class inherits shared common static methods &ndash; which I wish to be protected methods but current JS doesn't support such feature &ndash; to ReviewController and CollectionController classes.
-
-And controllers related to the same MongoDB collections &ndash; Review and Collection &ndash; are grouped into each class.
-
-```javascript
-export default class SuperController {
-	static _getIds(req) {
-		//...
-	}
-	static _validateAuthor(author, currentUserId) {
-		//...
-	}	
-}
-
-// review.controller.js
-import SuperController from './super.controller.js'
-export default class ReviewController extends SuperController {
-	static async apiPostReview(req, res, next) {
-		//...
-	}
-    //...
-}
-
-// routes/reviews.js
-//...
-import ReviewCtrl from './review.controller.js'
-router.route('/')
-	.post(upload.single('image'), ImageUpload.uploadImage, ReviewCtrl.apiPostReview)
-	.get(ReviewCtrl.apiGetReviews)
-
-router.route('/:reviewId')
-	.get(ReviewCtrl.apiGetReview)
-	.put(ReviewCtrl.apiPutReview)
-	.delete(ReviewCtrl.apiDeleteReview)
-//...
-```
-
-### 1.2 MongoDB / Mongoose
-
-1.2.1 [Aggregation](https://docs.mongodb.com/manual/aggregation/)
-
-Formerly, complex document manipulation was done in Node.js server.
-```javascript
-router.get('/feeds', async (req, res, next) => {
-	const { _id: userId } = res.locals.user
-
-	try {
-        let user = await User.findById(userId)
-        // User .followCount method to create .followingCount and .followerCount properties.
-        user = await user.followCount()
-		const reviews = await Review.find({user: userId}).populate('book').sort('-created_at')
-		const collections = await Collection.find({user: userId}).sort('-created_at')
-
-		return res.json({user, reviews, collections})
-	} catch (e) {
-		console.error(e)
-		return next(new Error('개인 피드 불러오기를 실패했습니다.'))
-	}
-})
-```
-
-Later, the code was refactored by using aggregation pipelines. So the process is now done in MongoDB server (Mongo Atlas).
-```javascript
-router.get('/feeds', async (req, res, next) => {
-	const { _id: userId } = res.locals.user
-	const query = { 
-		//...
-	}
-	const projection = { 
-		//...
-	}
-	// Using $lookup to calculate follower / following counts.
-	const followAggregation = [
-		{
-			'$lookup': {
-				'from': 'follows',
-				'let': { 'id': '$_id' },
-				'pipeline': [
-					{
-						'$match': {
-							'$expr': { '$eq': ['$$id', '$sender'] },
-						},
-					},
-					{ '$count': 'count' },
-				],
-				'as': 'followerCount',
-			},
-		}, {
-			'$lookup': {
-				'from': 'follows',
-				'let': { 'id': '$_id' },
-				'pipeline': [
-					{
-						'$match': {
-							'$expr': { '$eq': ['$$id', '$receiver'] },
-						},
-					},
-					{ '$count': 'count' },
-				],
-				'as': 'followingCount',
-			},
-		}, {
-			'$addFields': {
-				'followerCount': {
-					'$sum': '$followerCount.count',
-				},
-				'followingCount': {
-					'$sum': '$followingCount.count',
-				},
-			},
-		},
-	]
-	try {
-		// Simpler code with aggregation.
-		const user = await User.aggregate([query, projection, ...followAggregation])
-		const reviews = await Review.find({ user: userId }).populate('book').sort('-created_at')
-		const collections = await Collection.find({ user: userId }).sort('-created_at')
-
-		return res.json({ user, reviews, collections })
-	} catch (e) {
-		console.error(e)
-		return next(new Error('개인 피드 불러오기를 실패했습니다.'))
-	}
-})
-```
-
-### 1.3 Version Control 	![Git](https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white)
-
-[배달의 민족 Git-flow](https://techblog.woowahan.com/2553/)
-
-[Our Git Flow]()
-
-# 2. Architecture 👷
+# 2. Architecture · 구조 👷
 
 ```
 .
 ├── ...
 ├── controllers
+|   ├── crawl.js 
 |   ├── crawl.controller.js
 |   ├── get_collection_image.js
 |   ├── get_trending_review.js
 |   ├── image_upload.js
-|   ├── tag.controller.js
-|   ├── schedule.controller.js
+|   ├── index_top_tags.js
+|   ├── schedule_job.js
 |   └── utilities.js
 |
 ├── middleware
@@ -376,38 +109,23 @@ router.get('/feeds', async (req, res, next) => {
 ├── ...
 ```
 
-# 3. Dependencies 🤝
+---
 
-- Node.js@16.6.2
-- aws-sdk@2.975.0
-- axios@0.21.1
-- cheerio@1.0.0-rc.10
-- cors@2.8.5
-- cross-env@7.0.3
-- dotenv@10.0.0
-- express@4.17.1
-- jsonwebtoken@8.5.1
-- moment-timezone@0.5.33
-- mongoose@5.13.8
-- multer@1.4.3
-- node-schedule@2.0.0
-- passport-kakao@1.0.1
-- passport@0.4.1
-- path@0.12.7
-- puppeteer@10.2.0
-- xml2js@0.4.23
+# 3. Main features · 주요 기능  💡
 
-# 4. Sample Codes 💡
+### 3.1. Feeds
 
-### 1. Feeds
+Users can read others' reviews through the feed. Unlike ordinary projects with basic CRUD, **DIVER** provides a complex Read experience with following algorithm.
+
+The feed is consisted of 3 different stages, each offering a set of reviews based on different algorithm
 
 <!--suppress ALL -->
 <table>
 <thead>
-<th>단계</th>
-<th>7일 이내</th>
-<th>팔로우 여부</th>
-<th>인기</th>
+<th>Stage</th>
+<th>Within 7 days</th>
+<th>Followed User's review</th>
+<th>Likes</th>
 </thead>
 <tr>
 <td>1. Recent unread reviews of following users.</td>
@@ -426,6 +144,12 @@ router.get('/feeds', async (req, res, next) => {
 <td>🟢</td>
 <td>❌</td>
 <td>❌</td>
+</tr>
+<tr>
+<td>Extra: Show all reviews (Provided on a different tab)</td>
+<td>❌</td>
+<td>❌</td>
+<td>🟢</td>
 </tr>
 </table>
 
@@ -524,98 +248,377 @@ router.get('/', authMiddleware(false), async (req, res, next) => {
 // ...
 ```
 
-### 2. Tags
+### 3.2. Tags
 
-1. Indexing reviews every day
-2. Saving 10 of the most used tags in each book
-3. When writing reviews, expose the top frequency tag to encourage users to use the top frequency tag
+1. Update topTags field of books everyday
+2. Top 10 most used tags of one book is saved
+3. When writing reviews, exposes the top 10 frequent tags to users to reuse other users' tags
 
 
 ```js
-/**
- * Returns set of isbns which changed since last run
- * @returns {Promise<Set<number>>}
- */
-const getChangedISBNs = async () => {
-	const changes = await ChangesIndex.find()
-
-	return new Set(changes.map((change) => change.isbn))
-}
-/**
- * Returns set of tags from given array of books (=isbns).
- * @param isbnArr {number[]}
- * @returns {Promise<Set<string>>}
- */
-const getChangedTags = async (isbnArr) => {
-	const result = new Set()
-
-	/**
-	 *  Books to be updated on their topTags property.
-	 * @type {Document[]}
-	 */
-	const books = await Book.find({
-		_id: {
-			$in: isbnArr,
-		},
-	})
-	.select('reviews')
-	.populate({path:'reviews', select:'hashtags'})
-
-	for (const book of books) {
-		/**
-		 * Array of all tags from hashtags of reviews of book
-		 * @type {string[]}
-		 */
-		const allTags = book.reviews.reduce((acc, review) => {
-			// If hashtags is empty, continue without change
-			if (!review.hashtags) return acc
-			return [...acc, ...review.hashtags]
-		}, [])
-		/**
-		 * Array of unique tags from allTags.
-		 * @type {string[]}
-		 */
-		const uniqueTags = [...new Set(allTags)]
-
-		// Update topTags property of book.
-		book.topTags = uniqueTags
-			.map((tag) => {
-				return {
-					name: tag,
-					occurrence: allTags.filter((_tag) => _tag === tag).length,
-				}
-			})
-			.sort((a, b) => b.occurrence - a.occurrence)
-			.slice(0, 9)
-			.map((tag) => tag.name)
-
-		await book.save()
-		result.add(...book.topTags)
+export default class tagController {
+	static async updateTopTags() {
+		console.log('updateTopTags 를 실행합니다.')
+		try {
+			const updatedBooks = await tagController.#getUpdatedBooks()
+			const updatedTags = await tagController.#updateTopTags(updatedBooks)
+			const numOfUpdatedTags = await tagController.#updateTagCollection(updatedTags)
+			console.log(`updateTopTags 가 성공적으로 완료되었으며, 총 ${numOfUpdatedTags} 개의 태그가 생성 또는 수정되었습니다.`)
+		} catch (err) {
+			console.error(err)
+		}
 	}
 
-	return result
-}
+	/**
+	 * Returns array of isbn of which updateOnTag field is true. And set updateOnTag field to false.
+	 * @returns {Promise<Document<>[]>} Array of mongodb documents with id and reviews field.
+	 */
+	static async #getUpdatedBooks() {
+		const books = await Book.find({ updateOnTag: true }, { reviews: 1, topTags: 1 }).populate({
+			path: 'reviews',
+			select: 'hashtags',
+		})
+		await Book.updateMany({ updateOnTag: true }, { updateOnTag: false })
+		return books
+	}
 
-const indexTopTags = async () => {
-	try {
-		console.log('indexTopTags 함수가 실행됩니다.')
-		const changedISBNs = await getChangedISBNs()
-		const changedTags = await getChangedTags([...changedISBNs])
-		changedTags.forEach(await updateCollection)
-		await ChangesIndex.deleteMany()
-	} catch (e) {
-		console.error(e)
+	/**
+	 * For each book in books, calculate most used hashtags of its reviews. Then save them as topTags field in the book.
+	 * @param books Array of book documents.
+	 * @returns {Promise<string[]>} Array of updated tags.
+	 */
+	static async #updateTopTags(books) {
+		const updatedTags = new Set()
+		const promises = books.map(book => {
+			const allTagsOfOneBook = book.reviews.reduce((acc, review) => {
+				if (!review.hashtags) return acc
+				return [...acc, ...review.hashtags]
+			}, [])
+			const uniqueTagsOfOneBook = [...new Set(allTagsOfOneBook)]
+			book.topTags = getMostUsedTagsForOneBook(allTagsOfOneBook, uniqueTagsOfOneBook)
+			updatedTags.add(...uniqueTagsOfOneBook)
+			return book.save()
+		})
+		await Promise.allSettled(promises)
+
+		return [...updatedTags]
+
+		function getMostUsedTagsForOneBook(allTags, uniqueTags) {
+			return uniqueTags.map((tag) => {
+				return {
+					name: tag,
+					occurrence: allTags.filter((_tag) => tag === tag).length,
+				}
+			}).sort((a, b) => b.occurrence - a.occurrence).slice(0, 9).map((tag) => tag.name)
+		}
+	}
+
+	/**
+	 * Update tag collection's contents field with books having the tag in its topTags field.
+	 * @param tags {string[]}
+	 * @returns {Promise<number>} Number of tag documents that successfully updated.
+	 */
+	static async #updateTagCollection(tags) {
+		const promises = tags.map(async tag => {
+			const tagDocument = { name: tag, type: 'tag' }
+			const collection = await Collection.findOne(tagDocument) ?? await Collection.create(tagDocument)
+			const booksContainingTag = await Book.find({ topTags: tag })
+			collection.contents = booksContainingTag.map((book) => {
+				return { book: book.isbn }
+			})
+			return collection.save()
+		})
+		const result = await Promise.allSettled(promises)
+		return result.filter(res => res.status === 'fulfilled').length
 	}
 }
 
 ```
+---
+# 4. Sample Codes: Improvements by Refactoring · 샘플 코드 : 리팩토링을 통한 개선
+### 4.1 Javascript/ES6+ ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
+
+Not only using basics of ES6 superficially, we tried to implement syntactic sugars of recent versions of ECMAScript.
+
+Here are some codes that went through refactoring to apply ES6+
+
+---
+
+ES6+ 의 기본뿐만 아니라 최신 버전 ECMAScript 의 문법적 설탕을 적용하기 위해서 노력했습니다.
+
+아래는 ES6+ 적용을 하여 리팩토링을 진행한 코드입니다.
+
+---
+
+#### 4.1.1 [Promise.allSettled()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/allSettled)
+To reduce time consumption on crawling, we implemented **Promise.allSettled()**.
+
+Because we can query on anytime later, being rejected on some requests was not a big deal &ndash; and this DOES happen due to advertisement in source URL.
+
+---
+
+크롤링 시 시간 소요를 줄이기 위해 **Promise.allSettled()** 를 사용하였습니다.
+
+나중에라도 다시 받아오면 되기 때문에 몇개 실패한다고 하더라도 큰 문제가 아니었기 때문입니다. 실패는 대상 페이지에 삽입된 예기치 못한 광고 때문이었습니다.
+
+```javascript
+// ./controllers/crawl.js
+// todo Deprecated example
+
+const getBestsellers = async () => {
+	const BESTSELLER_URL = 'https://www.kyobobook.co.kr/bestSellerNew/bestseller.laf'
+	const query = 'ul > input[name=barcode]'
+	const page = await launchBrowserAndGotoURL(BESTSELLER_URL)
+    
+	const isbnArr = await page.$$eval(query, (inputList) => inputList.map((input) => input.value))
+	await (await page.browser()).close()
+	const top10 = isbnList.slice(0, 9)
+	const promises = top10.map((isbn) => searchBooks('isbn', isbn))
+	return [...await Promise.allSettled(promises)].filter((p) => p.status === 'fulfilled').map((p) => p.value)
+}
+```
+#### 4.1.2 [Optional Chaining (?.)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Optional_chaining)
+
+Optional Chaining was powerful and simple operator to process optional parameters. It created more readable code than `if` statement.
+
+---
+
+옵셔널 체이닝은 선택적인 매개변수를 처리하기에 강력하고 간결한 연산자입니다.`if`문에 비해 더 읽기 좋은 코드가 되었습니다.  
+```javascript
+// Saving a review with / without an image.
+
+// Previously
+let image
+if (res.locals) image = res.locals.url
+await Review.create({content, quote, image})
+
+// Refactored
+const image = res.locals?.url
+await Review.create({content, quote, image })
 
 
+```
 
+#### 4.1.3 [Nullish Coalescing (??)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Nullish_coalescing_operator)
 
-For development, you will only need Node.js and a node global package, Yarn, installed in your environement.
+`??` operator also helped to simply a complex `if` statement and reduce use of `let`. 
 
-# 5. Contributors 🧑‍🤝‍🧑 
+---
+
+`??` 연산자 역시 복잡한 `if`문을 간단하게 해주고 `let`을 덜 사용하게 해주었습니다.
+
+```javascript
+// Find a collection document by its name.
+// If such document doesn't exist, create one.
+
+// Previously
+const updateCollection = async (tag) => {
+	let collection
+	collection = await Collection.findOne({ name: tag, type: 'tag' })
+	if (!collection) collection = await Collection.create({ name: tag, type: 'tag ' })
+
+	//...
+}
+
+// Refactored
+const updateCollection = async (tag) => {
+	const collection = await Collection.findOne({ name: tag, type: 'tag' }) ?? await Collection.create({ name: tag, type: 'tag' })
+
+	//...
+}
+```
+
+#### 4.1.4 [Async / Await](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Async_await)
+
+By using `async/await`, it was possible to avoid complex call backs and use `try/catch` to handle errors.
+
+---
+
+`async/await`을 사용하여 복잡한 콜백 구조를 피하고 `try/catch`로 에러를 처리할 수 있었습니다.
+```javascript
+export default class ReviewController extends SuperController {
+	//...
+	static async apiDeleteReview(req, res, next) {
+		const { _id: userId } = res.locals.user
+
+		try {
+			const { reviewId } = ReviewController._getIds(req)
+			const review = await Review.findById(reviewId)
+
+			if (!review) return next({ message: '존재하지 않는 리뷰 아이디 입니다.', status: 400 })
+			ReviewController._validateAuthor(review.user, userId)
+
+			await review.deleteOne()
+
+			return res.sendStatus(202)
+		} catch (err) {
+			console.error(err)
+			if (err.status) next(err)
+			return next({ message: '리뷰 삭제를 실패했습니다.', status: 500 })
+		}
+	}
+}
+```
+
+#### 4.1.5 [Import (ESModule)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import)
+By adopting ESModule, modules are loaded both asynchronously and partially. Thus saving memory and time. 
+
+---
+
+ES 모듈을 사용하여 모듈을 비-동기적 그리고 부분적으로 불러온다. 따라서 메모리를 아끼고 속도를 향상시킬 수 있다.
+
+---
+
+#### 4.1.6 [Class](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes)
+
+Object-oriented programming is possible with `class` in some degree. In Diver backend, both reviews and collections share common features: they need a user to be logged in to post, they are MongoDB documents, they are both related to book and so on.
+
+Therefore, Super class inherits shared common static methods &ndash; which I wish to be protected methods but current JS doesn't support such feature &ndash; to ReviewController and CollectionController classes.
+
+And controllers related to the same MongoDB collections &ndash; Review and Collection &ndash; are grouped into each class.
+
+```javascript
+export default class SuperController {
+	static _getIds(req) {
+		//...
+	}
+	static _validateAuthor(author, currentUserId) {
+		//...
+	}	
+}
+
+// review.controller.js
+import SuperController from './super.controller.js'
+export default class ReviewController extends SuperController {
+	static async apiPostReview(req, res, next) {
+		//...
+	}
+    //...
+}
+
+// routes/reviews.js
+//...
+import ReviewCtrl from './review.controller.js'
+router.route('/')
+	.post(upload.single('image'), ImageUpload.uploadImage, ReviewCtrl.apiPostReview)
+	.get(ReviewCtrl.apiGetReviews)
+
+router.route('/:reviewId')
+	.get(ReviewCtrl.apiGetReview)
+	.put(ReviewCtrl.apiPutReview)
+	.delete(ReviewCtrl.apiDeleteReview)
+//...
+```
+
+### 4.2 MongoDB / Mongoose
+
+#### 4.2.1 [Aggregation](https://docs.mongodb.com/manual/aggregation/)
+
+Formerly, complex document manipulation was done in Node.js server.
+```javascript
+router.get('/feeds', async (req, res, next) => {
+	const { _id: userId } = res.locals.user
+
+	try {
+        let user = await User.findById(userId)
+        // User .followCount method to create .followingCount and .followerCount properties.
+        user = await user.followCount()
+		const reviews = await Review.find({user: userId}).populate('book').sort('-created_at')
+		const collections = await Collection.find({user: userId}).sort('-created_at')
+
+		return res.json({user, reviews, collections})
+	} catch (e) {
+		console.error(e)
+		return next(new Error('개인 피드 불러오기를 실패했습니다.'))
+	}
+})
+```
+
+Later, the code was refactored by using aggregation pipelines. So the process is now done in MongoDB server (Mongo Atlas).
+```javascript
+router.get('/feeds', async (req, res, next) => {
+	const { _id: userId } = res.locals.user
+	const query = { 
+		//...
+	}
+	const projection = { 
+		//...
+	}
+	// Using $lookup to calculate follower / following counts.
+	const followAggregation = [
+		{
+			'$lookup': {
+				'from': 'follows',
+				'let': { 'id': '$_id' },
+				'pipeline': [
+					{
+						'$match': {
+							'$expr': { '$eq': ['$$id', '$sender'] },
+						},
+					},
+					{ '$count': 'count' },
+				],
+				'as': 'followerCount',
+			},
+		}, {
+			'$lookup': {
+				'from': 'follows',
+				'let': { 'id': '$_id' },
+				'pipeline': [
+					{
+						'$match': {
+							'$expr': { '$eq': ['$$id', '$receiver'] },
+						},
+					},
+					{ '$count': 'count' },
+				],
+				'as': 'followingCount',
+			},
+		}, {
+			'$addFields': {
+				'followerCount': {
+					'$sum': '$followerCount.count',
+				},
+				'followingCount': {
+					'$sum': '$followingCount.count',
+				},
+			},
+		},
+	]
+	try {
+		// Simpler code with aggregation.
+		const user = await User.aggregate([query, projection, ...followAggregation])
+		const reviews = await Review.find({ user: userId }).populate('book').sort('-created_at')
+		const collections = await Collection.find({ user: userId }).sort('-created_at')
+
+		return res.json({ user, reviews, collections })
+	} catch (e) {
+		console.error(e)
+		return next(new Error('개인 피드 불러오기를 실패했습니다.'))
+	}
+})
+```
+# 5. Dependencies 🤝
+
+- Node.js@16.6.2
+- aws-sdk@2.975.0
+- axios@0.21.1
+- cheerio@1.0.0-rc.10
+- cors@2.8.5
+- cross-env@7.0.3
+- dotenv@10.0.0
+- express@4.17.1
+- jsonwebtoken@8.5.1
+- moment-timezone@0.5.33
+- mongoose@5.13.8
+- multer@1.4.3
+- passport-kakao@1.0.1
+- passport@0.4.1
+- path@0.12.7
+- puppeteer@10.2.0
+- xml2js@0.4.23
+
+# 6. Contributors 🧑‍🤝‍🧑 
 
 <table>
 <tr>
