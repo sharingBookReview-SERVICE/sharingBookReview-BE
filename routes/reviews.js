@@ -3,8 +3,8 @@ import { Review } from '../models/index.js'
 import { likeUnlike } from '../models/utilities.js'
 import authMiddleware from '../middleware/auth_middleware.js'
 import multer from 'multer'
-import ImageUpload from '../controllers/image_upload.js'
 import ReviewCtrl from './review.controller.js'
+import ImageUploadController from '../controllers/image_upload.controller.js'
 
 const router = new Router({ mergeParams: true })
 const upload = multer({ dest: 'uploads/' })
@@ -12,7 +12,7 @@ const upload = multer({ dest: 'uploads/' })
 router.use(authMiddleware(true))
 
 router.route('/')
-	.post(upload.single('image'), ImageUpload.uploadImage, ReviewCtrl.apiPostReview)
+	.post(upload.single('image'), ImageUploadController.uploadImage, ReviewCtrl.apiPostReview)
 	.get(ReviewCtrl.apiGetReviews)
 
 router.route('/:reviewId')
