@@ -1,7 +1,8 @@
 import { Book } from '../models/index.js'
 import crawlController from './crawl.controller.js'
+import SuperController from '../routes/super.controller.js'
 
-export default class BookController {
+export default class BookController extends SuperController {
 	static async apiGetBooks(req, res, next) {
 		const TARGETS = ['제목', '저자', '출판사', 'isbn', 'tag']
 
@@ -27,6 +28,20 @@ export default class BookController {
 			return res.json({ searchList })
 		} catch (err) {
 			return next({ message: '전체 책 불러오기를 실패했습니다.', status: 500 })
+		}
+	}
+
+	static async apiGetBook(req, res, next) {
+		try {
+			const { bookId } = BookController._getIds(req)
+			// todo Number 없어도 작동하는지 확인하기
+			const book = await Book.findById(Number(bookId)) ?? (await crawlController.searchBooks('sibn', bookId))[0]
+
+			// todo res.json({ book }) 으로 바꾸고 프론트엔드에 적용하기
+			return res.json(book)
+		} catch (err) {
+			console.error(err)
+			return next({ message: 'DB 에서 책 검색을 실패했습니다.', status: 500 })
 		}
 	}
 }

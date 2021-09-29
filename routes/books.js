@@ -22,24 +22,6 @@ router.get('/', BookController.apiGetBooks)
 // })
 
 // 개별 책 선택
-router.get('/:bookId', async (req, res, next) => {
-    const { bookId } = req.params
-	try {
-		const book = await Book.findById(Number(bookId))
-		if (book) {
-			return res.json(book)
-		}
-	} catch (e) {
-        console.error(e)
-		return next(new Error('DB 에서 책 검색을 실패했습니다.'))
-	}
-
-	try {
-		const searchList = await crawlController.searchBooks('isbn', bookId)
-		return res.json(searchList[0])
-	} catch (e) {
-		return next(new Error('책 정보를 불러오는데 실패했습니다.'))
-	}
-})
+router.get('/:bookId', BookController.apiGetBook)
 
 export default router
