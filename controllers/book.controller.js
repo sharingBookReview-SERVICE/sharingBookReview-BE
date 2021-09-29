@@ -44,4 +44,8 @@ export default class BookController extends SuperController {
 			return next({ message: 'DB 에서 책 검색을 실패했습니다.', status: 500 })
 		}
 	}
+
+	static async apiGetBestsellers(req, res, next) {
+		return res.sendStatus(501)
+	}
 }

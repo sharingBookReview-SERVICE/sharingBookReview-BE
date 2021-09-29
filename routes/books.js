@@ -1,27 +1,10 @@
-import express from 'express'
-import { Book } from '../models/index.js'
-import dotenv from 'dotenv'
-import crawlController from '../controllers/crawl.controller.js'
+import { Router } from 'express'
 import BookController from '../controllers/book.controller.js'
-dotenv.config()
 
-const router = new express.Router({ mergeParams: true })
+const router = new Router({ mergeParams: true })
 
-// 책 목록
 router.get('/', BookController.apiGetBooks)
-
-// todo Bestseller Crawl
-// 베스트 샐러
-// router.get('/bestsellers', async(req, res, next) => {
-//     try{
-//         // const bestsellers = await getBestsellers()
-// 	return res.json({bestsellers})
-//     } catch(e){
-//         return next(new Error('베스트셀러 목록을 불러오는데 실패했습니다.'))
-//     }
-// })
-
-// 개별 책 선택
 router.get('/:bookId', BookController.apiGetBook)
+router.get('/bestsellers', BookController.apiGetBestsellers)
 
 export default router
