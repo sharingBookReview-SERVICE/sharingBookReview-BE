@@ -34,8 +34,7 @@ export default class BookController extends SuperController {
 	static async apiGetBook(req, res, next) {
 		try {
 			const { bookId } = BookController._getIds(req)
-			// todo Number 없어도 작동하는지 확인하기
-			const book = await Book.findById(Number(bookId)) ?? (await crawlController.searchBooks('isbn', bookId))[0]
+			const book = await Book.findById(bookId) ?? (await crawlController.searchBooks('isbn', bookId))[0]
 
 			// todo res.json({ book }) 으로 바꾸고 프론트엔드에 적용하기
 			return res.json(book)
