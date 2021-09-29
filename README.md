@@ -1,11 +1,12 @@
 # 🌊 DIVER BACKEND 🌊
 
-❓ <b>Business Model</b> - Diver provides collections and reviews of books and users can share them like in a social network.
+❓ <b>Business Model</b> - Diver provides collections and reviews of books and users can share them like in a social
+network.
 
 🌌 <b>Base</b> - A Node.js + Express based backend project.
 
-🔗 <b>Our frontend</b> - Click [Frontend side](https://github.com/sharingBookReview-SERVICE/sharingBookReview-FE) to go to corresponding React.js
-based frontend project.
+🔗 <b>Our frontend</b> - Click [Frontend side](https://github.com/sharingBookReview-SERVICE/sharingBookReview-FE) to go
+to corresponding React.js based frontend project.
 
 ---
 
@@ -110,10 +111,27 @@ on.
 
 ---
 
-# 3. Main features · 주요 기능  💡
+## 3. Main features · 주요 기능 💡
+### 3.1 Basic Features
+* Sign up / Sing in : Users can create an account using Kakao's API. No vulnerable information is saved on the server or the DB.
+* Search books
+    * Users can search books by one of title, author, publisher, isbn, and tag. Uses Naver's book API.
+    * Once a review is posted on a book, or a book is included in a user made collection, the book's data is saved on the DB. Thus accelerating access speed on frequently used books.
+* Share reviews: Create, read, update, and delete reviews on a book. A review includes book info, content, a quote, an image, and book describing hashtags.
+* Share collections
+    * Users can make a collection of books with short description and an optional image.
+    * Users can read collections of other users, and find out new books to read.
+* More on collections
+    * The server automatically created several collections.
+    * Tag collection, for example, is made by topTag field of books.
+* Profile icons
+    * By numerous actions in Diver, a user can gain exp points!
+    * With a certain amount of exp points, a user dives deeper into the ocean of books, and sometimes can find treasure boxes!
+    * Users can change profile images with cute sea creature icons from the treasure boxes.
 
-### 3.1. Feeds
+### 3.1 Feeds
 
+<details>
 Users can read others' reviews through the feed. Unlike ordinary projects with basic CRUD, **DIVER** provides a complex Read experience with following algorithm.
 
 The feed is consisted of 3 different stages, each offering a set of reviews based on different algorithm
@@ -202,13 +220,11 @@ router.get('/', authMiddleware(false), async (req, res, next) => {
 			.populate({ path: 'user', select: '_id profileImage nickname' })
 			.populate({ path: 'book', select: '_id title author' })
 
-            
-    
 
 		// If no documents found with query, continue until next if statement. This keep goes on.
-		if (followingReviews.length){
-            return res.json(await showLikeFollowBookMarkStatus(followingReviews, userId))
-        } 
+		if (followingReviews.length) {
+			return res.json(await showLikeFollowBookMarkStatus(followingReviews, userId))
+		}
 
 		// 2. Return trending reviews (reviews with high trending point, in other words, recent review with lots of likes)
 		const trend = await Trend.findOne({}, {}, { sort: { created_at: -1 } })
@@ -222,8 +238,8 @@ router.get('/', authMiddleware(false), async (req, res, next) => {
 			.populate({ path: 'book', select: '_id title author' })
 
 		if (trendingReviews.length) {
-            return res.json(await showLikeFollowBookMarkStatus(trendingReviews, userId))
-        }
+			return res.json(await showLikeFollowBookMarkStatus(trendingReviews, userId))
+		}
 		// 3. Return all recent unread reviews regardless of following.
 
 		const recentReviews = await Review.find(query)
@@ -232,9 +248,9 @@ router.get('/', authMiddleware(false), async (req, res, next) => {
 			.populate({ path: 'user', select: '_id profileImage nickname' })
 			.populate({ path: 'book', select: '_id title author' })
 
-		if (recentReviews.length){
-            return res.json(await showLikeFollowBookMarkStatus(recentReviews, userId))
-        }
+		if (recentReviews.length) {
+			return res.json(await showLikeFollowBookMarkStatus(recentReviews, userId))
+		}
 		// 4. If no reviews are found by all three queries.
 		return res.sendStatus(204)
 
@@ -247,12 +263,15 @@ router.get('/', authMiddleware(false), async (req, res, next) => {
 // ...
 ```
 
-### 3.2. Tags
+</details>
+
+### 3.2 Tags
+
+<details>
 
 1. Update topTags field of books everyday
 2. Top 10 most used tags of one book is saved
 3. When writing reviews, exposes the top 10 frequent tags to users to reuse other users' tags
-
 
 ```js
 export default class tagController {
@@ -333,8 +352,13 @@ export default class tagController {
 }
 
 ```
+
+</details>
+
 ---
+
 # 4. Sample Codes: Improvements by Refactoring · 샘플 코드 : 리팩토링을 통한 개선
+
 ### 4.1 Javascript/ES6+ ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
 
 Not only using basics of ES6 superficially, we tried to implement syntactic sugars of recent versions of ECMAScript.
@@ -350,9 +374,11 @@ ES6+ 의 기본뿐만 아니라 최신 버전 ECMAScript 의 문법적 설탕을
 ---
 
 #### 4.1.1 [Promise.allSettled()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/allSettled)
+
 To reduce time consumption on crawling, we implemented **Promise.allSettled()**.
 
-Because we can query on anytime later, being rejected on some requests was not a big deal &ndash; and this DOES happen due to advertisement in source URL.
+Because we can query on anytime later, being rejected on some requests was not a big deal &ndash; and this DOES happen
+due to advertisement in source URL.
 
 ---
 
@@ -368,7 +394,7 @@ const getBestsellers = async () => {
 	const BESTSELLER_URL = 'https://www.kyobobook.co.kr/bestSellerNew/bestseller.laf'
 	const query = 'ul > input[name=barcode]'
 	const page = await launchBrowserAndGotoURL(BESTSELLER_URL)
-    
+
 	const isbnArr = await page.$$eval(query, (inputList) => inputList.map((input) => input.value))
 	await (await page.browser()).close()
 	const top10 = isbnList.slice(0, 9)
@@ -376,31 +402,34 @@ const getBestsellers = async () => {
 	return [...await Promise.allSettled(promises)].filter((p) => p.status === 'fulfilled').map((p) => p.value)
 }
 ```
+
 #### 4.1.2 [Optional Chaining (?.)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Optional_chaining)
 
-Optional Chaining was powerful and simple operator to process optional parameters. It created more readable code than `if` statement.
+Optional Chaining was powerful and simple operator to process optional parameters. It created more readable code
+than `if` statement.
 
 ---
 
-옵셔널 체이닝은 선택적인 매개변수를 처리하기에 강력하고 간결한 연산자입니다.`if`문에 비해 더 읽기 좋은 코드가 되었습니다.  
+옵셔널 체이닝은 선택적인 매개변수를 처리하기에 강력하고 간결한 연산자입니다.`if`문에 비해 더 읽기 좋은 코드가 되었습니다.
+
 ```javascript
 // Saving a review with / without an image.
 
 // Previously
 let image
 if (res.locals) image = res.locals.url
-await Review.create({content, quote, image})
+await Review.create({ content, quote, image })
 
 // Refactored
 const image = res.locals?.url
-await Review.create({content, quote, image })
+await Review.create({ content, quote, image })
 
 
 ```
 
 #### 4.1.3 [Nullish Coalescing (??)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Nullish_coalescing_operator)
 
-`??` operator also helped to simply a complex `if` statement and reduce use of `let`. 
+`??` operator also helped to simply a complex `if` statement and reduce use of `let`.
 
 ---
 
@@ -421,7 +450,10 @@ const updateCollection = async (tag) => {
 
 // Refactored
 const updateCollection = async (tag) => {
-	const collection = await Collection.findOne({ name: tag, type: 'tag' }) ?? await Collection.create({ name: tag, type: 'tag' })
+	const collection = await Collection.findOne({ name: tag, type: 'tag' }) ?? await Collection.create({
+		name: tag,
+		type: 'tag'
+	})
 
 	//...
 }
@@ -434,6 +466,7 @@ By using `async/await`, it was possible to avoid complex call backs and use `try
 ---
 
 `async/await`을 사용하여 복잡한 콜백 구조를 피하고 `try/catch`로 에러를 처리할 수 있었습니다.
+
 ```javascript
 export default class ReviewController extends SuperController {
 	//...
@@ -460,7 +493,8 @@ export default class ReviewController extends SuperController {
 ```
 
 #### 4.1.5 [Import (ESModule)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import)
-By adopting ESModule, modules are loaded both asynchronously and partially. Thus saving memory and time. 
+
+By adopting ESModule, modules are loaded both asynchronously and partially. Thus saving memory and time.
 
 ---
 
@@ -470,34 +504,42 @@ ES 모듈을 사용하여 모듈을 비-동기적 그리고 부분적으로 불�
 
 #### 4.1.6 [Class](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes)
 
-Object-oriented programming is possible with `class` in some degree. In Diver backend, both reviews and collections share common features: they need a user to be logged in to post, they are MongoDB documents, they are both related to book and so on.
+Object-oriented programming is possible with `class` in some degree. In Diver backend, both reviews and collections
+share common features: they need a user to be logged in to post, they are MongoDB documents, they are both related to
+book and so on.
 
-Therefore, Super class inherits shared common static methods &ndash; which I wish to be protected methods but current JS doesn't support such feature &ndash; to ReviewController and CollectionController classes.
+Therefore, Super class inherits shared common static methods &ndash; which I wish to be protected methods but current JS
+doesn't support such feature &ndash; to ReviewController and CollectionController classes.
 
-And controllers related to the same MongoDB collections &ndash; Review and Collection &ndash; are grouped into each class.
+And controllers related to the same MongoDB collections &ndash; Review and Collection &ndash; are grouped into each
+class.
 
 ```javascript
 export default class SuperController {
 	static _getIds(req) {
 		//...
 	}
+
 	static _validateAuthor(author, currentUserId) {
 		//...
-	}	
+	}
 }
 
 // review.controller.js
 import SuperController from './super.controller.js'
+
 export default class ReviewController extends SuperController {
 	static async apiPostReview(req, res, next) {
 		//...
 	}
-    //...
+
+	//...
 }
 
 // routes/reviews.js
 //...
 import ReviewCtrl from './review.controller.js'
+
 router.route('/')
 	.post(upload.single('image'), ImageUpload.uploadImage, ReviewCtrl.apiPostReview)
 	.get(ReviewCtrl.apiGetReviews)
@@ -514,18 +556,19 @@ router.route('/:reviewId')
 #### 4.2.1 [Aggregation](https://docs.mongodb.com/manual/aggregation/)
 
 Formerly, complex document manipulation was done in Node.js server.
+
 ```javascript
 router.get('/feeds', async (req, res, next) => {
 	const { _id: userId } = res.locals.user
 
 	try {
-        let user = await User.findById(userId)
-        // User .followCount method to create .followingCount and .followerCount properties.
-        user = await user.followCount()
-		const reviews = await Review.find({user: userId}).populate('book').sort('-created_at')
-		const collections = await Collection.find({user: userId}).sort('-created_at')
+		let user = await User.findById(userId)
+		// User .followCount method to create .followingCount and .followerCount properties.
+		user = await user.followCount()
+		const reviews = await Review.find({ user: userId }).populate('book').sort('-created_at')
+		const collections = await Collection.find({ user: userId }).sort('-created_at')
 
-		return res.json({user, reviews, collections})
+		return res.json({ user, reviews, collections })
 	} catch (e) {
 		console.error(e)
 		return next(new Error('개인 피드 불러오기를 실패했습니다.'))
@@ -533,14 +576,16 @@ router.get('/feeds', async (req, res, next) => {
 })
 ```
 
-Later, the code was refactored by using aggregation pipelines. So the process is now done in MongoDB server (Mongo Atlas).
+Later, the code was refactored by using aggregation pipelines. So the process is now done in MongoDB server (Mongo
+Atlas).
+
 ```javascript
 router.get('/feeds', async (req, res, next) => {
 	const { _id: userId } = res.locals.user
-	const query = { 
+	const query = {
 		//...
 	}
-	const projection = { 
+	const projection = {
 		//...
 	}
 	// Using $lookup to calculate follower / following counts.
@@ -597,6 +642,7 @@ router.get('/feeds', async (req, res, next) => {
 	}
 })
 ```
+
 # 5. Dependencies 🤝
 
 - Node.js@16.6.2
@@ -617,7 +663,7 @@ router.get('/feeds', async (req, res, next) => {
 - puppeteer@10.2.0
 - xml2js@0.4.23
 
-# 6. Contributors 🧑‍🤝‍🧑 
+# 6. Contributors 🧑‍🤝‍🧑
 
 <table>
 <tr>
