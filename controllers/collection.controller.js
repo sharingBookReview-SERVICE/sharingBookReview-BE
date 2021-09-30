@@ -1,10 +1,8 @@
-import { Book, Collection, Comment, User } from '../models/index.js'
-import { saveBook } from '../controllers/utilities.js'
+import { Book, Collection, Comment, User } from '../models'
+import { saveBook } from './utilities.js'
 import mongoose from 'mongoose'
 import SuperController from './super.controller.js'
-import crawlController from '../controllers/crawl.controller.js'
-
-const { isValidObjectId } = mongoose
+import crawlController from './crawl.controller.js'
 
 export default class CollectionController extends SuperController {
 	static async apiGetCollections(req, res, next) {

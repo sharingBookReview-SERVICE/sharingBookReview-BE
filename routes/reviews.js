@@ -3,7 +3,7 @@ import { Review } from '../models/index.js'
 import { likeUnlike } from '../models/utilities.js'
 import authMiddleware from '../middleware/auth_middleware.js'
 import multer from 'multer'
-import ReviewCtrl from './review.controller.js'
+import ReviewCtrl from '../controllers/review.controller.js'
 import ImageUploadController from '../controllers/image_upload.controller.js'
 
 const router = new Router({ mergeParams: true })
