@@ -1,6 +1,6 @@
 import { Book } from '../models/index.js'
 import crawlController from './crawl.controller.js'
-import SuperController from '../routes/super.controller.js'
+import SuperController from './super.controller.js'
 
 export default class BookController extends SuperController {
 	static async apiGetBooks(req, res, next) {
@@ -44,7 +44,7 @@ export default class BookController extends SuperController {
 		}
 	}
 
-	static async apiGetBestsellers(req, res, next) {
+	static async apiGetBestsellers(req, res) {
 		return res.sendStatus(501)
 	}
 }

@@ -5,7 +5,7 @@ const { isValidObjectId } = mongoose
 export default class SuperController {
 	/**
 	 * Validate and then return IDs in parameters.
-	 * @param req {Request<P, ResBody, ReqBody, ReqQuery, Locals>}
+	 * @param req
 	 * @returns {{reviewId, collectionId, commentId}}
 	 * @protected
 	 */

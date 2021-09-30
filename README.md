@@ -47,13 +47,16 @@ on.
 .
 ├── ...
 ├── controllers
-|   ├── crawl.js 
+|   ├── book.controller.js
+|   ├── collection.controller.js
 |   ├── crawl.controller.js
 |   ├── get_collection_image.js
 |   ├── get_trending_review.js
-|   ├── image_upload,controller.js
-|   ├── index_top_tags.js
-|   ├── schedule_job.js
+|   ├── image_upload.controller.js
+|   ├── review.controller.js
+|   ├── schedule.controller.js
+|   ├── super.controller.js
+|   ├── tag.controller.js
 |   └── utilities.js
 |
 ├── middleware

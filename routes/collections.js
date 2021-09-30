@@ -3,7 +3,7 @@ import { Collection } from '../models/index.js'
 import authMiddleware from '../middleware/auth_middleware.js'
 import multer from 'multer'
 import { likeUnlike } from '../models/utilities.js'
-import CollectionCtrl from './collection.controller.js'
+import CollectionCtrl from '../controllers/collection.controller.js'
 import ImageUploadController from '../controllers/image_upload.controller.js'
 
 const router = new express.Router()

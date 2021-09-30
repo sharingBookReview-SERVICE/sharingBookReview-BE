@@ -1,8 +1,8 @@
 import { Book, Review, User } from '../models/index.js'
-import { saveBook } from '../controllers/utilities.js'
+import { saveBook } from './utilities.js'
 import user from '../models/user.js'
 import SuperController from './super.controller.js'
-import crawlController from '../controllers/crawl.controller.js'
+import crawlController from './crawl.controller.js'
 
 export default class ReviewController extends SuperController {
 	static async apiPostReview(req, res, next) {
@@ -101,7 +101,6 @@ export default class ReviewController extends SuperController {
 
 	static async apiPutReview(req, res, next) {
 		const { _id: userId } = res.locals.user
-		const { quote, content, hashtags } = req.body
 
 		try {
 			const { reviewId } = ReviewController._getIds(req)
