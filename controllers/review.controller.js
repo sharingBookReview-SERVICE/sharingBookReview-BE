@@ -1,4 +1,4 @@
-import { Book, Review, User } from '../models'
+import { Book, Review, User } from '../models/index.js'
 import { saveBook } from './utilities.js'
 import user from '../models/user.js'
 import SuperController from './super.controller.js'

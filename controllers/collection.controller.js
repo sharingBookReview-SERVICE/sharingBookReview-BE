@@ -1,6 +1,5 @@
-import { Book, Collection, Comment, User } from '../models'
+import { Book, Collection, Comment, User } from '../models/index.js'
 import { saveBook } from './utilities.js'
-import mongoose from 'mongoose'
 import SuperController from './super.controller.js'
 import crawlController from './crawl.controller.js'
 
